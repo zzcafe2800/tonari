@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>トナリ - ひとりで集中する。でも、ひとりじゃない。</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   トナリ Part 2
+   - 目標の個別編集 / NPC無反応勢 / マップ円アイコン＋広い世界
+   - フレンド機能 / 作業部屋リニューアル / 記録グラフ＆カレンダー
+   - Firebase接続（プレゼンス）
+============================================================ */
+:root{
+  --bg:#F6F1E8; --bg2:#EFE8DB;
+  --card:#FFFDF9; --card2:#FBF6EE;
+  --ink:#5C5247; --ink2:#8A7D6E; --ink3:#B7AB9A;
+  --gold:#C9A87C; --gold2:#B8945F; --gold-soft:#EDE0CB;
+  --pink:#E4A9AD; --pink-soft:#F7E6E7;
+  --green:#9CBF9C; --green-soft:#E5EFE2;
+  --red-soft:#F3D9D9; --red-ink:#C0716F;
+  --r:20px; --r-sm:14px;
+  --sh:0 4px 18px rgba(150,130,100,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Zen Maru Gothic',sans-serif;
+  background:#E9E2D5; color:var(--ink);
+  display:flex; justify-content:center; user-select:none;
+}
+#app{width:100%; max-width:480px; min-height:100vh; background:var(--bg); position:relative; overflow:hidden}
+.screen{display:none; min-height:100vh; padding-bottom:92px; animation:fadein .25s ease}
+.screen.active{display:block}
+.screen.nonav{padding-bottom:20px}
+@keyframes fadein{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+
+/* ---------- 共通 ---------- */
+.card{background:var(--card); border-radius:var(--r); box-shadow:var(--sh); padding:16px}
+.btn{display:flex; align-items:center; justify-content:center; gap:8px; border:none; border-radius:999px;
+  cursor:pointer; font-family:inherit; font-weight:700; transition:transform .12s, opacity .2s}
+.btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.45; pointer-events:none}
+.btn-gold{background:linear-gradient(135deg,#D4B68A,#C2A06F); color:#fff; box-shadow:0 6px 16px rgba(180,150,100,.35)}
+.btn-ghost{background:var(--card); color:var(--ink2); border:1.5px solid var(--gold-soft)}
+.btn-pink{background:linear-gradient(135deg,#EDB6BA,#E09BA0); color:#fff; box-shadow:0 6px 16px rgba(220,150,155,.3)}
+.chip{display:inline-flex; align-items:center; gap:5px; padding:8px 16px; border-radius:999px;
+  font-size:13.5px; font-weight:500; background:var(--card); border:1.5px solid var(--gold-soft);
+  color:var(--ink2); cursor:pointer; transition:all .15s}
+.chip.on{background:var(--gold-soft); border-color:var(--gold); color:var(--ink); font-weight:700}
+.tag{display:inline-block; padding:3px 10px; border-radius:8px; font-size:11.5px; font-weight:700}
+.tag.green{background:var(--green-soft); color:#6E9A6E}
+.tag.red{background:var(--red-soft); color:var(--red-ink)}
+.tag.gold{background:var(--gold-soft); color:var(--gold2)}
+.tag.gray{background:#EAE5DC; color:#9A8F80}
+.hd{display:flex; align-items:center; justify-content:space-between; padding:18px 18px 10px}
+.hd .hd-c{text-align:center; flex:1}
+.hd .hd-title{font-size:18px; font-weight:700}
+.hd .hd-sub{font-size:12px; color:var(--ink2); margin-top:2px}
+.icon-btn{width:44px; height:44px; border-radius:50%; background:var(--card); box-shadow:var(--sh);
+  display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer;
+  border:none; color:var(--ink2); font-family:inherit; flex-shrink:0}
+
+/* ---------- ボトムナビ（ホーム中央） ---------- */
+#bnav{position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px;
+  height:76px; background:rgba(255,253,249,.97); backdrop-filter:blur(8px);
+  border-top:1px solid var(--gold-soft); display:none; justify-content:space-around;
+  align-items:center; z-index:50}
+#bnav.show{display:flex}
+.bnav-item{display:flex; flex-direction:column; align-items:center; gap:2px; font-size:10.5px;
+  color:var(--ink3); cursor:pointer; padding:6px 8px; border:none; background:none;
+  font-family:inherit; font-weight:500; position:relative}
+.bnav-item .bi{font-size:21px; line-height:1}
+.bnav-item.on{color:var(--gold2); font-weight:700}
+.bnav-item.center .bi{
+  font-size:24px; width:52px; height:52px; border-radius:50%;
+  background:linear-gradient(135deg,#EDB6BA,#E09BA0);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 5px 14px rgba(220,150,155,.4); margin-top:-22px;
+}
+.bnav-item.center.on .bi{background:linear-gradient(135deg,#E9A6AB,#D98990)}
+.req-dot{position:absolute; top:2px; right:6px; width:9px; height:9px; border-radius:50%; background:#E08A8A}
+
+/* ---------- セットアップ ---------- */
+#scr-setup{padding:0 20px 30px}
+.setup-top{display:flex; align-items:center; padding:22px 0 6px; min-height:60px}
+.setup-back{font-size:14px; color:var(--ink2); cursor:pointer; background:none; border:none; font-family:inherit}
+.dots{display:flex; gap:8px; justify-content:center; margin:8px 0 20px}
+.dot{width:9px; height:9px; border-radius:50%; background:var(--gold-soft); transition:all .2s}
+.dot.on{background:var(--gold); width:26px; border-radius:5px}
+.setup-title{font-size:21px; font-weight:700; text-align:center}
+.setup-sub{font-size:13px; color:var(--ink2); text-align:center; margin:6px 0 22px}
+.opt-card{display:flex; align-items:center; gap:14px; background:var(--card); border:2px solid transparent;
+  border-radius:var(--r); padding:16px; margin-bottom:12px; box-shadow:var(--sh); cursor:pointer; transition:all .15s}
+.opt-card.on{border-color:var(--gold); background:#FDF8EF}
+.opt-emoji{font-size:30px; flex-shrink:0}
+.opt-name{font-weight:700; font-size:15.5px}
+.opt-desc{font-size:12px; color:var(--ink2); margin-top:2px}
+.opt-count{margin-left:auto; font-size:11.5px; color:var(--green); font-weight:700; white-space:nowrap}
+.chip-grid{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
+.setup-actions{margin-top:26px; display:flex; flex-direction:column; gap:10px}
+.skip-link{text-align:center; font-size:13px; color:var(--ink3); cursor:pointer; padding:8px}
+
+/* ---------- ホーム ---------- */
+#scr-home{background:linear-gradient(180deg,#F3EADC 0%, #F6F1E8 45%)}
+.home-illust{position:absolute; top:0; left:0; right:0; height:330px;
+  background:linear-gradient(180deg,#E8D9C2 0%, #EFE4D2 60%, var(--bg) 100%);
+  display:flex; align-items:center; justify-content:center; color:#B8A78E; font-size:13px; z-index:0}
+.home-body{position:relative; z-index:1; padding:0 18px}
+.home-top{display:flex; align-items:center; gap:12px; background:rgba(255,253,249,.92);
+  border-radius:999px; padding:9px 14px 9px 9px; margin-top:16px; box-shadow:var(--sh)}
+.home-avatar{width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,#E9D6BC,#D9C2A2);
+  display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0}
+.home-name{font-weight:700; font-size:15px}
+.home-lv{font-size:11px; color:var(--ink2)}
+.streak-badge{margin-left:auto; background:#FBEFD9; border-radius:999px; padding:6px 12px;
+  font-size:12px; font-weight:700; color:#C98B3D; white-space:nowrap}
+.today-card{margin-top:118px; padding:18px}
+.today-label{font-size:12.5px; color:var(--ink2); display:flex; align-items:center; gap:6px}
+.today-time{font-size:30px; font-weight:700; margin:6px 0 10px}
+.today-time small{font-size:16px}
+.bar{height:8px; background:var(--bg2); border-radius:99px; overflow:hidden}
+.bar > i{display:block; height:100%; background:linear-gradient(90deg,#E0B98A,#C9A87C); border-radius:99px; transition:width .4s}
+.today-goal{font-size:12px; color:var(--ink2); margin-top:8px; display:flex; justify-content:space-between; align-items:center}
+.goal-quick{background:none; border:none; font-family:inherit; color:var(--gold2); font-weight:700; font-size:12px; cursor:pointer}
+.bubble{margin:16px auto 0; width:fit-content; max-width:85%; background:var(--card); border-radius:18px;
+  padding:11px 18px; font-size:13px; color:var(--ink2); box-shadow:var(--sh); text-align:center; position:relative}
+.bubble:after{content:''; position:absolute; bottom:-7px; left:50%; transform:translateX(-50%);
+  border:8px solid transparent; border-top-color:var(--card); border-bottom:0}
+/* 電話風スタートボタン */
+.call-wrap{display:flex; flex-direction:column; align-items:center; margin-top:18px}
+.call-btn{
+  width:96px; height:96px; border-radius:50%; border:none; cursor:pointer;
+  background:linear-gradient(135deg,#EDB6BA,#E09BA0);
+  box-shadow:0 8px 22px rgba(220,150,155,.45);
+  display:flex; align-items:center; justify-content:center; font-size:42px;
+  position:relative; transition:transform .12s; font-family:inherit;
+}
+.call-btn:active{transform:scale(.93)}
+.call-btn:before, .call-btn:after{
+  content:''; position:absolute; inset:-8px; border-radius:50%;
+  border:2px solid rgba(224,155,160,.5); animation:ring 2s ease infinite;
+}
+.call-btn:after{animation-delay:1s}
+@keyframes ring{0%{transform:scale(.9); opacity:.8} 100%{transform:scale(1.35); opacity:0}}
+.call-label{margin-top:14px; font-weight:700; font-size:16px}
+.call-sub{font-size:11.5px; color:var(--ink2); margin-top:2px}
+.menu3{display:flex; gap:10px; margin-top:20px}
+.menu3 .m-card{flex:1; background:var(--card); border-radius:var(--r); box-shadow:var(--sh);
+  padding:16px 8px; text-align:center; cursor:pointer; transition:transform .12s; border:none; font-family:inherit}
+.m-card:active{transform:scale(.95)}
+.m-emoji{font-size:26px}
+.m-name{font-size:13px; font-weight:700; margin-top:6px; color:var(--ink)}
+.m-desc{font-size:10px; color:var(--ink3); margin-top:3px}
+
+/* ---------- 目標編集 ---------- */
+.goal-rows{margin-top:14px; display:flex; flex-direction:column; gap:10px; padding:0 18px}
+.grow{display:flex; align-items:center; gap:12px; background:var(--card); border-radius:var(--r-sm);
+  box-shadow:var(--sh); padding:14px 16px; cursor:pointer}
+.grow .ge{font-size:22px}
+.grow .gl{font-size:11px; color:var(--ink3)}
+.grow .gv{font-size:14px; font-weight:700; margin-top:1px}
+.grow .ar{margin-left:auto; color:var(--ink3)}
+
+/* ---------- マップ ---------- */
+#scr-map{display:none; flex-direction:column}
+#scr-map.active{display:flex}
+.goal-card{margin:4px 18px 0; display:flex; align-items:center; gap:12px; padding:13px 16px}
+.goal-info{flex:1; min-width:0}
+.goal-line1{font-size:14px; font-weight:700}
+.goal-line2{font-size:12.5px; color:var(--ink2); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.goal-change{background:var(--gold-soft); color:var(--gold2); border:none; border-radius:999px;
+  padding:8px 16px; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; flex-shrink:0}
+#mapArea{flex:1; position:relative; min-height:440px; margin:6px 0; cursor:pointer; overflow:hidden;
+  background:radial-gradient(circle at 50% 40%, #F2EBDD 0%, #EDE4D2 100%)}
+.muser{position:absolute; left:50%; top:50%; width:60px; display:flex; flex-direction:column;
+  align-items:center; transition:transform .55s cubic-bezier(.3,1.1,.4,1); cursor:pointer}
+.mav{width:46px; height:46px; border-radius:50%; background:var(--card); box-shadow:var(--sh);
+  display:flex; align-items:center; justify-content:center; font-size:21px;
+  border:2.5px solid var(--bd,#D9CBB5); position:relative}
+.mav .stat{position:absolute; right:-2px; bottom:-2px; width:12px; height:12px; border-radius:50%;
+  border:2.5px solid var(--card); background:var(--green)}
+.mav .stat.brk{background:#D4BC93}
+.mname{margin-top:3px; font-size:10px; font-weight:700; color:var(--ink2);
+  background:rgba(255,253,249,.92); padding:1px 8px; border-radius:99px; opacity:0;
+  transition:opacity .3s; white-space:nowrap}
+.muser.near .mname{opacity:1}
+.muser.me{z-index:10}
+.muser.me .mav{width:52px; height:52px; font-size:24px; border-color:#D9A85C; background:#FDF6E8}
+.me-tip{position:absolute; top:-25px; left:50%; transform:translateX(-50%); background:#5C5247;
+  color:#fff; font-size:10px; font-weight:700; padding:3px 10px; border-radius:99px; white-space:nowrap}
+.me-tip:after{content:''; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);
+  border:5px solid transparent; border-top-color:#5C5247; border-bottom:0}
+.map-bottom{padding:0 18px 18px}
+.rand-btn{width:100%; padding:16px; font-size:16px; position:relative; overflow:hidden}
+.rand-btn .wait-bar{position:absolute; left:0; top:0; bottom:0; width:0%;
+  background:rgba(255,255,255,.25); transition:width 1s linear}
+.rand-cancel{text-align:center; font-size:12.5px; color:var(--ink3); margin-top:8px; cursor:pointer; display:none}
+.rand-cancel.show{display:block}
+
+/* ---------- フレンド ---------- */
+.fr-tabs{display:flex; gap:8px; padding:4px 18px 0}
+.fr-tab{flex:1; text-align:center; padding:11px; border-radius:999px; font-size:13.5px; font-weight:700;
+  background:var(--card); color:var(--ink2); cursor:pointer; box-shadow:var(--sh); border:none; font-family:inherit; position:relative}
+.fr-tab.on{background:var(--gold-soft); color:var(--gold2)}
+.fr-list{padding:14px 18px; display:flex; flex-direction:column; gap:10px}
+.fr-row{display:flex; align-items:center; gap:12px; background:var(--card); border-radius:var(--r-sm);
+  box-shadow:var(--sh); padding:12px 14px}
+.fr-av{width:44px; height:44px; border-radius:50%; background:var(--card2); display:flex;
+  align-items:center; justify-content:center; font-size:21px; position:relative; flex-shrink:0}
+.fr-av .stat{position:absolute; right:-1px; bottom:-1px; width:12px; height:12px; border-radius:50%;
+  border:2.5px solid var(--card); background:var(--green)}
+.fr-av .stat.off{background:#CFC6B8}
+.fr-name{font-weight:700; font-size:14px}
+.fr-sub{font-size:11px; color:var(--ink3)}
+.fr-act{margin-left:auto; display:flex; gap:8px}
+.fr-btn{width:38px; height:38px; border-radius:50%; border:none; font-size:16px; cursor:pointer;
+  font-family:inherit; display:flex; align-items:center; justify-content:center}
+.fr-btn.ok{background:var(--green-soft); color:#5F8E5F}
+.fr-btn.no{background:var(--red-soft); color:var(--red-ink)}
+.fr-empty{text-align:center; padding:50px 20px; color:var(--ink3); font-size:13px; line-height:1.8}
+
+/* ---------- 作業部屋 ---------- */
+#scr-room{position:relative;
+  background:linear-gradient(180deg,#E7DCC6 0%, #F1E9DA 50%, #F6F1E8 100%)}
+.room-bg{position:absolute; inset:0; background:url('aaa.png') center/cover no-repeat; z-index:0}
+.room-bg:after{content:''; position:absolute; inset:0; background:rgba(246,241,232,.28)}
+.room-ui{position:relative; z-index:1}
+.room-prof{display:flex; align-items:center; gap:6px; padding:6px 14px 0}
+.pcard{flex:1; background:rgba(255,253,249,.94); border-radius:var(--r-sm); box-shadow:var(--sh);
+  padding:10px 12px; display:flex; gap:10px; align-items:center; min-width:0; cursor:pointer; border:none; font-family:inherit; text-align:left}
+.pav{width:42px; height:42px; border-radius:50%; flex-shrink:0; display:flex; align-items:center;
+  justify-content:center; font-size:20px; background:linear-gradient(135deg,#EADBC4,#DCC8AA)}
+.pinfo{min-width:0; flex:1}
+.pname{font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pgoal{font-size:10px; color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pstat{font-size:10px; font-weight:700; margin-top:1px; color:#6E9A6E}
+.pstat.brk{color:#C09A55}
+.connect-mark{width:34px; height:34px; border-radius:50%; background:var(--card); box-shadow:var(--sh);
+  display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;
+  animation:pulse 1.8s ease infinite; transform:rotate(90deg)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,168,124,.45)} 60%{box-shadow:0 0 0 9px rgba(201,168,124,0)}}
+.timer-circle{width:230px; height:230px; margin:20px auto 0; background:rgba(255,253,249,.95);
+  border-radius:50%; box-shadow:0 8px 28px rgba(140,115,80,.2); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; position:relative; border:6px solid rgba(240,228,206,.9)}
+.tc-label{font-size:12px; color:var(--ink2)}
+.tc-time{font-size:40px; font-weight:700; letter-spacing:1px; margin:2px 0}
+.tc-goal{font-size:12px; color:var(--ink2)}
+.tc-reward{width:65%; margin-top:10px}
+.tc-reward .rw-label{font-size:10px; color:var(--ink3); text-align:center; margin-bottom:4px; font-weight:700}
+.tc-reward .bar{height:7px}
+.tc-reward .bar > i{background:linear-gradient(90deg,#F0C98F,#E0A865)}
+.gift-float{position:absolute; top:84px; right:16px; width:58px; height:58px; border-radius:50%;
+  background:linear-gradient(135deg,#FBE9C8,#F4D9A5); border:none; font-size:27px; cursor:pointer;
+  box-shadow:0 6px 16px rgba(190,150,90,.35); display:none; align-items:center; justify-content:center;
+  z-index:5; animation:pop .3s ease, wobble 1.6s ease .3s infinite; font-family:inherit}
+.gift-float.show{display:flex}
+.gift-float .gcount{position:absolute; top:-4px; right:-4px; background:#E08A8A; color:#fff;
+  font-size:11px; font-weight:700; min-width:20px; height:20px; border-radius:99px;
+  display:flex; align-items:center; justify-content:center; padding:0 5px}
+@keyframes wobble{0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(4deg)}}
+@keyframes pop{from{transform:scale(.5); opacity:0} to{transform:none; opacity:1}}
+.char-zone{height:150px; margin:16px 16px 0; display:flex; align-items:center; justify-content:center;
+  font-size:12px; color:rgba(140,120,95,.55)}
+/* 音楽バー */
+.music-bar{margin:10px 16px 0; background:rgba(255,253,249,.92); border-radius:18px; box-shadow:var(--sh);
+  display:flex; align-items:center; gap:12px; padding:10px 16px; cursor:pointer}
+.music-art{width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg,#C9B5D6,#9FB8D8);
+  display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0}
+.music-info{flex:1; min-width:0}
+.music-title{font-size:12.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.music-sub{font-size:10px; color:var(--ink3)}
+.music-wave{display:flex; gap:2.5px; align-items:flex-end; height:18px}
+.music-wave i{width:3px; background:var(--gold); border-radius:2px; animation:wave 1s ease infinite}
+.music-wave i:nth-child(2){animation-delay:.15s}
+.music-wave i:nth-child(3){animation-delay:.3s}
+.music-wave i:nth-child(4){animation-delay:.45s}
+@keyframes wave{0%,100%{height:5px} 50%{height:16px}}
+/* アイコンバー */
+.tool-bar{position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
+  width:calc(100% - 32px); max-width:448px; background:rgba(255,253,249,.97);
+  border-radius:26px; box-shadow:0 8px 24px rgba(140,115,80,.22);
+  display:flex; justify-content:space-around; align-items:center; padding:10px 8px; z-index:40}
+.tool-btn{display:flex; flex-direction:column; align-items:center; gap:3px; border:none;
+  background:none; cursor:pointer; font-family:inherit; padding:4px 10px}
+.tool-btn .te{width:46px; height:46px; border-radius:50%; background:var(--card2);
+  display:flex; align-items:center; justify-content:center; font-size:21px; transition:transform .12s}
+.tool-btn:active .te{transform:scale(.88)}
+.tool-btn .tl{font-size:10px; color:var(--ink2); font-weight:700}
+/* シート（共通パネル） */
+.todo-list{max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:6px; margin-top:6px}
+.todo-item{display:flex; align-items:center; gap:8px; background:var(--card2); border-radius:10px;
+  padding:9px 10px; font-size:13px}
+.todo-chk{width:20px; height:20px; border-radius:6px; border:2px solid #D8C9AF; background:var(--card);
+  cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff}
+.todo-item.done .todo-chk{background:var(--gold); border-color:var(--gold)}
+.todo-item.done .todo-tx{text-decoration:line-through; color:var(--ink3)}
+.todo-tx{flex:1; word-break:break-all}
+.todo-del{border:none; background:none; color:var(--ink3); font-size:15px; cursor:pointer; padding:2px}
+.todo-input-row{display:flex; gap:6px; margin-top:10px}
+.todo-input{flex:1; border:1.5px solid var(--gold-soft); border-radius:10px; padding:10px 12px;
+  font-family:inherit; font-size:13.5px; background:var(--card); color:var(--ink); outline:none; min-width:0}
+.todo-ok{border:none; background:var(--gold); color:#fff; border-radius:10px; padding:0 16px;
+  font-family:inherit; font-weight:700; cursor:pointer}
+.stamp-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-top:8px}
+.stamp-btn{background:var(--card2); border:1.5px solid transparent; border-radius:14px;
+  padding:12px 4px; text-align:center; cursor:pointer; font-family:inherit; transition:transform .12s}
+.stamp-btn:active{transform:scale(.9)}
+.stamp-btn .se{font-size:25px}
+.stamp-btn .sl{font-size:10px; color:var(--ink2); font-weight:700; margin-top:3px}
+.pomo-sheet{text-align:center; padding:8px 0}
+.pomo-time-big{font-size:46px; font-weight:700; margin:4px 0}
+.pomo-phase{font-size:13px; font-weight:700; color:#C8797E}
+.pomo-phase.brk{color:#6E9A6E}
+.float-stamp{position:fixed; z-index:90; pointer-events:none; display:flex; flex-direction:column;
+  align-items:center; animation:floatup 2.2s ease forwards}
+.float-stamp .fe{font-size:44px}
+.float-stamp .fl{font-size:11px; font-weight:700; color:var(--ink);
+  background:rgba(255,253,249,.95); padding:2px 10px; border-radius:99px; box-shadow:var(--sh)}
+@keyframes floatup{0%{opacity:0; transform:translateY(16px) scale(.6)} 15%{opacity:1; transform:translateY(0) scale(1.1)}
+  25%{transform:scale(1)} 80%{opacity:1} 100%{opacity:0; transform:translateY(-70px)}}
+
+/* ---------- 記録 ---------- */
+.rec-tabs{display:flex; gap:8px; padding:4px 18px 0}
+.stat3{display:flex; gap:10px; margin-top:14px; padding:0 18px}
+.stat3 .s-card{flex:1; background:var(--card); border-radius:var(--r-sm); box-shadow:var(--sh);
+  padding:14px 6px; text-align:center}
+.s-num{font-size:16px; font-weight:700}
+.s-label{font-size:10.5px; color:var(--ink2); margin-top:3px}
+.graph-card{margin:14px 18px 0; padding:18px 14px 10px}
+.graph{display:flex; align-items:flex-end; gap:5px; height:150px; padding:0 4px}
+.gbar{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end}
+.gbar i{width:100%; max-width:18px; background:linear-gradient(180deg,#E0B98A,#C9A87C);
+  border-radius:6px 6px 3px 3px; min-height:3px; transition:height .5s}
+.gbar span{font-size:8.5px; color:var(--ink3)}
+.cal{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:10px}
+.cal .cday{aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  border-radius:10px; font-size:12px; color:var(--ink2)}
+.cal .cday.head{font-size:10px; color:var(--ink3); font-weight:700; aspect-ratio:auto; padding:4px 0}
+.cal .cday.has{background:var(--gold-soft); color:var(--gold2); font-weight:700}
+.cal .cday.lots{background:linear-gradient(135deg,#E8C794,#D9B077); color:#fff; font-weight:700}
+.cal .cday .cd-dot{font-size:7px; line-height:1}
+
+/* ---------- スタブ等 ---------- */
+.stub-wrap{padding:0 18px}
+.stub-card{padding:30px 20px; text-align:center; margin-top:14px}
+.stub-emoji{font-size:42px}
+.stub-title{font-size:16px; font-weight:700; margin-top:10px}
+.stub-desc{font-size:12.5px; color:var(--ink2); margin-top:8px; line-height:1.7}
+.item-list{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; justify-content:center}
+
+/* ---------- モーダル ---------- */
+.modal-bg{position:fixed; inset:0; background:rgba(70,58,44,.45); z-index:100; display:none;
+  align-items:flex-end; justify-content:center; backdrop-filter:blur(2px)}
+.modal-bg.show{display:flex}
+.modal{width:100%; max-width:480px; background:var(--card); border-radius:28px 28px 0 0;
+  padding:24px 22px 30px; animation:slideup .3s cubic-bezier(.3,1.1,.4,1); max-height:80vh; overflow-y:auto}
+@keyframes slideup{from{transform:translateY(60px); opacity:0} to{transform:none; opacity:1}}
+.modal.center-modal{border-radius:28px; margin:0 18px 40vh; align-self:center}
+.sheet-title{font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; margin-bottom:6px}
+.pm-head{display:flex; align-items:center; gap:14px}
+.pm-av{width:60px; height:60px; border-radius:50%; background:var(--card2); display:flex;
+  align-items:center; justify-content:center; font-size:30px; border:2.5px solid var(--bd,#D9CBB5)}
+.pm-name{font-size:18px; font-weight:700}
+.pm-goal{font-size:13px; color:var(--ink2); margin-top:2px}
+.pm-stats{display:flex; gap:18px; margin:16px 0 12px; font-size:13px; color:var(--ink2)}
+.pm-stats b{color:var(--ink)}
+.pm-tags{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:18px}
+.modal-title{font-size:17px; font-weight:700; text-align:center}
+.modal-desc{font-size:13px; color:var(--ink2); text-align:center; margin-top:8px; line-height:1.7}
+.modal-actions{display:flex; gap:10px; margin-top:20px}
+.modal-actions .btn{flex:1; padding:15px; font-size:15px}
+.reward-box{width:110px; height:110px; margin:18px auto; font-size:60px; display:flex;
+  align-items:center; justify-content:center; background:var(--card2); border-radius:26px;
+  cursor:pointer; animation:wobble 1.4s ease infinite}
+.reward-result{display:none; text-align:center; padding:8px 0}
+.reward-result.show{display:block; animation:pop .35s ease}
+.rr-emoji{font-size:52px}
+.rr-name{font-size:16px; font-weight:700; margin-top:8px}
+.reward-list{display:flex; flex-direction:column; gap:8px; margin:16px 0; max-height:200px; overflow-y:auto}
+.reward-row{display:flex; align-items:center; gap:10px; background:var(--card2); border-radius:12px;
+  padding:10px 14px; font-size:13.5px; font-weight:700}
+.reward-row .re{font-size:22px}
+
+#toast{position:fixed; top:18px; left:50%; transform:translateX(-50%) translateY(-90px);
+  background:rgba(70,58,44,.92); color:#fff; font-size:13px; font-weight:500; padding:11px 22px;
+  border-radius:99px; z-index:200; transition:transform .35s cubic-bezier(.3,1.1,.4,1);
+  white-space:nowrap; max-width:90%; overflow:hidden; text-overflow:ellipsis}
+#toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== セットアップ（マッチ開始時・未設定のみ） ===== -->
+  <section class="screen nonav" id="scr-setup">
+    <div class="setup-top"><button class="setup-back" id="setupBack" style="visibility:hidden">‹ 戻る</button></div>
+    <div class="dots" id="setupDots"></div>
+    <div id="setupBody"></div>
+  </section>
+
+  <!-- ===== ホーム ===== -->
+  <section class="screen" id="scr-home">
+    <div class="home-illust">（ここにホームのイラスト背景が入ります）</div>
+    <div class="home-body">
+      <div class="home-top">
+        <div class="home-avatar">🧸</div>
+        <div>
+          <div class="home-name" id="hName">ゆめ</div>
+          <div class="home-lv" id="hLv">Lv.1</div>
+        </div>
+        <div class="streak-badge" id="hStreak">🔥 1日継続中</div>
+        <button class="icon-btn" style="box-shadow:none;background:none" onclick="toast('通知はまだありません')">🔔</button>
+      </div>
+
+      <div class="card today-card">
+        <div class="today-label">⏱ 今日の記録</div>
+        <div class="today-time" id="hToday">0<small>分</small></div>
+        <div class="bar"><i id="hBar" style="width:0%"></i></div>
+        <div class="today-goal">
+          <span id="hGoal">目標：2時間</span>
+          <button class="goal-quick" onclick="quickGoalTime()">⏰ 時間をかえる</button>
+        </div>
+      </div>
+
+      <div class="bubble">📌 いっしょに作業する仲間に<br>でんわをかけてみよう 📞</div>
+
+      <div class="call-wrap">
+        <button class="call-btn" onclick="startWork()">📞</button>
+        <div class="call-label">作業を始める</div>
+        <div class="call-sub">仲間を探しにいく</div>
+      </div>
+
+      <div class="menu3">
+        <button class="m-card" onclick="go('scr-closet')">
+          <div class="m-emoji">👗</div><div class="m-name">着せ替え</div><div class="m-desc">アバターを<br>カスタマイズ</div>
+        </button>
+        <button class="m-card" onclick="openGoal()">
+          <div class="m-emoji">🎯</div><div class="m-name">目標設定</div><div class="m-desc">目標を<br>編集しよう</div>
+        </button>
+        <button class="m-card" onclick="go('scr-shop')">
+          <div class="m-emoji">🛍️</div><div class="m-name">ショップ</div><div class="m-desc">アイテムを<br>手に入れよう</div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 目標設定（個別編集） ===== -->
+  <section class="screen" id="scr-goal">
+    <div class="hd"><button class="icon-btn" onclick="go('scr-home')">‹</button>
+      <div class="hd-c"><div class="hd-title">目標設定</div></div><div style="width:44px"></div></div>
+    <div style="padding:0 18px">
+      <div class="card">
+        <div class="today-label">⏱ 今日の記録</div>
+        <div class="today-time" id="gToday">0<small>分</small></div>
+        <div class="bar"><i id="gBar" style="width:0%"></i></div>
+        <div class="today-goal"><span id="gGoalTxt">目標：2時間</span></div>
+      </div>
+    </div>
+    <div class="goal-rows" id="goalRows"></div>
+  </section>
+
+  <!-- ===== マップ ===== -->
+  <section class="screen nonav" id="scr-map">
+    <div class="hd">
+      <button class="icon-btn" onclick="go('scr-home')">‹</button>
+      <div class="hd-c"><div class="hd-title">マッチングマップ</div>
+        <div class="hd-sub">クリックした方向に歩けるよ</div></div>
+      <button class="icon-btn" onclick="openGoal()">⚙</button>
+    </div>
+    <div class="card goal-card">
+      <div style="font-size:22px">🎯</div>
+      <div class="goal-info">
+        <div class="goal-line1" id="mapGoalTime">目標 2時間</div>
+        <div class="goal-line2" id="mapGoalCat">未設定</div>
+      </div>
+      <button class="goal-change" onclick="openGoal()">変更</button>
+    </div>
+    <div id="mapArea"></div>
+    <div class="map-bottom">
+      <button class="btn btn-gold rand-btn" id="randBtn" onclick="startRandom()">
+        <div class="wait-bar" id="waitBar"></div>
+        <span id="randLabel">⤨ ランダムマッチ</span>
+      </button>
+      <div class="rand-cancel" id="randCancel" onclick="cancelRandom()">キャンセル</div>
+    </div>
+  </section>
+
+  <!-- ===== フレンド ===== -->
+  <section class="screen" id="scr-friends">
+    <div class="hd"><div style="width:44px"></div>
+      <div class="hd-c"><div class="hd-title">フレンド</div></div><div style="width:44px"></div></div>
+    <div class="fr-tabs">
+      <button class="fr-tab on" id="frTabList" onclick="frTab('list')">フレンド一覧</button>
+      <button class="fr-tab" id="frTabReq" onclick="frTab('req')">リクエスト<span class="req-dot" id="reqDot" style="display:none"></span></button>
+    </div>
+    <div class="fr-list" id="frList"></div>
+  </section>
+
+  <!-- ===== 作業部屋 ===== -->
+  <section class="screen nonav" id="scr-room">
+    <div class="room-bg"></div>
+    <div class="room-ui">
+      <div class="hd">
+        <button class="icon-btn" onclick="askLeave()" style="font-size:13px;width:auto;padding:0 16px;border-radius:99px">🚪 退出</button>
+        <div class="hd-c"><div class="hd-title">🍂 作業中 🍂</div>
+          <div class="hd-sub" style="color:#C8946A">一緒に頑張ろうね！</div></div>
+        <button class="icon-btn" onclick="roomSettings()">⚙</button>
+      </div>
+
+      <div class="room-prof">
+        <button class="pcard" onclick="toggleMyStatus()">
+          <div class="pav">🧸</div>
+          <div class="pinfo">
+            <div class="pname" id="rMyName">あなた</div>
+            <div class="pgoal" id="rMyGoal">📖 作業</div>
+            <div class="pstat" id="rMyStat">● 集中中（タップで切替）</div>
+          </div>
+        </button>
+        <div class="connect-mark">⚡</div>
+        <button class="pcard" onclick="showPartnerProfile()">
+          <div class="pav" id="rPav">🐰</div>
+          <div class="pinfo">
+            <div class="pname" id="rPName">相手</div>
+            <div class="pgoal" id="rPGoal">📖 作業</div>
+            <div class="pstat" id="rPStat">● 集中中</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="timer-circle">
+        <div class="tc-label">今の作業時間</div>
+        <div class="tc-time" id="elapsed">00:00:00</div>
+        <div class="tc-goal" id="rGoal">目標 2時間</div>
+        <div class="tc-reward">
+          <div class="rw-label">🎁 次の報酬まで</div>
+          <div class="bar"><i id="rewardBar" style="width:0%"></i></div>
+        </div>
+      </div>
+
+      <button class="gift-float" id="giftFloat" onclick="openOneGift()">🎁<span class="gcount" id="giftCount" style="display:none">2</span></button>
+
+      <div class="char-zone">（ここにキャラクターのイラストが入ります）</div>
+
+      <div class="music-bar" onclick="toast('音楽機能はこれから🎵')">
+        <div class="music-art">🎵</div>
+        <div class="music-info">
+          <div class="music-title">lofi hip hop radio</div>
+          <div class="music-sub">chill beats to relax / study</div>
+        </div>
+        <div class="music-wave"><i></i><i></i><i></i><i></i></div>
+      </div>
+
+      <div style="height:110px"></div>
+    </div>
+
+    <div class="tool-bar">
+      <button class="tool-btn" onclick="openSheet('todoSheet')"><div class="te">📝</div><div class="tl">ToDo</div></button>
+      <button class="tool-btn" onclick="openSheet('stampSheet')"><div class="te">😊</div><div class="tl">スタンプ</div></button>
+      <button class="tool-btn" onclick="openSheet('pomoSheet')"><div class="te">🍅</div><div class="tl">ポモドーロ</div></button>
+      <button class="tool-btn" onclick="toast('モーション機能はこれから🎬')"><div class="te">🎬</div><div class="tl">モーション</div></button>
+    </div>
+  </section>
+
+  <!-- ===== 記録 ===== -->
+  <section class="screen" id="scr-records">
+    <div class="hd"><div style="width:44px"></div>
+      <div class="hd-c"><div class="hd-title">作業記録</div></div><div style="width:44px"></div></div>
+    <div class="rec-tabs">
+      <button class="fr-tab on" id="recTabG" onclick="recTab('graph')">グラフ</button>
+      <button class="fr-tab" id="recTabC" onclick="recTab('cal')">カレンダー</button>
+    </div>
+    <div class="stat3">
+      <div class="s-card"><div class="s-num" id="recToday">0分</div><div class="s-label">今日</div></div>
+      <div class="s-card"><div class="s-num" id="recTotal">0分</div><div class="s-label">総作業時間</div></div>
+      <div class="s-card"><div class="s-num" id="recStreak">1日</div><div class="s-label">継続日数</div></div>
+    </div>
+    <div class="graph-card card" id="recBody"></div>
+  </section>
+
+  <!-- ===== ショップ ===== -->
+  <section class="screen" id="scr-shop">
+    <div class="hd"><div style="width:44px"></div>
+      <div class="hd-c"><div class="hd-title">ショップ</div></div>
+      <div style="background:var(--card);border-radius:99px;padding:8px 14px;font-weight:700;font-size:13px;box-shadow:var(--sh)">🪙 <span id="shopCoins">0</span></div>
+    </div>
+    <div class="stub-wrap">
+      <div id="shopItems"></div>
+      <div class="card stub-card">
+        <div class="stub-emoji">🛍️</div>
+        <div class="stub-title">本格的なショップはPart 3で</div>
+        <div class="stub-desc">カテゴリタブや期間限定セットを実装予定</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== マイページ ===== -->
+  <section class="screen" id="scr-mypage">
+    <div class="hd"><div style="width:44px"></div>
+      <div class="hd-c"><div class="hd-title">マイページ</div></div><div style="width:44px"></div></div>
+    <div class="stub-wrap">
+      <div class="card" style="display:flex;align-items:center;gap:14px">
+        <div class="home-avatar" style="width:60px;height:60px;font-size:30px">🧸</div>
+        <div>
+          <div style="font-weight:700;font-size:17px" id="mpName">ゆめ</div>
+          <div style="font-size:12px;color:var(--ink2)" id="mpTags">タグ未設定</div>
+        </div>
+      </div>
+      <div class="stat3" style="padding:0">
+        <div class="s-card"><div class="s-num" id="mpTotal">0分</div><div class="s-label">総作業時間</div></div>
+        <div class="s-card"><div class="s-num" id="mpStreak">1日</div><div class="s-label">継続日数</div></div>
+        <div class="s-card"><div class="s-num" id="mpCoins">0</div><div class="s-label">コイン</div></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div style="font-weight:700;font-size:14px">🎒 もっているアイテム</div>
+        <div class="item-list" id="mpItems"><span style="font-size:12px;color:var(--ink3)">まだありません</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 着せ替え（スタブ） ===== -->
+  <section class="screen" id="scr-closet">
+    <div class="hd"><button class="icon-btn" onclick="go('scr-home')">‹</button>
+      <div class="hd-c"><div class="hd-title">着せ替え</div></div><div style="width:44px"></div></div>
+    <div class="stub-wrap">
+      <div class="card stub-card">
+        <div class="stub-emoji">👗</div>
+        <div class="stub-title">キャラの絵ができたらここで着せ替え！</div>
+        <div class="stub-desc">ゆめさんのイラストを待ってます🎨</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ボトムナビ（ホーム中央） ===== -->
+  <nav id="bnav">
+    <button class="bnav-item" data-s="scr-records"><span class="bi">📊</span>記録</button>
+    <button class="bnav-item" data-s="scr-friends"><span class="bi">👥</span>フレンド<span class="req-dot" id="navReqDot" style="display:none"></span></button>
+    <button class="bnav-item center" data-s="scr-home"><span class="bi">🏠</span>ホーム</button>
+    <button class="bnav-item" data-s="scr-shop"><span class="bi">🛍️</span>ショップ</button>
+    <button class="bnav-item" data-s="scr-mypage"><span class="bi">👤</span>マイページ</button>
+  </nav>
+</div>
+
+<!-- ===== モーダル群 ===== -->
+<div class="modal-bg" id="modalBg" onclick="bgClose(event)">
+
+  <!-- マップ：プロフィール -->
+  <div class="modal" id="profileModal" style="display:none">
+    <div class="pm-head">
+      <div class="pm-av" id="pmAv">📖</div>
+      <div><div class="pm-name" id="pmName">ゆい</div><div class="pm-goal" id="pmGoal">資格勉強</div></div>
+    </div>
+    <div class="pm-stats">
+      <span>🔥 継続 <b id="pmStreak">12日</b></span>
+      <span>🕐 今日 <b id="pmToday">01:24</b></span>
+    </div>
+    <div class="pm-tags" id="pmTags"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">閉じる</button>
+      <button class="btn btn-gold" id="pmInvite" onclick="sendInvite()">作業に招待する</button>
+    </div>
+    <div style="text-align:center;font-size:11.5px;color:var(--ink3);margin-top:10px" id="pmNote"></div>
+  </div>
+
+  <!-- 部屋：相手プロフィール -->
+  <div class="modal" id="partnerModal" style="display:none">
+    <div class="pm-head">
+      <div class="pm-av" id="ppAv">🐰</div>
+      <div><div class="pm-name" id="ppName">相手</div><div class="pm-goal" id="ppGoal">作業</div></div>
+    </div>
+    <div class="pm-stats">
+      <span>🔥 継続 <b id="ppStreak">5日</b></span>
+      <span>🕐 今日 <b id="ppToday">00:40</b></span>
+    </div>
+    <div class="pm-tags" id="ppTags"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">閉じる</button>
+      <button class="btn btn-gold" id="ppFriendBtn" onclick="sendFriendReq()">フレンド申請</button>
+    </div>
+  </div>
+
+  <!-- 確認 -->
+  <div class="modal center-modal" id="confirmModal" style="display:none">
+    <div class="modal-title" id="cfTitle">本当に退出しますか？</div>
+    <div class="modal-desc" id="cfDesc">作業時間と報酬は保存されます</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">いいえ</button>
+      <button class="btn btn-gold" id="cfYes">はい</button>
+    </div>
+  </div>
+
+  <!-- ギフト -->
+  <div class="modal center-modal" id="giftModal" style="display:none">
+    <div class="modal-title">プレゼント 🎁</div>
+    <div class="reward-box" id="giftBox" onclick="revealGift()">🎁</div>
+    <div class="reward-result" id="giftResult">
+      <div class="rr-emoji" id="grEmoji">🪙</div>
+      <div class="rr-name" id="grName">100コイン</div>
+    </div>
+    <div class="modal-actions" id="giftActions" style="display:none">
+      <button class="btn btn-gold" onclick="closeModal()" style="flex:1">うれしい！</button>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--ink3);margin-top:6px" id="giftHint">箱をタップして開封</div>
+  </div>
+
+  <!-- 退出報酬まとめ -->
+  <div class="modal center-modal" id="leaveRewardModal" style="display:none">
+    <div class="modal-title">おつかれさま！🍵</div>
+    <div class="modal-desc" id="lrDesc">今回の作業：0分</div>
+    <div class="reward-list" id="lrList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" onclick="finishLeave()" style="flex:1">ホームに戻る</button>
+    </div>
+  </div>
+
+  <!-- 通信切断 -->
+  <div class="modal center-modal" id="dcModal" style="display:none">
+    <div class="stub-emoji" style="text-align:center">😢</div>
+    <div class="modal-title" style="margin-top:8px">相手の通信が切れてしまいました</div>
+    <div class="modal-desc">お部屋はなくなります。<br>ここまでの作業時間と報酬は受け取れます</div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" onclick="dcLeave()" style="flex:1">報酬を受け取ってホームへ</button>
+    </div>
+  </div>
+
+  <!-- 部屋設定 -->
+  <div class="modal" id="roomSetModal" style="display:none">
+    <div class="modal-title">設定</div>
+    <div class="modal-actions" style="flex-direction:column">
+      <button class="btn btn-ghost" onclick="simulateDC()" style="padding:14px">（テスト用）相手の切断を再現</button>
+      <button class="btn btn-gold" onclick="closeModal()" style="padding:14px">閉じる</button>
+    </div>
+  </div>
+
+  <!-- ToDoシート -->
+  <div class="modal" id="todoSheet" style="display:none">
+    <div class="sheet-title">📝 ToDoリスト <span style="margin-left:auto;font-size:11px;color:var(--ink3)" id="todoProgress">0/0</span></div>
+    <div class="todo-list" id="todoList"></div>
+    <div class="todo-input-row">
+      <input class="todo-input" id="todoInput" placeholder="やること..." maxlength="30">
+      <button class="todo-ok" onclick="addTodo()">追加</button>
+    </div>
+  </div>
+
+  <!-- スタンプシート -->
+  <div class="modal" id="stampSheet" style="display:none">
+    <div class="sheet-title">😊 スタンプ</div>
+    <div class="stamp-grid" id="stampGrid"></div>
+  </div>
+
+  <!-- ポモドーロシート -->
+  <div class="modal" id="pomoSheet" style="display:none">
+    <div class="sheet-title">🍅 ポモドーロ</div>
+    <div class="pomo-sheet">
+      <div class="pomo-phase" id="pomoPhase">集中タイム</div>
+      <div class="pomo-time-big" id="pomoTime">25:00</div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="pomoReset()">リセット</button>
+        <button class="btn btn-pink" id="pomoBtn" onclick="pomoToggle()">スタート</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ピッカー（目標個別編集用） -->
+  <div class="modal" id="pickerModal" style="display:none">
+    <div class="sheet-title" id="pickerTitle">選択</div>
+    <div id="pickerBody" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   データ
+============================================================ */
+const STYLES = [
+  {id:'cowork', emoji:'☕', name:'一緒に作業したい', desc:'会話少なめ、静かに同じ空間で作業'},
+  {id:'buddy',  emoji:'🤝', name:'勉強仲間を探す',   desc:'同じ目標の人と励まし合いたい'},
+  {id:'rival',  emoji:'🔥', name:'ライバルを探す',   desc:'進捗を見せ合って競いたい'},
+  {id:'casual', emoji:'✨', name:'ゆるく交流したい', desc:'スタンプで軽くつながりたい'},
+];
+const CATS = {
+  study:{emoji:'📚', name:'勉強', details:{
+    'テスト勉強':['中学生','高校生','大学生'],
+    '受験勉強':['情報系','工学部','医学部','薬学部','法学部','経済学部','文学部','教育学部','その他'],
+    '資格勉強':['簿記','宅建','FP','基本情報','応用情報','英検','TOEIC','行政書士','社労士'],
+    '語学学習':null,'大学課題':null,'読書':null}},
+  work:{emoji:'💻', name:'作業', details:{
+    'プログラミング':null,'Web制作':null,'動画編集':null,'デザイン':null,'イラスト制作':null,'執筆':null,'事務作業':null,'資料作成':null}},
+  create:{emoji:'🎨', name:'創作', details:{
+    'イラスト':null,'漫画':null,'小説':null,'作曲':null,'3D制作':null,'ゲーム制作':null}},
+  job:{emoji:'💼', name:'仕事', details:{
+    'リモートワーク':null,'資料作成':null,'勉強会':null,'フリーランス作業':null}},
+  other:{emoji:'🌱', name:'その他', details:{
+    '読書':null,'家計簿':null,'自己学習':null,'習慣化':null}},
+};
+const TAGS = ['🔰 初心者','👀 誰でも歓迎','🔥 本気集中'];
+const NPC_TAG = '🤫 無反応勢';
+const GOALS = [{m:30,t:'30分'},{m:60,t:'1時間'},{m:120,t:'2時間'},{m:180,t:'3時間以上'}];
+const STAMPS = [
+  {e:'🐻', l:'頑張ろう！'},{e:'🐰', l:'いいね！'},{e:'☕', l:'おつかれさま'},
+  {e:'✨', l:'集中！！'},{e:'🐼', l:'休憩しよ〜'},{e:'💗', l:'ありがとう'},
+];
+const SHOP_ITEMS = [
+  {e:'🪟', n:'夕暮れの窓辺', p:300, c:'お部屋'},
+  {e:'🐰', n:'うさぎクッション', p:150, c:'デスク'},
+  {e:'💡', n:'木製デスクライト', p:200, c:'デスク'},
+];
+const BOX_ITEMS = [
+  {e:'🧥', n:'パーカー（仮）'},{e:'🎧', n:'ヘッドホン（白）'},{e:'🪴', n:'観葉植物'},
+  {e:'🧸', n:'くまのぬいぐるみ'},{e:'🌙', n:'夜景の背景（仮）'},{e:'📔', n:'手帳ステッカー'},
+];
+const NAMES = ['みほ','れん','さくら','ゆい','そら','あおい','ひなた','りく','めい','かえで','つむぎ','はる','こと','なぎ'];
+const CAT_EMOJI = {study:['📖','✏️','📚'], work:['💻','🖥️','⌨️'], create:['🎨','🖌️','🎼'], job:['💼','📊','🗂️'], other:['🌱','📒','📗']};
+const BORDERS = ['#D9A8A8','#A8C2D9','#A8D0A8','#D9C7A0','#C9B0D6','#A8CFC9'];
+
+/* ============================================================
+   状態
+============================================================ */
+let state = {
+  setupDone:false,
+  profile:{name:'ゆめ', style:null, cat:null, detail:null, detail2:null, tags:[], goalMin:120},
+  todayMin:0, totalMin:0, streak:1, lastWorkDate:null,
+  coins:0, items:[], history:{},
+  friends:[], requests:[], seeded:false,
+};
+function save(){ localStorage.setItem('tonari_v2', JSON.stringify(state)); }
+function load(){ try{ const s=localStorage.getItem('tonari_v2'); if(s) state=Object.assign(state, JSON.parse(s)); }catch(e){} }
+
+/* ============================================================
+   ユーティリティ
+============================================================ */
+function rnd(a){ return a[Math.floor(Math.random()*a.length)]; }
+let toastT=null;
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2200);
+}
+function showModal(id){
+  document.getElementById('modalBg').classList.add('show');
+  document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('show'); }
+function bgClose(e){ if(e.target.id==='modalBg') closeModal(); }
+function openSheet(id){ showModal(id); }
+function fmtMin(m){ return m>=60? `${Math.floor(m/60)}<small>時間</small>${m%60>0?(m%60)+'<small>分</small>':''}` : `${m}<small>分</small>`; }
+function fmtMinPlain(m){ return m>=60? `${Math.floor(m/60)}時間${m%60>0?(m%60)+'分':''}` : `${m}分`; }
+function goalLabel(){ const g=GOALS.find(g=>g.m===state.profile.goalMin); return g?g.t:'2時間'; }
+function profileCatLabel(){
+  const p=state.profile;
+  if(!p.cat) return '未設定';
+  let s = p.detail || CATS[p.cat].name;
+  if(p.detail2) s += '・'+p.detail2;
+  return s;
+}
+/* チャイム音（WebAudio合成） */
+function playChime(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    [[660,0],[880,.13]].forEach(([f,d])=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='sine'; o.frequency.value=f;
+      g.gain.setValueAtTime(0, ctx.currentTime+d);
+      g.gain.linearRampToValueAtTime(.18, ctx.currentTime+d+.02);
+      g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime+d+.5);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(ctx.currentTime+d); o.stop(ctx.currentTime+d+.55);
+    });
+  }catch(e){}
+}
+
+/* ============================================================
+   画面遷移
+============================================================ */
+const NAV_SCREENS = ['scr-home','scr-records','scr-shop','scr-mypage','scr-friends'];
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const nav=document.getElementById('bnav');
+  if(NAV_SCREENS.includes(id)) nav.classList.add('show'); else nav.classList.remove('show');
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.toggle('on', b.dataset.s===id));
+  if(id==='scr-home') renderHome();
+  if(id==='scr-records') renderRecords();
+  if(id==='scr-shop') renderShop();
+  if(id==='scr-mypage') renderMyPage();
+  if(id==='scr-friends') renderFriends();
+  if(id==='scr-goal') renderGoalEdit();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.bnav-item').forEach(b=>{
+  b.addEventListener('click',()=>go(b.dataset.s));
+});
+
+/* ============================================================
+   セットアップウィザード（マッチ開始時・未設定のみ）
+============================================================ */
+let su={step:1, style:null, cat:null, detail:null, detail2:null, tags:[], goalMin:120};
+const onlineCounts={};
+function genCounts(){
+  const base={study:38, work:27, create:16, job:11, other:7};
+  for(const k in base) onlineCounts[k]=base[k]+Math.floor(Math.random()*9);
+}
+function startWork(){
+  if(!state.setupDone){ openWizard(); return; }
+  openMap();
+}
+function openWizard(){
+  genCounts();
+  su={step:1, style:null, cat:null, detail:null, detail2:null, tags:[], goalMin:state.profile.goalMin||120};
+  go('scr-setup'); renderSetup();
+}
+function renderSetup(){
+  document.getElementById('setupDots').innerHTML=[1,2,3,4].map(i=>`<div class="dot ${su.step>=i?'on':''}"></div>`).join('');
+  document.getElementById('setupBack').style.visibility = su.step>1?'visible':'hidden';
+  const body=document.getElementById('setupBody');
+  if(su.step===1){
+    body.innerHTML=`<div class="setup-title">どんなふうに使いたい？</div>
+      <div class="setup-sub">マッチングの雰囲気が変わるよ</div>
+      ${STYLES.map(s=>`<div class="opt-card ${su.style===s.id?'on':''}" onclick="pickStyle('${s.id}')">
+        <div class="opt-emoji">${s.emoji}</div>
+        <div><div class="opt-name">${s.name}</div><div class="opt-desc">${s.desc}</div></div></div>`).join('')}`;
+  } else if(su.step===2){
+    body.innerHTML=`<div class="setup-title">なにをがんばる？</div>
+      <div class="setup-sub">横の数字は今オンラインの人数だよ</div>
+      ${Object.entries(CATS).map(([k,c])=>`<div class="opt-card ${su.cat===k?'on':''}" onclick="pickCat('${k}')">
+        <div class="opt-emoji">${c.emoji}</div><div><div class="opt-name">${c.name}</div></div>
+        <div class="opt-count">🟢 ${onlineCounts[k]}人</div></div>`).join('')}`;
+  } else if(su.step===3){
+    const det=CATS[su.cat].details;
+    const subList=su.detail && det[su.detail];
+    if(!su.detail || !subList){
+      body.innerHTML=`<div class="setup-title">もう少しくわしく</div>
+        <div class="setup-sub">${CATS[su.cat].emoji} ${CATS[su.cat].name} のなかから選んでね</div>
+        <div class="chip-grid">${Object.keys(det).map(d=>`<div class="chip ${su.detail===d?'on':''}" onclick="pickDetail('${d}')">${d}</div>`).join('')}</div>
+        <div class="setup-actions"><div class="skip-link" onclick="skipDetail()">えらばずにすすむ ›</div></div>`;
+    } else {
+      body.innerHTML=`<div class="setup-title">${su.detail}のくわしい内容</div>
+        <div class="setup-sub">なしでもOK！スキップできるよ</div>
+        <div class="chip-grid">${subList.map(d=>`<div class="chip ${su.detail2===d?'on':''}" onclick="pickDetail2('${d}')">${d}</div>`).join('')}</div>
+        <div class="setup-actions"><div class="skip-link" onclick="skipDetail2()">スキップ ›</div></div>`;
+    }
+  } else {
+    body.innerHTML=`<div class="setup-title">さいごに、タグと目標時間</div>
+      <div class="setup-sub">タグは2つまで選べるよ</div>
+      <div class="chip-grid" style="margin-bottom:24px">${TAGS.map(t=>`<div class="chip ${su.tags.includes(t)?'on':''}" onclick="toggleTag('${t}')">${t}</div>`).join('')}</div>
+      <div class="setup-sub" style="margin-bottom:10px">きょうの目標時間</div>
+      <div class="chip-grid">${GOALS.map(g=>`<div class="chip ${su.goalMin===g.m?'on':''}" onclick="pickGoalTime(${g.m})">${g.t}</div>`).join('')}</div>
+      <div class="setup-actions"><button class="btn btn-gold" style="padding:17px;font-size:16px" onclick="finishSetup()">はじめる！</button></div>`;
+  }
+}
+function pickStyle(id){ su.style=id; su.step=2; renderSetup(); }
+function pickCat(k){ su.cat=k; su.detail=null; su.detail2=null; su.step=3; renderSetup(); }
+function pickDetail(d){ su.detail=d; if(CATS[su.cat].details[d]) renderSetup(); else {su.detail2=null; su.step=4; renderSetup();} }
+function skipDetail(){ su.detail=null; su.detail2=null; su.step=4; renderSetup(); }
+function pickDetail2(d){ su.detail2=d; su.step=4; renderSetup(); }
+function skipDetail2(){ su.detail2=null; su.step=4; renderSetup(); }
+function toggleTag(t){
+  const i=su.tags.indexOf(t);
+  if(i>=0) su.tags.splice(i,1);
+  else if(su.tags.length<2) su.tags.push(t);
+  else toast('タグは2つまでだよ');
+  renderSetup();
+}
+function pickGoalTime(m){ su.goalMin=m; renderSetup(); }
+function finishSetup(){
+  if(!su.style){ toast('利用スタイルを選んでね'); su.step=1; renderSetup(); return; }
+  if(!su.cat){ toast('カテゴリを選んでね'); su.step=2; renderSetup(); return; }
+  Object.assign(state.profile,{style:su.style, cat:su.cat, detail:su.detail, detail2:su.detail2, tags:[...su.tags], goalMin:su.goalMin});
+  state.setupDone=true; save();
+  fbSaveProfile();
+  toast('せってい完了！マップへ🌱');
+  openMap();
+}
+document.getElementById('setupBack').addEventListener('click',()=>{
+  if(su.step===3 && su.detail && CATS[su.cat].details[su.detail]){ su.detail=null; renderSetup(); return; }
+  if(su.step>1){ su.step--; renderSetup(); }
+});
+
+/* ============================================================
+   目標設定（個別編集画面）
+============================================================ */
+function openGoal(){ go('scr-goal'); }
+function quickGoalTime(){ go('scr-goal'); setTimeout(()=>openPicker('time'),150); }
+function renderGoalEdit(){
+  const p=state.profile;
+  document.getElementById('gToday').innerHTML=fmtMin(state.todayMin);
+  const pct=Math.min(100, Math.round(state.todayMin/p.goalMin*100));
+  document.getElementById('gBar').style.width=pct+'%';
+  document.getElementById('gGoalTxt').textContent=`目標：${goalLabel()}（${pct}%）`;
+  const rows=document.getElementById('goalRows');
+  if(!state.setupDone){
+    rows.innerHTML=`
+      <div class="grow" onclick="openPicker('time')">
+        <div class="ge">⏰</div>
+        <div><div class="gl">きょうの目標時間</div><div class="gv">${goalLabel()}</div></div>
+        <div class="ar">›</div>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--ink3);padding:14px;line-height:1.8">
+        くわしい目標は「作業を始める」を押したときに<br>設定できるよ📞</div>`;
+    return;
+  }
+  const styleObj=STYLES.find(s=>s.id===p.style);
+  rows.innerHTML=`
+    <div class="grow" onclick="openPicker('style')">
+      <div class="ge">${styleObj?styleObj.emoji:'☕'}</div>
+      <div><div class="gl">利用スタイル</div><div class="gv">${styleObj?styleObj.name:'未設定'}</div></div>
+      <div class="ar">›</div></div>
+    <div class="grow" onclick="openPicker('cat')">
+      <div class="ge">${p.cat?CATS[p.cat].emoji:'📚'}</div>
+      <div><div class="gl">カテゴリ</div><div class="gv">${p.cat?CATS[p.cat].name:'未設定'}</div></div>
+      <div class="ar">›</div></div>
+    <div class="grow" onclick="openPicker('detail')">
+      <div class="ge">🔍</div>
+      <div><div class="gl">くわしく</div><div class="gv">${p.detail||'なし'}</div></div>
+      <div class="ar">›</div></div>
+    ${p.detail && CATS[p.cat].details[p.detail]?`
+    <div class="grow" onclick="openPicker('detail2')">
+      <div class="ge">🎓</div>
+      <div><div class="gl">さらにくわしく</div><div class="gv">${p.detail2||'なし'}</div></div>
+      <div class="ar">›</div></div>`:''}
+    <div class="grow" onclick="openPicker('tags')">
+      <div class="ge">🏷️</div>
+      <div><div class="gl">タグ</div><div class="gv">${p.tags.length?p.tags.join('　'):'なし'}</div></div>
+      <div class="ar">›</div></div>
+    <div class="grow" onclick="openPicker('time')">
+      <div class="ge">⏰</div>
+      <div><div class="gl">きょうの目標時間</div><div class="gv">${goalLabel()}</div></div>
+      <div class="ar">›</div></div>`;
+}
+function openPicker(kind){
+  const p=state.profile;
+  const title=document.getElementById('pickerTitle');
+  const body=document.getElementById('pickerBody');
+  if(kind==='style'){
+    title.textContent='利用スタイル';
+    body.innerHTML=STYLES.map(s=>`<div class="opt-card ${p.style===s.id?'on':''}" onclick="setPick('style','${s.id}')">
+      <div class="opt-emoji">${s.emoji}</div><div><div class="opt-name">${s.name}</div><div class="opt-desc">${s.desc}</div></div></div>`).join('');
+  } else if(kind==='cat'){
+    title.textContent='カテゴリ';
+    body.innerHTML=Object.entries(CATS).map(([k,c])=>`<div class="opt-card ${p.cat===k?'on':''}" onclick="setPick('cat','${k}')">
+      <div class="opt-emoji">${c.emoji}</div><div><div class="opt-name">${c.name}</div></div></div>`).join('');
+  } else if(kind==='detail'){
+    if(!p.cat){ toast('先にカテゴリを選んでね'); return; }
+    title.textContent='くわしく';
+    body.innerHTML=`<div class="chip-grid">${Object.keys(CATS[p.cat].details).map(d=>
+      `<div class="chip ${p.detail===d?'on':''}" onclick="setPick('detail','${d}')">${d}</div>`).join('')}
+      <div class="chip ${!p.detail?'on':''}" onclick="setPick('detail','')">なし</div></div>`;
+  } else if(kind==='detail2'){
+    const sub=p.detail && CATS[p.cat].details[p.detail];
+    if(!sub){ toast('この項目にはくわしい内容がないよ'); return; }
+    title.textContent=p.detail+'のくわしい内容';
+    body.innerHTML=`<div class="chip-grid">${sub.map(d=>
+      `<div class="chip ${p.detail2===d?'on':''}" onclick="setPick('detail2','${d}')">${d}</div>`).join('')}
+      <div class="chip ${!p.detail2?'on':''}" onclick="setPick('detail2','')">なし</div></div>`;
+  } else if(kind==='tags'){
+    title.textContent='タグ（2つまで）';
+    body.innerHTML=`<div class="chip-grid">${TAGS.map(t=>
+      `<div class="chip ${p.tags.includes(t)?'on':''}" onclick="togglePickTag('${t}')">${t}</div>`).join('')}</div>
+      <div class="modal-actions"><button class="btn btn-gold" onclick="closeModal();renderGoalEdit()" style="flex:1">OK</button></div>`;
+  } else if(kind==='time'){
+    title.textContent='きょうの目標時間';
+    body.innerHTML=`<div class="chip-grid">${GOALS.map(g=>
+      `<div class="chip ${p.goalMin===g.m?'on':''}" onclick="setPick('time',${g.m})">${g.t}</div>`).join('')}</div>`;
+  }
+  showModal('pickerModal');
+}
+function setPick(kind,val){
+  const p=state.profile;
+  if(kind==='style') p.style=val;
+  if(kind==='cat'){ if(p.cat!==val){ p.detail=null; p.detail2=null; } p.cat=val; }
+  if(kind==='detail'){ p.detail=val||null; p.detail2=null; }
+  if(kind==='detail2') p.detail2=val||null;
+  if(kind==='time') p.goalMin=val;
+  save(); fbSaveProfile();
+  closeModal(); renderGoalEdit();
+  toast('変更したよ！');
+}
+function togglePickTag(t){
+  const p=state.profile;
+  const i=p.tags.indexOf(t);
+  if(i>=0) p.tags.splice(i,1);
+  else if(p.tags.length<2) p.tags.push(t);
+  else { toast('タグは2つまでだよ'); return; }
+  save(); openPicker('tags');
+}
+
+/* ============================================================
+   ホーム
+============================================================ */
+function renderHome(){
+  const p=state.profile;
+  document.getElementById('hName').textContent=p.name;
+  document.getElementById('hLv').textContent='Lv.'+(Math.floor(state.totalMin/300)+1);
+  document.getElementById('hStreak').textContent=`🔥 ${state.streak}日継続中`;
+  document.getElementById('hToday').innerHTML=fmtMin(state.todayMin);
+  const pct=Math.min(100, Math.round(state.todayMin/p.goalMin*100));
+  document.getElementById('hBar').style.width=pct+'%';
+  document.getElementById('hGoal').textContent=`目標：${goalLabel()}（${pct}%）`;
+  updateReqDots();
+}
+
+/* ============================================================
+   マップ（広い世界・カメラ追従）
+============================================================ */
+let mapUsers=[], myWorld={x:0,y:0}, mapWaiting=false, waitTimer=null, waitLeft=30, selectedUser=null;
+const STEP=85, WORLD=750;
+let wanderTimer=null;
+
+function genUsers(){
+  const p=state.profile;
+  mapUsers=[];
+  const catKeys=Object.keys(CATS);
+  for(let i=0;i<14;i++){
+    let cat, detail=null, detail2=null, style;
+    if(i===0){ cat=p.cat||'study'; detail=p.detail; detail2=p.detail2; style=p.style||'cowork'; }
+    else if(i<5){ cat=p.cat||rnd(catKeys); const ds=Object.keys(CATS[cat].details); detail=(i===1&&p.detail)?p.detail:rnd(ds); style=rnd(STYLES).id; }
+    else { cat=rnd(catKeys); const ds=Object.keys(CATS[cat].details); detail=rnd(ds); style=rnd(STYLES).id; }
+    if(detail && CATS[cat].details[detail] && !detail2 && Math.random()<.6) detail2=rnd(CATS[cat].details[detail]);
+    mapUsers.push({
+      id:'npc'+i, name:NAMES[i], cat, detail, detail2, style,
+      tags:[rnd(TAGS)].concat(Math.random()<.4?[rnd(TAGS)]:[]).filter((v,ix,a)=>a.indexOf(v)===ix).concat([NPC_TAG]),
+      streak:1+Math.floor(Math.random()*29), todayMin:5+Math.floor(Math.random()*290),
+      isBreak:Math.random()<.2, emoji:rnd(CAT_EMOJI[cat]), border:BORDERS[i%BORDERS.length],
+      isNPC:true,
+    });
+  }
+}
+function score(u){
+  const p=state.profile; let s=0;
+  if(u.style===p.style) s+=5;
+  if(u.cat===p.cat) s+=4;
+  if(u.detail && u.detail===p.detail) s+=3;
+  if(u.detail2 && u.detail2===p.detail2) s+=2;
+  s+=u.tags.filter(t=>p.tags.includes(t)).length;
+  return s;
+}
+function placeUsers(){
+  const sorted=[...mapUsers].sort((a,b)=>score(b)-score(a));
+  sorted.forEach((u,i)=>{
+    const r=85 + i*92 + Math.random()*55;
+    const ang=(i*137.5 + Math.random()*40)*Math.PI/180;
+    u.x=Math.cos(ang)*r;
+    u.y=Math.sin(ang)*r*0.85;
+  });
+}
+function openMap(){
+  if(!state.setupDone){ openWizard(); return; }
+  genUsers(); placeUsers();
+  fbMergeOnlineUsers();
+  myWorld={x:0,y:0};
+  document.getElementById('mapGoalTime').textContent='目標 '+goalLabel();
+  document.getElementById('mapGoalCat').textContent=profileCatLabel();
+  cancelRandom(true);
+  go('scr-map');
+  renderMap();
+  clearInterval(wanderTimer);
+  wanderTimer=setInterval(()=>{
+    if(!document.getElementById('scr-map').classList.contains('active')){ clearInterval(wanderTimer); return; }
+    mapUsers.forEach(u=>{
+      if(u.isNPC && Math.random()<.25){
+        const a=Math.random()*Math.PI*2;
+        u.x=Math.max(-WORLD,Math.min(WORLD, u.x+Math.cos(a)*STEP*.7));
+        u.y=Math.max(-WORLD,Math.min(WORLD, u.y+Math.sin(a)*STEP*.7));
+      }
+    });
+    renderMap();
+  }, 9000);
+}
+function renderMap(){
+  const area=document.getElementById('mapArea');
+  area.querySelectorAll('.muser').forEach(e=>e.remove());
+  const rect=area.getBoundingClientRect();
+  const hw=rect.width/2+40, hh=rect.height/2+40;
+  mapUsers.forEach(u=>{
+    const sx=u.x-myWorld.x, sy=u.y-myWorld.y;
+    if(Math.abs(sx)>hw || Math.abs(sy)>hh) return; // 画面外
+    const dist=Math.hypot(sx,sy);
+    const d=document.createElement('div');
+    d.className='muser'+(dist<150?' near':'');
+    d.style.transform=`translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
+    d.innerHTML=`<div class="mav" style="--bd:${u.border}">${u.emoji}<div class="stat ${u.isBreak?'brk':''}"></div></div>
+      <div class="mname">${u.name}</div>`;
+    d.addEventListener('click',e=>{ e.stopPropagation(); showProfile(u); });
+    area.appendChild(d);
+  });
+  const me=document.createElement('div');
+  me.className='muser me near';
+  me.style.transform='translate(-50%,-50%)';
+  me.innerHTML='<div class="mav">🧸<div class="stat"></div><div class="me-tip">あなた</div></div>';
+  area.appendChild(me);
+}
+document.getElementById('mapArea').addEventListener('click',e=>{
+  const area=document.getElementById('mapArea');
+  const rect=area.getBoundingClientRect();
+  const cx=e.clientX-rect.left-rect.width/2;
+  const cy=e.clientY-rect.top-rect.height/2;
+  const len=Math.hypot(cx,cy);
+  if(len<10) return;
+  myWorld.x=Math.max(-WORLD,Math.min(WORLD, myWorld.x+cx/len*STEP));
+  myWorld.y=Math.max(-WORLD,Math.min(WORLD, myWorld.y+cy/len*STEP));
+  renderMap();
+  fbSendMove();
+});
+function showProfile(u){
+  selectedUser=u;
+  document.getElementById('pmAv').textContent=u.emoji;
+  document.getElementById('pmAv').style.setProperty('--bd',u.border);
+  document.getElementById('pmName').textContent=u.name;
+  let g=u.detail||CATS[u.cat].name; if(u.detail2) g+='・'+u.detail2;
+  document.getElementById('pmGoal').textContent=g;
+  document.getElementById('pmStreak').textContent=u.streak+'日';
+  const h=Math.floor(u.todayMin/60), m=u.todayMin%60;
+  document.getElementById('pmToday').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  document.getElementById('pmTags').innerHTML=u.tags.map(t=>{
+    const cls=t.includes('本気')?'red':t.includes('初心')?'green':t.includes('無反応')?'gray':'gold';
+    return `<span class="tag ${cls}">${t}</span>`;
+  }).join('');
+  const btn=document.getElementById('pmInvite'), note=document.getElementById('pmNote');
+  if(mapWaiting){ btn.disabled=true; btn.textContent='招待できません'; note.textContent='ランダムマッチ待機中は招待できないよ'; }
+  else if(u.isBreak){ btn.disabled=true; btn.textContent='休憩中（招待不可）'; note.textContent='休憩が終わるまで待ってあげてね☕'; }
+  else if(u.isReal){ btn.disabled=true; btn.textContent='招待（Part 3で実装）'; note.textContent='本物のプレイヤーへの招待はもうすぐ！'; }
+  else { btn.disabled=false; btn.textContent='作業に招待する'; note.textContent=''; }
+  showModal('profileModal');
+}
+function sendInvite(){
+  if(!selectedUser||mapWaiting) return;
+  closeModal();
+  toast(`${selectedUser.name}さんに招待を送りました…`);
+  const u=selectedUser;
+  setTimeout(()=>{ toast(`${u.name}さんが承諾しました！🎉`); setTimeout(()=>enterRoom(u),800); },1600);
+}
+function startRandom(){
+  if(mapWaiting) return;
+  mapWaiting=true; waitLeft=30;
+  const btn=document.getElementById('randBtn'), label=document.getElementById('randLabel'), bar=document.getElementById('waitBar');
+  document.getElementById('randCancel').classList.add('show');
+  btn.style.pointerEvents='none';
+  label.textContent=`待機中… ${waitLeft}秒`; bar.style.width='0%';
+  waitTimer=setInterval(()=>{
+    waitLeft--;
+    label.textContent=`待機中… ${waitLeft}秒`;
+    bar.style.width=((30-waitLeft)/30*100)+'%';
+    if(waitLeft<=0){
+      clearInterval(waitTimer);
+      const cands=mapUsers.filter(u=>!u.isBreak&&!u.isReal);
+      if(!cands.length){ cancelRandom(); toast('いまマッチできる人がいないみたい…'); return; }
+      cands.sort((a,b)=>score(b)-score(a));
+      const best=cands[0];
+      toast(`${best.name}さんとマッチしました！✨`);
+      setTimeout(()=>{ cancelRandom(true); enterRoom(best); },800);
+    }
+  },1000);
+}
+function cancelRandom(silent){
+  mapWaiting=false; clearInterval(waitTimer);
+  document.getElementById('randLabel').textContent='⤨ ランダムマッチ';
+  document.getElementById('waitBar').style.width='0%';
+  document.getElementById('randCancel').classList.remove('show');
+  document.getElementById('randBtn').style.pointerEvents='auto';
+  if(!silent) toast('待機をキャンセルしました');
+}
+
+/* ============================================================
+   フレンド
+============================================================ */
+let frMode='list';
+function frTab(m){
+  frMode=m;
+  document.getElementById('frTabList').classList.toggle('on',m==='list');
+  document.getElementById('frTabReq').classList.toggle('on',m==='req');
+  renderFriends();
+}
+function renderFriends(){
+  updateReqDots();
+  const list=document.getElementById('frList');
+  if(frMode==='list'){
+    if(!state.friends.length){
+      list.innerHTML=`<div class="fr-empty">まだフレンドがいないよ🌱<br>作業部屋で相手のカードをタップすると<br>フレンド申請が送れるよ</div>`;
+      return;
+    }
+    list.innerHTML=state.friends.map(f=>`
+      <div class="fr-row">
+        <div class="fr-av">${f.emoji}<div class="stat ${f.online?'':'off'}"></div></div>
+        <div><div class="fr-name">${f.name}</div>
+        <div class="fr-sub">${f.online?'🟢 オンライン':'⚪ オフライン'}</div></div>
+      </div>`).join('');
+  } else {
+    if(!state.requests.length){
+      list.innerHTML=`<div class="fr-empty">新しいリクエストはないよ</div>`;
+      return;
+    }
+    list.innerHTML=state.requests.map((r,i)=>`
+      <div class="fr-row">
+        <div class="fr-av">${r.emoji}</div>
+        <div><div class="fr-name">${r.name}</div><div class="fr-sub">フレンドリクエスト</div></div>
+        <div class="fr-act">
+          <button class="fr-btn ok" onclick="acceptReq(${i})">✓</button>
+          <button class="fr-btn no" onclick="rejectReq(${i})">×</button>
+        </div>
+      </div>`).join('');
+  }
+}
+function acceptReq(i){
+  const r=state.requests.splice(i,1)[0];
+  state.friends.push({name:r.name, emoji:r.emoji, online:Math.random()<.5});
+  save(); renderFriends(); toast(`${r.name}さんとフレンドになったよ！🎉`);
+}
+function rejectReq(i){
+  state.requests.splice(i,1); save(); renderFriends();
+}
+function updateReqDots(){
+  const has=state.requests.length>0;
+  document.getElementById('navReqDot').style.display=has?'block':'none';
+  const rd=document.getElementById('reqDot');
+  if(rd) rd.style.display=has?'block':'none';
+}
+
+/* ============================================================
+   作業部屋
+============================================================ */
+let room=null, elapsedTimer=null, pomoTimer=null;
+let pomoSec=25*60, pomoRunning=false, pomoPhase='work';
+let pendingGifts=0, grantedThresholds=[], myFocus=true;
+const THRESHOLDS=(()=>{const a=[25];const st=[20,15,10,5];let c=25;st.forEach(s=>{c+=s;a.push(c)});for(let i=0;i<20;i++){c+=5;a.push(c)}return a;})();
+
+function enterRoom(partner){
+  room={partner, start:Date.now(), todos:[]};
+  pendingGifts=0; grantedThresholds=[]; myFocus=true;
+  pomoSec=25*60; pomoRunning=false; pomoPhase='work';
+  document.getElementById('rMyName').textContent=state.profile.name;
+  document.getElementById('rMyGoal').textContent='📖 '+profileCatLabel();
+  document.getElementById('rMyStat').textContent='● 集中中（タップで切替）';
+  document.getElementById('rMyStat').classList.remove('brk');
+  document.getElementById('rPName').textContent=partner.name;
+  let pg=partner.detail||CATS[partner.cat].name; if(partner.detail2) pg+='・'+partner.detail2;
+  document.getElementById('rPGoal').textContent=partner.emoji+' '+pg;
+  document.getElementById('rPav').textContent=partner.emoji;
+  document.getElementById('rPStat').textContent='● 集中中';
+  document.getElementById('rPStat').style.color='';
+  document.getElementById('rGoal').textContent='目標 '+goalLabel();
+  document.getElementById('rewardBar').style.width='0%';
+  updateGiftFloat();
+  renderTodos(); renderStamps(); updatePomoUI();
+  document.getElementById('elapsed').textContent='00:00:00';
+  go('scr-room');
+  clearInterval(elapsedTimer);
+  elapsedTimer=setInterval(tickElapsed,1000);
+}
+function tickElapsed(){
+  if(!room) return;
+  const sec=Math.floor((Date.now()-room.start)/1000);
+  const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60;
+  document.getElementById('elapsed').textContent=
+    `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  // 次の報酬までバー
+  const min=sec/60;
+  let prev=0, next=THRESHOLDS[0];
+  for(let i=0;i<THRESHOLDS.length;i++){
+    if(min<THRESHOLDS[i]){ next=THRESHOLDS[i]; prev=i>0?THRESHOLDS[i-1]:0; break; }
+  }
+  const pct=Math.min(100,(min-prev)/(next-prev)*100);
+  document.getElementById('rewardBar').style.width=pct+'%';
+  THRESHOLDS.forEach(t=>{
+    if(min>=t && !grantedThresholds.includes(t)){
+      grantedThresholds.push(t); pendingGifts++;
+      playChime(); updateGiftFloat();
+      toast('🎁 プレゼントが届いたよ！');
+    }
+  });
+}
+function updateGiftFloat(){
+  const f=document.getElementById('giftFloat'), c=document.getElementById('giftCount');
+  f.classList.toggle('show', pendingGifts>0);
+  if(pendingGifts>=2){ c.style.display='flex'; c.textContent=pendingGifts; }
+  else c.style.display='none';
+}
+function toggleMyStatus(){
+  myFocus=!myFocus;
+  const el=document.getElementById('rMyStat');
+  el.textContent= myFocus?'● 集中中（タップで切替）':'● 休憩中（タップで切替）';
+  el.classList.toggle('brk',!myFocus);
+}
+/* 相手プロフィール */
+function showPartnerProfile(){
+  if(!room) return;
+  const u=room.partner;
+  document.getElementById('ppAv').textContent=u.emoji;
+  document.getElementById('ppName').textContent=u.name;
+  let g=u.detail||CATS[u.cat].name; if(u.detail2) g+='・'+u.detail2;
+  document.getElementById('ppGoal').textContent=g;
+  document.getElementById('ppStreak').textContent=u.streak+'日';
+  const h=Math.floor(u.todayMin/60), m=u.todayMin%60;
+  document.getElementById('ppToday').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  document.getElementById('ppTags').innerHTML=u.tags.map(t=>{
+    const cls=t.includes('本気')?'red':t.includes('初心')?'green':t.includes('無反応')?'gray':'gold';
+    return `<span class="tag ${cls}">${t}</span>`;
+  }).join('');
+  const btn=document.getElementById('ppFriendBtn');
+  if(state.friends.some(f=>f.name===u.name)){ btn.disabled=true; btn.textContent='フレンド済み'; }
+  else { btn.disabled=false; btn.textContent='フレンド申請'; }
+  showModal('partnerModal');
+}
+function sendFriendReq(){
+  const u=room.partner;
+  closeModal();
+  toast(`${u.name}さんにフレンド申請を送りました`);
+  // NPC: 70%で3〜6秒後に承諾（無反応勢なので何も起きないことも）
+  if(Math.random()<.7){
+    setTimeout(()=>{
+      if(state.friends.some(f=>f.name===u.name)) return;
+      state.friends.push({name:u.name, emoji:u.emoji, online:true});
+      save(); updateReqDots();
+      toast(`${u.name}さんが承諾しました！🎉`);
+    }, 3000+Math.random()*3000);
+  }
+}
+/* ポモドーロ */
+function pomoToggle(){
+  pomoRunning=!pomoRunning;
+  document.getElementById('pomoBtn').textContent=pomoRunning?'一時停止':'再開';
+  if(pomoRunning){
+    clearInterval(pomoTimer);
+    pomoTimer=setInterval(()=>{
+      pomoSec--;
+      if(pomoSec<=0){
+        if(pomoPhase==='work'){ pomoPhase='break'; pomoSec=5*60; toast('☕ おつかれさま！5分休憩しよう'); }
+        else { pomoPhase='work'; pomoSec=25*60; toast('🍅 休憩おわり！集中タイム'); }
+        updatePomoUI(true);
+      }
+      renderPomoTime();
+    },1000);
+  } else clearInterval(pomoTimer);
+}
+function pomoReset(){
+  pomoRunning=false; clearInterval(pomoTimer);
+  pomoPhase='work'; pomoSec=25*60; updatePomoUI();
+}
+function renderPomoTime(){
+  const m=Math.floor(pomoSec/60), s=pomoSec%60;
+  document.getElementById('pomoTime').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+function updatePomoUI(keepBtn){
+  renderPomoTime();
+  const ph=document.getElementById('pomoPhase');
+  if(pomoPhase==='work'){ ph.textContent='🍅 集中タイム'; ph.classList.remove('brk'); }
+  else { ph.textContent='☕ 休憩タイム'; ph.classList.add('brk'); }
+  if(!keepBtn) document.getElementById('pomoBtn').textContent=pomoRunning?'一時停止':'スタート';
+}
+/* ToDo */
+function addTodo(){
+  const inp=document.getElementById('todoInput');
+  const tx=inp.value.trim();
+  if(!tx) return;
+  room.todos.push({tx,done:false});
+  inp.value=''; renderTodos();
+}
+document.getElementById('todoInput').addEventListener('keydown',e=>{if(e.key==='Enter')addTodo();});
+function renderTodos(){
+  const list=document.getElementById('todoList');
+  list.innerHTML=room.todos.map((t,i)=>`
+    <div class="todo-item ${t.done?'done':''}">
+      <div class="todo-chk" onclick="toggleTodo(${i})">${t.done?'✓':''}</div>
+      <div class="todo-tx">${t.tx}</div>
+      <button class="todo-del" onclick="delTodo(${i})">×</button>
+    </div>`).join('') || '<div style="text-align:center;font-size:12px;color:var(--ink3);padding:14px">やることを追加してみよう</div>';
+  const done=room.todos.filter(t=>t.done).length;
+  document.getElementById('todoProgress').textContent=`進捗 ${done}/${room.todos.length}`;
+}
+function toggleTodo(i){ room.todos[i].done=!room.todos[i].done; renderTodos(); }
+function delTodo(i){ room.todos.splice(i,1); renderTodos(); }
+/* スタンプ（NPCは基本返さない） */
+function renderStamps(){
+  document.getElementById('stampGrid').innerHTML=STAMPS.map((s,i)=>`
+    <button class="stamp-btn" onclick="sendStamp(${i})">
+      <div class="se">${s.e}</div><div class="sl">${s.l}</div>
+    </button>`).join('');
+}
+function sendStamp(i){
+  closeModal();
+  floatStamp(STAMPS[i],0.27);
+  // 無反応勢：返さない
+}
+function floatStamp(s,xRatio){
+  const d=document.createElement('div');
+  d.className='float-stamp';
+  const app=document.getElementById('app').getBoundingClientRect();
+  d.style.left=(app.left+app.width*xRatio-30)+'px';
+  d.style.top=(window.innerHeight*0.4)+'px';
+  d.innerHTML=`<div class="fe">${s.e}</div><div class="fl">${s.l}</div>`;
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),2300);
+}
+/* ギフト */
+function rollReward(){
+  if(Math.random()<.6){ const c=rnd([50,80,100,120,150]); return {type:'coin', e:'🪙', n:`${c}コイン`, v:c}; }
+  const it=rnd(BOX_ITEMS); return {type:'item', e:it.e, n:it.n, v:0};
+}
+let currentGift=null;
+function openOneGift(){
+  if(pendingGifts<=0) return;
+  currentGift=rollReward();
+  document.getElementById('giftBox').style.display='flex';
+  document.getElementById('giftResult').classList.remove('show');
+  document.getElementById('giftActions').style.display='none';
+  document.getElementById('giftHint').style.display='block';
+  showModal('giftModal');
+}
+function revealGift(){
+  if(!currentGift) return;
+  applyReward(currentGift);
+  document.getElementById('giftBox').style.display='none';
+  document.getElementById('grEmoji').textContent=currentGift.e;
+  document.getElementById('grName').textContent=currentGift.n;
+  document.getElementById('giftResult').classList.add('show');
+  document.getElementById('giftActions').style.display='flex';
+  document.getElementById('giftHint').style.display='none';
+  pendingGifts--; updateGiftFloat();
+  currentGift=null;
+}
+function applyReward(r){
+  if(r.type==='coin') state.coins+=r.v;
+  else state.items.push(r.n);
+  save();
+}
+/* 退出 */
+function askLeave(){
+  document.getElementById('cfTitle').textContent='本当に退出しますか？';
+  document.getElementById('cfDesc').textContent='作業時間と報酬は保存されます';
+  document.getElementById('cfYes').onclick=leaveFlow;
+  showModal('confirmModal');
+}
+function leaveFlow(){
+  closeModal();
+  const sec=Math.floor((Date.now()-room.start)/1000);
+  const min=Math.floor(sec/60);
+  state.todayMin+=min; state.totalMin+=min;
+  const today=new Date().toDateString();
+  state.history[today]=(state.history[today]||0)+min;
+  if(state.lastWorkDate && state.lastWorkDate!==today){
+    const y=new Date(); y.setDate(y.getDate()-1);
+    state.streak=(state.lastWorkDate===y.toDateString())?state.streak+1:1;
+  }
+  state.lastWorkDate=today;
+  const boxes=pendingGifts+1;
+  const results=[];
+  for(let i=0;i<boxes;i++){ const r=rollReward(); applyReward(r); results.push(r); }
+  pendingGifts=0; save();
+  clearInterval(elapsedTimer); clearInterval(pomoTimer); pomoRunning=false;
+  document.getElementById('lrDesc').textContent=`今回の作業：${fmtMinPlain(Math.max(min,0))}　えらい！`;
+  document.getElementById('lrList').innerHTML=results.map(r=>`<div class="reward-row"><span class="re">${r.e}</span>${r.n}</div>`).join('');
+  showModal('leaveRewardModal');
+}
+function finishLeave(){ closeModal(); room=null; go('scr-home'); }
+function roomSettings(){ showModal('roomSetModal'); }
+function simulateDC(){
+  closeModal();
+  setTimeout(()=>{
+    document.getElementById('rPStat').textContent='● 接続が切れました';
+    document.getElementById('rPStat').style.color='#C0716F';
+    showModal('dcModal');
+  },400);
+}
+function dcLeave(){ leaveFlow(); }
+
+/* ============================================================
+   記録（グラフ＆カレンダー）
+============================================================ */
+let recMode='graph';
+function recTab(m){
+  recMode=m;
+  document.getElementById('recTabG').classList.toggle('on',m==='graph');
+  document.getElementById('recTabC').classList.toggle('on',m==='cal');
+  renderRecords();
+}
+function renderRecords(){
+  document.getElementById('recToday').textContent=fmtMinPlain(state.todayMin);
+  document.getElementById('recTotal').textContent=fmtMinPlain(state.totalMin);
+  document.getElementById('recStreak').textContent=state.streak+'日';
+  const body=document.getElementById('recBody');
+  if(recMode==='graph'){
+    // 直近14日のバー
+    const days=[]; let max=10;
+    for(let i=13;i>=0;i--){
+      const d=new Date(); d.setDate(d.getDate()-i);
+      const key=d.toDateString();
+      const min=(key===new Date().toDateString())?state.todayMin:(state.history[key]||0);
+      days.push({label:(d.getMonth()+1)+'/'+d.getDate(), min});
+      if(min>max) max=min;
+    }
+    body.innerHTML=`<div style="font-weight:700;font-size:14px;margin-bottom:12px">📊 直近14日の作業時間</div>
+      <div class="graph">${days.map(d=>`
+        <div class="gbar"><i style="height:${Math.max(2,d.min/max*100)}%"></i><span>${d.label}</span></div>`).join('')}</div>`;
+  } else {
+    // 今月カレンダー
+    const now=new Date();
+    const y=now.getFullYear(), m=now.getMonth();
+    const first=new Date(y,m,1).getDay();
+    const days=new Date(y,m+1,0).getDate();
+    const heads=['日','月','火','水','木','金','土'];
+    let cells=heads.map(h=>`<div class="cday head">${h}</div>`).join('');
+    for(let i=0;i<first;i++) cells+='<div class="cday"></div>';
+    for(let d=1;d<=days;d++){
+      const key=new Date(y,m,d).toDateString();
+      const min=(key===new Date().toDateString())?state.todayMin:(state.history[key]||0);
+      const cls=min>=120?'lots':min>0?'has':'';
+      cells+=`<div class="cday ${cls}">${d}${min>0?'<span class="cd-dot">●</span>':''}</div>`;
+    }
+    body.innerHTML=`<div style="font-weight:700;font-size:14px;margin-bottom:6px">🗓️ ${y}年${m+1}月</div>
+      <div class="cal">${cells}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:10px;text-align:center">
+        ● 作業した日　濃い色＝2時間以上</div>`;
+  }
+}
+
+/* ============================================================
+   ショップ・マイページ
+============================================================ */
+function renderShop(){
+  document.getElementById('shopCoins').textContent=state.coins;
+  document.getElementById('shopItems').innerHTML=SHOP_ITEMS.map((it,i)=>`
+    <div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <div style="font-size:30px">${it.e}</div>
+      <div style="flex:1"><div style="font-weight:700;font-size:14px">${it.n}</div>
+        <div style="font-size:11px;color:var(--ink3)">${it.c}</div></div>
+      <button class="btn btn-gold" style="padding:9px 16px;font-size:13px"
+        onclick="buyItem(${i})" ${state.items.includes(it.n)?'disabled':''}>
+        ${state.items.includes(it.n)?'入手済み':'🪙 '+it.p}</button>
+    </div>`).join('');
+}
+function buyItem(i){
+  const it=SHOP_ITEMS[i];
+  if(state.coins<it.p){ toast('コインが足りないよ…作業して貯めよう！'); return; }
+  state.coins-=it.p; state.items.push(it.n); save();
+  renderShop(); toast(`${it.n} を手に入れた！🎉`);
+}
+function renderMyPage(){
+  document.getElementById('mpName').textContent=state.profile.name;
+  document.getElementById('mpTags').textContent=state.profile.tags.join('　')||'タグ未設定';
+  document.getElementById('mpTotal').textContent=fmtMinPlain(state.totalMin);
+  document.getElementById('mpStreak').textContent=state.streak+'日';
+  document.getElementById('mpCoins').textContent=state.coins;
+  const el=document.getElementById('mpItems');
+  if(state.items.length) el.innerHTML=state.items.map(n=>`<span class="tag gold">${n}</span>`).join('');
+}
+
+/* ============================================================
+   Firebase（プレゼンス・プロフィール同期）
+   ※詳細はモジュールスクリプトで初期化
+============================================================ */
+window.fbApi=null;
+function fbSaveProfile(){ if(window.fbApi) window.fbApi.saveProfile(); }
+function fbSendMove(){ /* リアルタイム位置共有はPart 3で実装予定 */ }
+async function fbMergeOnlineUsers(){
+  if(!window.fbApi) return;
+  try{
+    const users=await window.fbApi.getOnline();
+    users.forEach((u,i)=>{
+      const ang=Math.random()*Math.PI*2;
+      const r=280+Math.random()*420;
+      mapUsers.push({
+        id:u.id, name:u.name||'プレイヤー', cat:u.cat||'study',
+        detail:u.detail||null, detail2:u.detail2||null, style:u.style||'cowork',
+        tags:(u.tags||[]).filter(t=>t!==NPC_TAG),
+        streak:u.streak||1, todayMin:u.todayMin||0,
+        isBreak:false, emoji:rnd(CAT_EMOJI[u.cat||'study']),
+        border:'#C9A87C', isReal:true,
+        x:Math.cos(ang)*r, y:Math.sin(ang)*r*0.85,
+      });
+    });
+    if(users.length) { renderMap(); toast(`🌐 本物のプレイヤーが${users.length}人いるよ！`); }
+  }catch(e){ console.log('online users fetch skip', e); }
+}
+
+/* ============================================================
+   起動
+============================================================ */
+load();
+(()=>{ // 日付変化処理＆初期データ
+  const today=new Date().toDateString();
+  if(state.lastWorkDate && state.lastWorkDate!==today){
+    const y=new Date(); y.setDate(y.getDate()-1);
+    if(state.lastWorkDate!==y.toDateString()) state.streak=1;
+    state.todayMin=0;
+  }
+  if(!state.seeded){ // フレンドリクエストのモック
+    state.requests=[{name:'ひより',emoji:'📖'},{name:'いつき',emoji:'💻'}];
+    state.seeded=true;
+  }
+  save();
+})();
+go('scr-home');
+</script>
+
+<!-- ============================================================
+     Firebase 初期化（失敗してもアプリは動く）
+============================================================ -->
+<script type="module">
+try{
+  const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js');
+  const { getAuth, signInAnonymously, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
+  const { getFirestore, doc, setDoc, getDocs, collection, query, where, limit, serverTimestamp, updateDoc } =
+    await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js');
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBmgtx4FW_3_0zy1MvAvZLPHmE_CE1txuE",
+    authDomain: "zzke-ki1.firebaseapp.com",
+    databaseURL: "https://zzke-ki1-default-rtdb.firebaseio.com",
+    projectId: "zzke-ki1",
+    storageBucket: "zzke-ki1.firebasestorage.app",
+    messagingSenderId: "260981230516",
+    appId: "1:260981230516:web:146a29f15b2716a9af80e1"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  let uid = null;
+
+  async function saveProfile(){
+    if(!uid) return;
+    const p = state.profile;
+    try{
+      await setDoc(doc(db,'users',uid), {
+        name:p.name, style:p.style, cat:p.cat, detail:p.detail||null, detail2:p.detail2||null,
+        tags:p.tags, goalMin:p.goalMin,
+        todayMin:state.todayMin, streak:state.streak,
+        isOnline:true, platform:'web', lastUpdated:serverTimestamp(),
+      },{merge:true});
+      console.log('✅ プロフィール同期');
+    }catch(e){ console.log('profile sync skip', e.message); }
+  }
+  async function getOnline(){
+    const q = query(collection(db,'users'), where('isOnline','==',true), limit(30));
+    const snap = await getDocs(q);
+    const arr=[];
+    snap.forEach(d=>{
+      if(d.id===uid) return;
+      const v=d.data();
+      if(v.platform!=='web') return; // Unityテストデータは除外
+      arr.push({id:d.id, ...v});
+    });
+    return arr;
+  }
+  async function setOffline(){
+    if(!uid) return;
+    try{ await updateDoc(doc(db,'users',uid), {isOnline:false}); }catch(e){}
+  }
+
+  onAuthStateChanged(auth, user=>{
+    if(user){
+      uid = user.uid;
+      console.log('✅ Firebaseログイン:', uid);
+      window.fbApi = { saveProfile, getOnline, setOffline };
+      saveProfile();
+    }
+  });
+  signInAnonymously(auth).catch(e=>console.log('auth skip', e.message));
+  window.addEventListener('beforeunload', setOffline);
+}catch(e){
+  console.log('Firebase未接続（オフラインモードで動作）', e.message);
+}
+</script>
+</body>
+</html>
