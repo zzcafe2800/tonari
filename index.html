@@ -73,7 +73,7 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .bnav-item.center .bi{font-size:24px; width:52px; height:52px; border-radius:50%;
   background:linear-gradient(135deg,#EDB6BA,#E09BA0); display:flex; align-items:center;
   justify-content:center; box-shadow:0 5px 14px rgba(220,150,155,.4); margin-top:-22px}
-.bnav-item.center.callmode .bi{width:64px; height:64px; font-size:28px; margin-top:-32px;
+.bnav-item.center.callmode .bi{width:72px; height:72px; font-size:31px; margin-top:-36px;
   animation:callpulse 1.8s ease infinite}
 .bnav-item.center.callmode{color:#D98990; font-weight:700}
 @keyframes callpulse{0%,100%{box-shadow:0 5px 14px rgba(220,150,155,.45)}
@@ -123,7 +123,9 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .home-name{display:flex; align-items:center}
 .goal-mini{margin-left:8px; background:var(--gold-soft); border:none; border-radius:99px;
   padding:3px 10px; font-size:11px; font-weight:700; color:var(--gold2); font-family:inherit; cursor:pointer}
-.home-top-row{display:flex; align-items:center; gap:10px; margin-top:16px}
+.home-actions{display:flex; flex-direction:column; gap:8px}
+.home-actions .icon-btn{width:40px; height:40px; font-size:16px; position:relative}
+.home-top-row{display:flex; align-items:stretch; gap:10px; margin-top:16px}
 .home-top-row .home-top{flex:1; margin-top:0}
 .streak-badge{margin-left:auto; background:#FBEFD9; border-radius:999px; padding:6px 12px;
   font-size:12px; font-weight:700; color:#C98B3D; white-space:nowrap}
@@ -238,6 +240,12 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 
 /* ---------- 作業部屋 ---------- */
 #scr-room{position:relative; background:linear-gradient(180deg,#E7DCC6 0%, #F1E9DA 50%, #F6F1E8 100%)}
+.room-ui.hide-ui .hd,
+.room-ui.hide-ui .room-prof,
+.room-ui.hide-ui .gift-float,
+#scr-room.hide-ui .tool-bar{ opacity:0; pointer-events:none; transition:opacity .5s }
+.room-ui .hd, .room-ui .room-prof, .room-ui .gift-float,
+#scr-room .tool-bar { transition:opacity .3s }
 .room-bg{position:absolute; inset:0; background-image:url('aaa.png'); background-position:center;
   background-size:cover; background-repeat:no-repeat; z-index:0}
 .room-bg:after{content:''; position:absolute; inset:0; background:rgba(30,24,36,.18)}
@@ -253,20 +261,24 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 @keyframes wave{0%,100%{height:7px} 50%{height:22px}}
 .room-prof{display:flex; align-items:center; gap:6px; padding:6px 14px 0}
 .pcard{flex:1; background:rgba(255,253,249,.94); border-radius:var(--r-sm); box-shadow:var(--sh);
-  padding:10px 12px; display:flex; gap:10px; align-items:center; min-width:0; border:none;
+  padding:7px 10px; display:flex; gap:8px; align-items:center; min-width:0; border:none;
   font-family:inherit; text-align:left}
 button.pcard{cursor:pointer}
-.pav{width:42px; height:42px; border-radius:50%; flex-shrink:0; display:flex; align-items:center;
-  justify-content:center; font-size:20px; background:linear-gradient(135deg,#EADBC4,#DCC8AA)}
-.pinfo{min-width:0; flex:1}
+.pav{width:38px; height:38px; border-radius:50%; flex-shrink:0; display:flex; align-items:center;
+  justify-content:center; font-size:18px; background:linear-gradient(135deg,#EADBC4,#DCC8AA)}
+.pinfo{min-width:0; flex:1; line-height:1.2}
+.pinfo .pname{margin-bottom:1px}
 .pname{font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .pgoal{font-size:10px; color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.goal-chip{display:inline-block; font-size:9.5px; font-weight:700; padding:1.5px 7px; border-radius:99px;
+  background:var(--gold-soft); color:var(--gold2); margin-left:6px; white-space:nowrap}
 .connect-mark{width:34px; height:34px; border-radius:50%; background:var(--card); box-shadow:var(--sh);
   display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;
   animation:pulse 1.8s ease infinite; transform:rotate(90deg)}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,168,124,.45)} 60%{box-shadow:0 0 0 9px rgba(201,168,124,0)}}
 /* タイマー（ガラス＋ポモリング） */
-.timer-wrap{position:relative; width:min(80%,300px); height:138px; margin:14px auto 0}
+.timer-wrap{position:relative; width:min(80%,300px); height:138px; margin:14px auto 0; cursor:pointer}
+.tc-rbar{margin-top:14px}
 .pomo-svg{position:absolute; inset:-7px; width:calc(100% + 14px); height:calc(100% + 14px); display:none; pointer-events:none}
 .pomo-svg.show{display:block}
 .timer-circle{position:absolute; inset:0; border-radius:26px;
@@ -281,8 +293,8 @@ button.pcard{cursor:pointer}
 .tc-rbar{width:54%; height:5px; background:rgba(255,255,255,.22); border-radius:99px; overflow:hidden; margin-top:6px}
 .tc-rbar i{display:block; height:100%; width:100%; background:linear-gradient(90deg,#F5D98E,#E8B86B);
   border-radius:99px; transition:width 1s linear}
-.gift-float{position:absolute; top:84px; right:14px; width:58px; height:58px; border-radius:50%;
-  background:linear-gradient(135deg,#FBE9C8,#F4D9A5); border:none; font-size:27px; cursor:pointer;
+.gift-float{position:absolute; top:248px; left:18%; width:54px; height:54px; border-radius:50%;
+  background:linear-gradient(135deg,#FBE9C8,#F4D9A5); border:none; font-size:25px; cursor:pointer;
   box-shadow:0 6px 16px rgba(190,150,90,.35); display:none; align-items:center; justify-content:center;
   z-index:5; animation:gpop .3s ease, wobble 1.6s ease .3s infinite; font-family:inherit}
 .gift-float.show{display:flex}
@@ -490,6 +502,33 @@ button.pcard{cursor:pointer}
 <body>
 <div id="app">
 
+  <!-- ===== ログイン画面（初回） ===== -->
+  <section class="screen nonav" id="scr-login">
+    <div style="padding:80px 24px 30px;text-align:center">
+      <div style="font-size:64px">🌙</div>
+      <h1 style="font-size:28px;font-weight:700;margin-top:14px">トナリ</h1>
+      <p style="font-size:13px;color:var(--ink2);margin-top:8px;line-height:1.7">
+        ひとりで集中する。<br>でも、ひとりじゃない。
+      </p>
+    </div>
+    <div style="padding:20px">
+      <div class="card" style="padding:22px">
+        <div style="font-weight:700;font-size:14px;margin-bottom:14px">よびかた</div>
+        <input id="loginName" placeholder="3〜12文字" maxlength="12" class="dg-input" style="width:100%;font-size:15px;padding:13px 14px;border-radius:14px"/>
+        <div style="font-size:11px;color:var(--ink3);margin-top:8px">あとからマイページで変えられるよ</div>
+      </div>
+      <button class="btn btn-gold" id="googleBtn" onclick="loginGoogle()" style="width:100%;padding:15px;font-size:15px;margin-top:16px;gap:10px">
+        <span style="font-size:18px">🅖</span> Googleでつづける
+      </button>
+      <button class="btn btn-ghost" onclick="loginGuest()" style="width:100%;padding:14px;font-size:14px;margin-top:10px">
+        いったんゲストで始める
+      </button>
+      <div style="font-size:11px;color:var(--ink3);text-align:center;margin-top:18px;line-height:1.7">
+        ※Googleログインで作業記録・コインがちゃんと残るよ<br>ゲストでも遊べるけど端末を変えるとリセットされちゃう
+      </div>
+    </div>
+  </section>
+
   <!-- ===== セットアップ ===== -->
   <section class="screen nonav" id="scr-setup">
     <div class="setup-top"><button class="setup-back" id="setupBack" style="visibility:hidden">‹ 戻る</button></div>
@@ -505,12 +544,16 @@ button.pcard{cursor:pointer}
         <div class="home-top">
           <div class="home-avatar">🧸</div>
           <div>
-            <div class="home-name"><span id="hName">ゆめ</span><button class="goal-mini" onclick="quickGoalTime()">🎯 <span id="hGoalMini">2時間</span></button></div>
+            <div class="home-name"><span id="hName">ゆめ</span></div>
             <div class="home-lv" id="hLv">Lv.1</div>
           </div>
           <div class="streak-badge" id="hStreak">🔥 1日継続中</div>
         </div>
-        <button class="icon-btn" onclick="toast('通知はまだありません')">🔔</button>
+        <div class="home-actions">
+          <button class="icon-btn" onclick="go('scr-friends')">👥<span class="req-dot" id="navReqDotHome" style="display:none"></span></button>
+          <button class="icon-btn" onclick="openGoal()">🎯</button>
+          <button class="icon-btn" onclick="toast('通知はまだありません')">🔔</button>
+        </div>
       </div>
       <div class="card today-card">
         <div class="today-label">⏱ 今日の記録</div>
@@ -521,14 +564,14 @@ button.pcard{cursor:pointer}
     </div>
     <div class="home-bottom">
       <div class="menu3">
-        <button class="m-card" onclick="go('scr-closet')">
-          <div class="m-emoji">👗</div><div class="m-name">着せ替え</div><div class="m-desc">アバターを<br>カスタマイズ</div>
+        <button class="m-card" onclick="go('scr-skin')">
+          <div class="m-emoji">🧥</div><div class="m-name">スキン</div><div class="m-desc">アバター・<br>お部屋</div>
         </button>
         <button class="m-card" onclick="openGoal()">
           <div class="m-emoji">🎯</div><div class="m-name">目標設定</div><div class="m-desc">目標を<br>編集しよう</div>
         </button>
-        <button class="m-card" onclick="go('scr-roomedit')">
-          <div class="m-emoji">🛋️</div><div class="m-name">ルーム編集</div><div class="m-desc">背景を<br>変えよう</div>
+        <button class="m-card" onclick="go('scr-shop')">
+          <div class="m-emoji">🛍️</div><div class="m-name">ショップ</div><div class="m-desc">アイテムを<br>手に入れよう</div>
         </button>
       </div>
     </div>
@@ -599,16 +642,15 @@ button.pcard{cursor:pointer}
         <button class="icon-btn" onclick="askLeave()" style="font-size:13px;width:auto;padding:0 16px;border-radius:99px">🚪 退出</button>
         <div class="hd-c">
           <div class="eq" onclick="toast('好きな曲に変えられる機能はこれから🎵')"><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="hd-sub" style="color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(0,0,0,.4)">一緒に頑張ろうね！</div>
         </div>
-        <button class="icon-btn" onclick="roomSettings()">⚙</button>
+        <button class="icon-btn" onclick="toggleFocus()" id="focusBtn">🎧</button>
       </div>
 
       <div class="room-prof">
         <div class="pcard">
           <div class="pav">🧸</div>
           <div class="pinfo">
-            <div class="pname" id="rMyName">あなた</div>
+            <div class="pname"><span id="rMyName">あなた</span><span class="goal-chip" id="rMyGoalChip">2h</span></div>
             <div class="pgoal" id="rMyGoal">📖 作業</div>
           </div>
         </div>
@@ -616,30 +658,28 @@ button.pcard{cursor:pointer}
         <button class="pcard" onclick="showPartnerProfile()">
           <div class="pav" id="rPav">🐰</div>
           <div class="pinfo">
-            <div class="pname" id="rPName">相手</div>
+            <div class="pname"><span id="rPName">相手</span><span class="goal-chip" id="rPGoalChip">2h</span></div>
             <div class="pgoal" id="rPGoal">📖 作業</div>
           </div>
         </button>
       </div>
 
-      <div class="timer-wrap">
+      <div class="timer-wrap" onclick="toggleTimerMode()">
         <svg class="pomo-svg" id="pomoSvg"><rect id="pomoRect" fill="none" stroke-width="5" stroke-linecap="round"/></svg>
         <div class="timer-circle">
-          <div class="tc-label">今日の作業時間<span class="tc-goal" id="rGoal">目標 2時間</span></div>
           <div class="tc-time" id="elapsed">00:00:00</div>
-          <div class="tc-reward" id="rewardLeft">🎁 次の報酬まで あと25分</div>
           <div class="tc-rbar"><i id="rewardBar"></i></div>
         </div>
       </div>
 
       <button class="gift-float" id="giftFloat" onclick="openOneGift()">🎁<span class="gcount" id="giftCount" style="display:none">2</span></button>
 
-      <div class="char-zone">（ここにキャラクターのイラストが入ります）</div>
+      <div class="char-zone"></div>
       <div style="height:190px"></div>
     </div>
 
     <div class="tool-bar">
-      <button class="tool-btn" onclick="openSheet('todoSheet')"><div class="te">📝</div><div class="tl">ToDo</div></button>
+      <button class="tool-btn" onclick="toast('ちょっかい機能はこれから😈')"><div class="te">😈</div><div class="tl">ちょっかい</div></button>
       <button class="tool-btn" onclick="openSheet('stampSheet')"><div class="te">😊</div><div class="tl">スタンプ</div></button>
       <button class="tool-btn" onclick="openSheet('pomoSheet')"><div class="te">🍅</div><div class="tl">ポモドーロ</div></button>
       <button class="tool-btn" onclick="toast('モーション機能はこれから🎬')"><div class="te">🎬</div><div class="tl">モーション</div></button>
@@ -648,6 +688,10 @@ button.pcard{cursor:pointer}
     <div class="prog-card mine">
       <div class="prog-head">🧸 わたしの進捗<button class="edit" onclick="openDailyGoals(true)">✎ 編集</button></div>
       <div id="myProg"></div>
+    </div>
+    <div class="prog-card theirs">
+      <div class="prog-head">🐰 <span id="theirProgName">相手</span>の進捗</div>
+      <div id="theirProg"></div>
     </div>
 
   </section>
@@ -703,31 +747,21 @@ button.pcard{cursor:pointer}
     </div>
   </section>
 
-  <!-- ===== 着せ替え ===== -->
-  <section class="screen" id="scr-closet">
-    <div class="hd"><button class="icon-btn" onclick="go('scr-home')">‹</button>
-      <div class="hd-c"><div class="hd-title">着せ替え</div></div><div style="width:44px"></div></div>
-    <div class="stub-wrap">
-      <div class="card stub-card">
-        <div class="stub-emoji">👗</div>
-        <div class="stub-title">キャラの絵ができたらここで着せ替え！</div>
-        <div class="stub-desc">ゆめさんのイラストを待ってます🎨</div>
-      </div>
+  <!-- ===== スキン（着せ替え + ルーム編集 統合） ===== -->
+  <section class="screen" id="scr-skin">
+    <div class="hd"><div style="width:44px"></div>
+      <div class="hd-c"><div class="hd-title">スキン</div></div><div style="width:44px"></div></div>
+    <div class="fr-tabs">
+      <button class="fr-tab on" id="skTabAv" onclick="skTab('av')">アバター</button>
+      <button class="fr-tab" id="skTabRoom" onclick="skTab('room')">ルーム</button>
     </div>
-  </section>
-
-  <!-- ===== ルーム編集 ===== -->
-  <section class="screen" id="scr-roomedit">
-    <div class="hd"><button class="icon-btn" onclick="go('scr-home')">‹</button>
-      <div class="hd-c"><div class="hd-title">ルーム編集</div>
-        <div class="hd-sub">作業部屋の背景をえらぼう</div></div><div style="width:44px"></div></div>
-    <div class="bg-grid" id="bgGrid"></div>
+    <div id="skBody"></div>
   </section>
 
   <!-- ===== ボトムナビ ===== -->
   <nav id="bnav">
     <button class="bnav-item" data-s="scr-records"><span class="bi">📊</span>記録</button>
-    <button class="bnav-item" data-s="scr-friends"><span class="bi">👥</span>フレンド<span class="req-dot" id="navReqDot" style="display:none"></span></button>
+    <button class="bnav-item" data-s="scr-skin"><span class="bi">👗</span>スキン</button>
     <button class="bnav-item center" id="navCenter" data-s="scr-home"><span class="bi" id="navCenterIcon">🏠</span><span id="navCenterLabel">ホーム</span></button>
     <button class="bnav-item" data-s="scr-shop"><span class="bi">🛍️</span>ショップ</button>
     <button class="bnav-item" data-s="scr-mypage"><span class="bi">👤</span>マイページ</button>
@@ -821,7 +855,7 @@ button.pcard{cursor:pointer}
     <div class="modal-desc" id="lrDesc">今回の作業：0分</div>
     <div class="reward-list" id="lrList"></div>
     <div class="modal-actions">
-      <button class="btn btn-gold" onclick="openGallery()" style="flex:1">みんなの新着を見る ›</button>
+      <button class="btn btn-gold" onclick="finishOrGallery()" style="flex:1" id="lrNext">ホームに戻る</button>
     </div>
   </div>
 
@@ -976,6 +1010,7 @@ let state={
   dailyGoals:[], dailyDate:null,
   roomBg:'aaa',
   npcDay:null, npcs:[], npcStampLog:{},
+  signedIn:false, signedProvider:null,
 };
 function save(){ localStorage.setItem('tonari_v2', JSON.stringify(state)); }
 function load(){ try{ const s=localStorage.getItem('tonari_v2'); if(s) state=Object.assign(state, JSON.parse(s)); }catch(e){} }
@@ -1054,6 +1089,7 @@ function go(id){
   if(id==='scr-friends') renderFriends();
   if(id==='scr-goal') renderGoalEdit();
   if(id==='scr-roomedit') renderRoomEdit();
+  if(id==='scr-skin') renderSkin();
   window.scrollTo(0,0);
 }
 document.querySelectorAll('.bnav-item').forEach(b=>b.addEventListener('click',()=>{
@@ -1151,7 +1187,24 @@ function genCounts(){
   const base={study:38, work:27, create:16, job:11, other:7};
   for(const k in base) onlineCounts[k]=base[k]+Math.floor(Math.random()*9);
 }
-function startWork(){
+function loginGuest(){
+  const n=document.getElementById('loginName').value.trim();
+  if(!n || n.length<2){ toast('よびかたを入れてね（2文字以上）'); return; }
+  state.profile.name=n; state.signedIn=true; state.signedProvider='guest';
+  save();
+  go('scr-home');
+  if(needDailyGoals()) setTimeout(()=>openDailyGoals(false),300);
+}
+function loginGoogle(){
+  const n=document.getElementById('loginName').value.trim();
+  if(!n || n.length<2){ toast('よびかたを入れてね'); return; }
+  if(window.fbGoogleSignIn){
+    state.profile.name=n; save();
+    window.fbGoogleSignIn();
+  } else {
+    toast('Googleログイン準備中…ゲストでも始められるよ');
+  }
+}
   if(!state.setupDone){ openWizard(); return; }
   openMap();
 }
@@ -1564,7 +1617,7 @@ function acceptReq(i){
 function rejectReq(i){ state.requests.splice(i,1); save(); renderFriends(); }
 function updateReqDots(){
   const has=state.requests.length>0;
-  document.getElementById('navReqDot').style.display=has?'block':'none';
+  const a=document.getElementById('navReqDotHome'); if(a) a.style.display=has?'block':'none';
   const rd=document.getElementById('reqDot');
   if(rd) rd.style.display=has?'block':'none';
 }
@@ -1573,7 +1626,7 @@ function updateReqDots(){
 let room=null, elapsedTimer=null, pomoTimer=null, partnerSimTimer=null;
 let pomoSec=25*60, pomoRunning=false, pomoPhase='work', pomoActive=false;
 let pendingGifts=0, grantedThresholds=[];
-const THRESHOLDS=(()=>{const a=[25];const st=[20,15,10,5];let c=25;st.forEach(s=>{c+=s;a.push(c)});for(let i=0;i<20;i++){c+=5;a.push(c)}return a;})();
+const THRESHOLDS=(()=>{const a=[15,25,30];let c=30;for(let i=0;i<30;i++){c+=5;a.push(c)}return a;})();
 
 function applyRoomBg(){
   const el=document.getElementById('roomBg');
@@ -1594,41 +1647,66 @@ function enterRoom(partner){
   applyRoomBg();
   document.getElementById('rMyName').textContent=state.profile.name;
   document.getElementById('rMyGoal').textContent='📖 '+profileCatLabel();
+  document.getElementById('rMyGoalChip').textContent=goalLabel().replace('時間','h').replace('分','m');
   document.getElementById('rPName').textContent=partner.name;
   let pg=partner.detail||CATS[partner.cat].name; if(partner.detail2) pg+='・'+partner.detail2;
   document.getElementById('rPGoal').textContent=partner.emoji+' '+pg;
+  document.getElementById('rPGoalChip').textContent=
+    GOALS.find(g=>g.m===(partner.goalMin||120))?GOALS.find(g=>g.m===(partner.goalMin||120)).t.replace('時間','h').replace('分','m'):'2h';
   document.getElementById('rPav').textContent=partner.emoji;
   document.getElementById('rGoal').textContent='目標 '+goalLabel();
+  document.getElementById('theirProgName').textContent=partner.name;
   updateGiftFloat(); updatePomoRing();
   renderTodos(); renderStamps(); updatePomoUI();
-  renderMyProg();
+  renderMyProg(); renderTheirProg();
   go('scr-room');
   clearInterval(elapsedTimer);
   elapsedTimer=setInterval(tickElapsed,1000);
   tickElapsed();
+  pingActivity();
   clearInterval(partnerSimTimer);
+  partnerSimTimer=setInterval(()=>{
+    if(!room) return;
+    const cand=(room.partner.goals||[]).filter(g=>g.done<g.target);
+    if(cand.length && Math.random()<.6){
+      const g=rnd(cand);
+      g.done++;
+      const npc=state.npcs.find(n=>n.name===room.partner.name);
+      if(npc){ const ng=npc.goals.find(x=>x.tx===g.tx); if(ng) ng.done=g.done; save(); }
+      renderTheirProg();
+      if(g.done>=g.target) toast(`${room.partner.name}さんが「${g.tx}」を達成！🎉`);
+    }
+  }, 22000);
+}
+let timerMode='session';
+function toggleTimerMode(){
+  timerMode = timerMode==='session' ? 'pomo' : 'session';
+  document.getElementById('rewardBar').parentElement.style.display = timerMode==='session' ? 'block' : 'none';
+  tickElapsed();
 }
 function tickElapsed(){
   if(!room) return;
   const sec=Math.floor((Date.now()-room.start)/1000);
-  const total=state.todayMin*60+sec;
-  const h=Math.floor(total/3600), m=Math.floor(total%3600/60), s=total%60;
-  document.getElementById('elapsed').textContent=
-    `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  // 報酬（今回セッション分で判定）
+  const el=document.getElementById('elapsed');
+  if(timerMode==='pomo'){
+    const m=Math.floor(pomoSec/60), s=pomoSec%60;
+    el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  } else {
+    const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60;
+    el.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  // 報酬しきい値（15→10→5→以降5分おき）
   const min=sec/60;
   let prev=0, next=THRESHOLDS[0];
   for(let i=0;i<THRESHOLDS.length;i++){
     if(min<THRESHOLDS[i]){ next=THRESHOLDS[i]; prev=i>0?THRESHOLDS[i-1]:0; break; }
   }
-  document.getElementById('rewardLeft').textContent=`🎁 次の報酬まで あと${Math.max(1,Math.ceil(next-min))}分`;
   const remain=Math.max(0,(next-min)/(next-prev));
   document.getElementById('rewardBar').style.width=(remain*100)+'%';
   THRESHOLDS.forEach(t=>{
     if(min>=t && !grantedThresholds.includes(t)){
       grantedThresholds.push(t); pendingGifts++;
-      playChime(); updateGiftFloat();
-      toast('🎁 プレゼントが届いたよ！');
+      updateGiftFloat();
     }
   });
 }
@@ -1921,7 +1999,12 @@ function leaveFlow(){
   document.getElementById('lrList').innerHTML=leaveResults.map(r=>`<div class="reward-row"><span class="re">${r.e}</span>${r.n}</div>`).join('');
   showModal('leaveRewardModal');
 }
-function roomSettings(){ showModal('roomSetModal'); }
+let focusMode=false;
+function toggleFocus(){
+  focusMode=!focusMode;
+  document.getElementById('focusBtn').style.background = focusMode?'var(--gold-soft)':'';
+  toast(focusMode?'🎧 集中モード ON':'🎧 集中モード OFF');
+}
 function simulateDC(){
   closeModal();
   setTimeout(()=>{ showModal('dcModal'); },400);
@@ -1931,19 +2014,9 @@ function dcLeave(){ leaveFlow(); }
 /* ============================================================ 終了後ギャラリー ============================================================ */
 let galList=[], galIdx=0, galCombo=0, galComboT=null, galStamp='💗';
 function openGallery(){
-  ensureNpcs();
-  const friendsSet=new Set(state.friends.map(f=>f.name));
-  const me=state.profile;
-  const scored=state.npcs.map(n=>{
-    const totalStamps=Object.values(state.npcStampLog[n.name]||{}).reduce((a,b)=>a+b,0);
-    let pr=0;
-    if(friendsSet.has(n.name)) pr+=2000;
-    if(n.cat===me.cat) pr+=500;
-    if(n.detail===me.detail) pr+=200;
-    pr-=totalStamps*10;
-    return {n, pr};
-  }).sort((a,b)=>b.pr-a.pr);
-  galList=scored.slice(0,5).map(s=>s.n);
+  // 本物のプレイヤー（マップ上のisReal）のみ。NPCには意味がないので含めない
+  const realList=(mapUsers||[]).filter(u=>u.isReal);
+  galList=realList.slice(0,2);
   galIdx=0; galStamp='💗';
   if(!galList.length){ finishGallery(); return; }
   renderGallery();
@@ -2002,6 +2075,15 @@ function galTap(ev){
 function nextGallery(){
   if(galIdx<galList.length-1){ galIdx++; galCombo=0; renderGallery(); }
   else finishGallery();
+}
+function finishOrGallery(){
+  const realList=(mapUsers||[]).filter(u=>u.isReal);
+  if(realList.length){
+    document.getElementById('lrNext').textContent='ホームに戻る';
+    openGallery();
+  } else {
+    closeModal(); room=null; go('scr-home');
+  }
 }
 function finishGallery(){
   modalLock=false; closeModal(); room=null; go('scr-home');
@@ -2107,24 +2189,54 @@ function renderMyPage(){
   const el=document.getElementById('mpItems');
   if(state.items.length) el.innerHTML=state.items.map(n=>`<span class="tag gold">${n}</span>`).join('');
 }
-function renderRoomEdit(){
-  const grid=document.getElementById('bgGrid');
-  grid.innerHTML=BGS.map(b=>{
-    const owned=!b.need || state.items.includes(b.need);
-    const thumb=b.img?`background-image:url('${b.img}')`:b.grad?`background-image:${b.grad}`:'background:linear-gradient(180deg,#E7DCC6,#F6F1E8)';
-    return `<div class="bg-opt ${state.roomBg===b.id?'on':''}" onclick="pickBg('${b.id}',${owned})">
-      <div class="bg-thumb" style="${thumb}">${b.img||b.grad?'':'🌿'}</div>
-      <div class="bg-name">${b.n}${owned?'':'<div class="bg-lock">🔒 ショップで入手</div>'}</div>
-    </div>`;
-  }).join('');
+let skMode='av';
+function skTab(m){
+  skMode=m;
+  document.getElementById('skTabAv').classList.toggle('on',m==='av');
+  document.getElementById('skTabRoom').classList.toggle('on',m==='room');
+  renderSkin();
+}
+function renderSkin(){
+  const body=document.getElementById('skBody');
+  if(skMode==='av'){
+    body.innerHTML=`<div class="stub-wrap"><div class="card stub-card">
+      <div class="stub-emoji">👗</div>
+      <div class="stub-title">キャラの絵ができたらここで着せ替え！</div>
+      <div class="stub-desc">ゆめさんのイラストを待ってます🎨</div></div></div>`;
+  } else {
+    body.innerHTML=`<div class="bg-grid">${BGS.map(b=>{
+      const owned=!b.need || state.items.includes(b.need);
+      const thumb=b.img?`background-image:url('${b.img}')`:b.grad?`background-image:${b.grad}`:'background:linear-gradient(180deg,#E7DCC6,#F6F1E8)';
+      return `<div class="bg-opt ${state.roomBg===b.id?'on':''}" onclick="pickBg('${b.id}',${owned})">
+        <div class="bg-thumb" style="${thumb}">${b.img||b.grad?'':'🌿'}</div>
+        <div class="bg-name">${b.n}${owned?'':'<div class="bg-lock">🔒 ショップで入手</div>'}</div></div>`;
+    }).join('')}</div>`;
+  }
 }
 function pickBg(id,owned){
   if(!owned){ toast('ショップで手に入れてね🛍️'); return; }
-  state.roomBg=id; save();
-  renderRoomEdit(); toast('背景を変えたよ！次の作業から反映🌙');
+  state.roomBg=id; save(); applyRoomBg();
+  renderSkin(); toast('背景を変えたよ！🌙');
 }
 
-/* ============================================================ Firebase ============================================================ */
+/* 7秒無動作でUI自動非表示（半透明カードは例外で常時表示） */
+let idleHideT=null;
+function pingActivity(){
+  const ui=document.querySelector('#scr-room .room-ui');
+  const scr=document.getElementById('scr-room');
+  if(ui) ui.classList.remove('hide-ui');
+  if(scr) scr.classList.remove('hide-ui');
+  clearTimeout(idleHideT);
+  if(!room) return;
+  idleHideT=setTimeout(()=>{
+    if(!room) return;
+    if(ui) ui.classList.add('hide-ui');
+    if(scr) scr.classList.add('hide-ui');
+  }, 7000);
+}
+['click','touchstart','keydown','mousemove'].forEach(ev=>{
+  document.addEventListener(ev,()=>{ if(room) pingActivity(); }, {passive:true});
+});
 /* --- リアルプレイヤー連携の窓口 --- */
 let pendingInvite=null;
 window.onIncomingInvite=function(v){
@@ -2239,15 +2351,20 @@ load();
 })();
 ensureNpcs();
 applyRoomBg();
-go('scr-home');
-if(needDailyGoals()){ setTimeout(()=>openDailyGoals(false), 400); }
+if(!state.signedIn){
+  go('scr-login');
+  document.getElementById('bnav').classList.remove('show');
+} else {
+  go('scr-home');
+  if(needDailyGoals()){ setTimeout(()=>openDailyGoals(false), 400); }
+}
 </script>
 
 <!-- ===== Firebase 初期化 ===== -->
 <script type="module">
 try{
   const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js');
-  const { getAuth, signInAnonymously, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
+  const { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
   const { getFirestore, doc, setDoc, getDocs, collection, query, where, limit, serverTimestamp, updateDoc } =
     await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js');
   const { getDatabase, ref, set, onValue, remove, onDisconnect, update } =
@@ -2361,6 +2478,25 @@ try{
   function sendMapStamp(e){
     set(ref(rtdb,'mapStamps/'+uid), {uid, name:state.profile.name, e, t:Date.now()}).catch(()=>{});
   }
+
+  window.fbGoogleSignIn=async function(){
+    try{
+      const provider = new GoogleAuthProvider();
+      const res = await signInWithPopup(auth, provider);
+      state.signedIn=true; state.signedProvider='google';
+      if(res.user && res.user.displayName && !state.profile.name) state.profile.name=res.user.displayName;
+      save();
+      go('scr-home');
+      if(needDailyGoals()) setTimeout(()=>openDailyGoals(false),300);
+    }catch(e){
+      console.log('google login failed', e.message);
+      // フォールバック：匿名で続行
+      state.signedIn=true; state.signedProvider='guest';
+      save();
+      go('scr-home');
+      if(needDailyGoals()) setTimeout(()=>openDailyGoals(false),300);
+    }
+  };
 
   onAuthStateChanged(auth, user=>{
     if(user){
