@@ -1405,7 +1405,6 @@ function togglePickTag(t){
 function renderHome(){
   const p=state.profile;
   document.getElementById('hName').textContent=p.name;
-  document.getElementById('hGoalMini').textContent=goalLabel();
   document.getElementById('hLv').textContent='Lv.'+(Math.floor(state.totalMin/300)+1);
   document.getElementById('hStreak').textContent=`🔥 ${state.streak}日継続中`;
   document.getElementById('hToday').innerHTML=fmtMin(state.todayMin);
