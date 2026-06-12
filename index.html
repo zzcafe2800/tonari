@@ -73,6 +73,11 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .bnav-item.center .bi{font-size:24px; width:52px; height:52px; border-radius:50%;
   background:linear-gradient(135deg,#EDB6BA,#E09BA0); display:flex; align-items:center;
   justify-content:center; box-shadow:0 5px 14px rgba(220,150,155,.4); margin-top:-22px}
+.bnav-item.center.callmode .bi{width:64px; height:64px; font-size:28px; margin-top:-32px;
+  animation:callpulse 1.8s ease infinite}
+.bnav-item.center.callmode{color:#D98990; font-weight:700}
+@keyframes callpulse{0%,100%{box-shadow:0 5px 14px rgba(220,150,155,.45)}
+  50%{box-shadow:0 6px 26px rgba(220,150,155,.85)}}
 .req-dot{position:absolute; top:2px; right:6px; width:9px; height:9px; border-radius:50%; background:#E08A8A}
 
 /* ---------- セットアップ ---------- */
@@ -115,9 +120,14 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
   display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0}
 .home-name{font-weight:700; font-size:15px}
 .home-lv{font-size:11px; color:var(--ink2)}
+.home-name{display:flex; align-items:center}
+.goal-mini{margin-left:8px; background:var(--gold-soft); border:none; border-radius:99px;
+  padding:3px 10px; font-size:11px; font-weight:700; color:var(--gold2); font-family:inherit; cursor:pointer}
+.home-top-row{display:flex; align-items:center; gap:10px; margin-top:16px}
+.home-top-row .home-top{flex:1; margin-top:0}
 .streak-badge{margin-left:auto; background:#FBEFD9; border-radius:999px; padding:6px 12px;
   font-size:12px; font-weight:700; color:#C98B3D; white-space:nowrap}
-.today-card{margin-top:14px; padding:16px}
+.today-card{margin-top:12px; padding:14px 16px; width:62%; min-width:210px; margin-right:auto}
 .today-label{font-size:12.5px; color:var(--ink2); display:flex; align-items:center; gap:6px}
 .today-time{font-size:28px; font-weight:700; margin:6px 0 10px}
 .today-time small{font-size:15px}
@@ -198,6 +208,10 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
   background:rgba(255,255,255,.25); transition:width 1s linear}
 .rand-cancel{text-align:center; font-size:12.5px; color:var(--ink3); margin-top:8px; cursor:pointer; display:none}
 .rand-cancel.show{display:block}
+.map-stamps{position:absolute; right:12px; bottom:12px; display:flex; flex-direction:column; gap:8px; z-index:5}
+.map-stamps button{width:46px; height:46px; border-radius:50%; border:none; background:rgba(255,253,249,.95);
+  box-shadow:var(--sh); font-size:20px; cursor:pointer; font-family:inherit; transition:transform .1s}
+.map-stamps button:active{transform:scale(.85)}
 
 /* ---------- フレンド ---------- */
 .fr-tabs{display:flex; gap:8px; padding:4px 18px 0}
@@ -224,8 +238,8 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 
 /* ---------- 作業部屋 ---------- */
 #scr-room{position:relative; background:linear-gradient(180deg,#E7DCC6 0%, #F1E9DA 50%, #F6F1E8 100%)}
-.room-bg{position:absolute; inset:0; background-position:center; background-size:cover;
-  background-repeat:no-repeat; z-index:0}
+.room-bg{position:absolute; inset:0; background-image:url('aaa.png'); background-position:center;
+  background-size:cover; background-repeat:no-repeat; z-index:0}
 .room-bg:after{content:''; position:absolute; inset:0; background:rgba(30,24,36,.18)}
 .room-ui{position:relative; z-index:1}
 /* ヘッダーEQアイコン */
@@ -252,25 +266,21 @@ button.pcard{cursor:pointer}
   animation:pulse 1.8s ease infinite; transform:rotate(90deg)}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,168,124,.45)} 60%{box-shadow:0 0 0 9px rgba(201,168,124,0)}}
 /* タイマー（ガラス＋ポモリング） */
-.timer-wrap{position:relative; width:250px; height:250px; margin:16px auto 0}
-.pomo-ring{position:absolute; inset:-9px; border-radius:50%; display:none;
-  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 9px), #000 calc(100% - 8px));
-  mask:radial-gradient(farthest-side, transparent calc(100% - 9px), #000 calc(100% - 8px))}
-.pomo-ring.show{display:block}
-.timer-circle{position:absolute; inset:0; border-radius:50%;
+.timer-wrap{position:relative; width:min(80%,300px); height:138px; margin:14px auto 0}
+.pomo-svg{position:absolute; inset:-7px; width:calc(100% + 14px); height:calc(100% + 14px); display:none; pointer-events:none}
+.pomo-svg.show{display:block}
+.timer-circle{position:absolute; inset:0; border-radius:26px;
   background:rgba(45,38,54,.48); backdrop-filter:blur(9px); -webkit-backdrop-filter:blur(9px);
   border:1.5px solid rgba(255,255,255,.3); box-shadow:0 12px 34px rgba(20,15,30,.3);
   display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff}
 .tc-label{font-size:12px; color:rgba(255,255,255,.85); display:flex; gap:10px; align-items:center}
 .tc-label .tc-goal{color:rgba(255,255,255,.75)}
-.tc-time{font-size:44px; font-weight:700; letter-spacing:1.5px; margin:5px 0 2px;
+.tc-time{font-size:38px; font-weight:700; letter-spacing:1.5px; margin:3px 0 1px;
   text-shadow:0 2px 10px rgba(0,0,0,.35)}
-.tc-prog{display:flex; align-items:center; gap:7px; width:68%; margin-top:7px}
-.tc-prog .pct{font-size:12px; font-weight:700; color:#F5D98E; white-space:nowrap}
-.tc-prog .pline{flex:1; height:3px; background:rgba(255,255,255,.25); border-radius:99px; overflow:hidden}
-.tc-prog .pline i{display:block; height:100%; width:0%;
-  background:linear-gradient(90deg,#F5D98E,#E8B86B); border-radius:99px; transition:width .5s}
-.tc-reward{font-size:11px; color:rgba(255,255,255,.8); margin-top:8px; font-weight:700}
+.tc-reward{font-size:11.5px; color:rgba(255,255,255,.85); margin-top:10px; font-weight:700}
+.tc-rbar{width:54%; height:5px; background:rgba(255,255,255,.22); border-radius:99px; overflow:hidden; margin-top:6px}
+.tc-rbar i{display:block; height:100%; width:100%; background:linear-gradient(90deg,#F5D98E,#E8B86B);
+  border-radius:99px; transition:width 1s linear}
 .gift-float{position:absolute; top:84px; right:14px; width:58px; height:58px; border-radius:50%;
   background:linear-gradient(135deg,#FBE9C8,#F4D9A5); border:none; font-size:27px; cursor:pointer;
   box-shadow:0 6px 16px rgba(190,150,90,.35); display:none; align-items:center; justify-content:center;
@@ -284,16 +294,18 @@ button.pcard{cursor:pointer}
 .char-zone{height:104px; margin:12px 16px 0; display:flex; align-items:center; justify-content:center;
   font-size:12px; color:rgba(255,255,255,.45)}
 /* 左ツールスタック */
-.tool-stack{position:fixed; left:max(8px, calc(50% - 232px)); top:40%; transform:translateY(-50%);
-  display:flex; flex-direction:column; gap:9px; z-index:40}
-.tool-btn{display:flex; flex-direction:column; align-items:center; gap:2px; border:none;
-  background:rgba(255,253,249,.94); cursor:pointer; font-family:inherit;
-  padding:9px 7px 6px; border-radius:15px; box-shadow:var(--sh); width:60px; transition:transform .12s}
-.tool-btn:active{transform:scale(.92)}
-.tool-btn .te{font-size:21px}
-.tool-btn .tl{font-size:9px; color:var(--ink2); font-weight:700}
+.tool-bar{position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
+  width:calc(100% - 32px); max-width:448px; background:rgba(255,253,249,.97);
+  border-radius:26px; box-shadow:0 8px 24px rgba(140,115,80,.22);
+  display:flex; justify-content:space-around; align-items:center; padding:9px 8px; z-index:40}
+.tool-btn{display:flex; flex-direction:column; align-items:center; gap:3px; border:none;
+  background:none; cursor:pointer; font-family:inherit; padding:3px 10px}
+.tool-btn .te{width:44px; height:44px; border-radius:50%; background:var(--card2);
+  display:flex; align-items:center; justify-content:center; font-size:20px; transition:transform .12s}
+.tool-btn:active .te{transform:scale(.88)}
+.tool-btn .tl{font-size:9.5px; color:var(--ink2); font-weight:700}
 /* 進捗カード（下バー上の左右） */
-.prog-card{position:fixed; bottom:96px; width:46%; max-width:215px;
+.prog-card{position:fixed; bottom:110px; width:46%; max-width:215px;
   background:rgba(255,253,249,.93); border-radius:15px; box-shadow:var(--sh);
   padding:9px 10px; z-index:39; max-height:165px; overflow-y:auto}
 .prog-card.mine{left:max(8px, calc(50% - 232px))}
@@ -361,6 +373,17 @@ button.pcard{cursor:pointer}
 .cal .cday.has{background:var(--gold-soft); color:var(--gold2); font-weight:700}
 .cal .cday.lots{background:linear-gradient(135deg,#E8C794,#D9B077); color:#fff; font-weight:700}
 .cal .cday .cd-dot{font-size:7px; line-height:1}
+.cat-wrap{display:flex; align-items:center; gap:14px; margin-top:8px}
+.donut{width:108px; height:108px; border-radius:50%; position:relative; flex-shrink:0}
+.donut .hole{position:absolute; inset:22px; background:var(--card); border-radius:50%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:10px; color:var(--ink2)}
+.donut .hole b{font-size:11.5px; color:var(--ink)}
+.cat-legend{flex:1; display:flex; flex-direction:column; gap:6px; min-width:0}
+.cat-row{display:flex; align-items:center; gap:7px; font-size:11.5px}
+.cat-row .cdot{width:9px; height:9px; border-radius:50%; flex-shrink:0}
+.cat-row .cname{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.cat-row .ctime{font-weight:700; white-space:nowrap}
+.cat-row .cpct{color:var(--ink3); width:34px; text-align:right; white-space:nowrap}
 
 /* ---------- ルーム編集 ---------- */
 .bg-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:14px 18px}
@@ -478,32 +501,25 @@ button.pcard{cursor:pointer}
   <section class="screen" id="scr-home">
     <div class="home-illust">（ここにホームのイラスト背景が入ります）</div>
     <div class="home-body">
-      <div class="home-top">
-        <div class="home-avatar">🧸</div>
-        <div>
-          <div class="home-name" id="hName">ゆめ</div>
-          <div class="home-lv" id="hLv">Lv.1</div>
+      <div class="home-top-row">
+        <div class="home-top">
+          <div class="home-avatar">🧸</div>
+          <div>
+            <div class="home-name"><span id="hName">ゆめ</span><button class="goal-mini" onclick="quickGoalTime()">🎯 <span id="hGoalMini">2時間</span></button></div>
+            <div class="home-lv" id="hLv">Lv.1</div>
+          </div>
+          <div class="streak-badge" id="hStreak">🔥 1日継続中</div>
         </div>
-        <div class="streak-badge" id="hStreak">🔥 1日継続中</div>
-        <button class="icon-btn" style="box-shadow:none;background:none" onclick="toast('通知はまだありません')">🔔</button>
+        <button class="icon-btn" onclick="toast('通知はまだありません')">🔔</button>
       </div>
       <div class="card today-card">
         <div class="today-label">⏱ 今日の記録</div>
         <div class="today-time" id="hToday">0<small>分</small></div>
         <div class="bar"><i id="hBar" style="width:0%"></i></div>
-        <div class="today-goal">
-          <span id="hGoal">目標：2時間</span>
-          <button class="goal-quick" onclick="quickGoalTime()">⏰ 時間をかえる</button>
-        </div>
+        <div class="today-goal"><span id="hGoal">目標：2時間</span></div>
       </div>
     </div>
     <div class="home-bottom">
-      <div class="bubble">📌 いっしょに作業する仲間に<br>でんわをかけてみよう 📞</div>
-      <div class="call-wrap">
-        <button class="call-btn" onclick="startWork()">📞</button>
-        <div class="call-label">作業を始める</div>
-        <div class="call-sub">仲間を探しにいく</div>
-      </div>
       <div class="menu3">
         <button class="m-card" onclick="go('scr-closet')">
           <div class="m-emoji">👗</div><div class="m-name">着せ替え</div><div class="m-desc">アバターを<br>カスタマイズ</div>
@@ -549,7 +565,12 @@ button.pcard{cursor:pointer}
       </div>
       <button class="goal-change" onclick="openGoal()">変更</button>
     </div>
-    <div id="mapArea"></div>
+    <div id="mapArea">
+      <div class="map-stamps">
+        <button onclick="event.stopPropagation();mapStamp('✋')">✋</button>
+        <button onclick="event.stopPropagation();mapStamp('👋')">👋</button>
+      </div>
+    </div>
     <div class="map-bottom">
       <button class="btn btn-gold rand-btn" id="randBtn" onclick="startRandom()">
         <div class="wait-bar" id="waitBar"></div>
@@ -572,7 +593,7 @@ button.pcard{cursor:pointer}
 
   <!-- ===== 作業部屋 ===== -->
   <section class="screen nonav" id="scr-room">
-    <div class="room-bg" id="roomBg"></div>
+    <div class="room-bg" id="roomBg" style="background-image:url('aaa.png')"></div>
     <div class="room-ui">
       <div class="hd">
         <button class="icon-btn" onclick="askLeave()" style="font-size:13px;width:auto;padding:0 16px;border-radius:99px">🚪 退出</button>
@@ -602,15 +623,12 @@ button.pcard{cursor:pointer}
       </div>
 
       <div class="timer-wrap">
-        <div class="pomo-ring" id="pomoRing"></div>
+        <svg class="pomo-svg" id="pomoSvg"><rect id="pomoRect" fill="none" stroke-width="5" stroke-linecap="round"/></svg>
         <div class="timer-circle">
           <div class="tc-label">今日の作業時間<span class="tc-goal" id="rGoal">目標 2時間</span></div>
           <div class="tc-time" id="elapsed">00:00:00</div>
-          <div class="tc-prog">
-            <span class="pct">⭐ <span id="goalPct">0%</span></span>
-            <div class="pline"><i id="goalLine"></i></div>
-          </div>
           <div class="tc-reward" id="rewardLeft">🎁 次の報酬まで あと25分</div>
+          <div class="tc-rbar"><i id="rewardBar"></i></div>
         </div>
       </div>
 
@@ -620,7 +638,7 @@ button.pcard{cursor:pointer}
       <div style="height:190px"></div>
     </div>
 
-    <div class="tool-stack">
+    <div class="tool-bar">
       <button class="tool-btn" onclick="openSheet('todoSheet')"><div class="te">📝</div><div class="tl">ToDo</div></button>
       <button class="tool-btn" onclick="openSheet('stampSheet')"><div class="te">😊</div><div class="tl">スタンプ</div></button>
       <button class="tool-btn" onclick="openSheet('pomoSheet')"><div class="te">🍅</div><div class="tl">ポモドーロ</div></button>
@@ -631,19 +649,7 @@ button.pcard{cursor:pointer}
       <div class="prog-head">🧸 わたしの進捗<button class="edit" onclick="openDailyGoals(true)">✎ 編集</button></div>
       <div id="myProg"></div>
     </div>
-    <div class="prog-card theirs">
-      <div class="prog-head">🐰 <span id="theirProgName">相手</span>の進捗</div>
-      <div id="theirProg"></div>
-    </div>
 
-    <div class="music-bar" onclick="toast('音楽機能はこれから🎵')">
-      <div class="music-art">🎵</div>
-      <div class="music-info">
-        <div class="music-title">lofi hip hop radio</div>
-        <div class="music-sub">chill beats to relax / study</div>
-      </div>
-      <div class="music-wave"><i></i><i></i><i></i><i></i></div>
-    </div>
   </section>
 
   <!-- ===== 記録 ===== -->
@@ -722,7 +728,7 @@ button.pcard{cursor:pointer}
   <nav id="bnav">
     <button class="bnav-item" data-s="scr-records"><span class="bi">📊</span>記録</button>
     <button class="bnav-item" data-s="scr-friends"><span class="bi">👥</span>フレンド<span class="req-dot" id="navReqDot" style="display:none"></span></button>
-    <button class="bnav-item center" data-s="scr-home"><span class="bi">🏠</span>ホーム</button>
+    <button class="bnav-item center" id="navCenter" data-s="scr-home"><span class="bi" id="navCenterIcon">🏠</span><span id="navCenterLabel">ホーム</span></button>
     <button class="bnav-item" data-s="scr-shop"><span class="bi">🛍️</span>ショップ</button>
     <button class="bnav-item" data-s="scr-mypage"><span class="bi">👤</span>マイページ</button>
   </nav>
@@ -827,6 +833,17 @@ button.pcard{cursor:pointer}
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="finishGallery()">おわる</button>
       <button class="btn btn-gold" onclick="nextGallery()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- 招待が届いた -->
+  <div class="modal center-modal" id="inviteModal" style="display:none">
+    <div class="stub-emoji" style="text-align:center">📞</div>
+    <div class="modal-title" style="margin-top:8px"><span id="invFrom">だれか</span>さんから招待！</div>
+    <div class="modal-desc">いっしょに作業しよう、って</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="declineInvite()">ことわる</button>
+      <button class="btn btn-gold" onclick="acceptInvite()">うける 📞</button>
     </div>
   </div>
 
@@ -954,7 +971,7 @@ let state={
   setupDone:false,
   profile:{name:'ゆめ', style:null, cat:null, detail:null, detail2:null, tags:[], goalMin:120},
   todayMin:0, totalMin:0, streak:1, lastWorkDate:null,
-  coins:0, items:[], history:{},
+  coins:0, items:[], history:{}, catMin:{},
   friends:[], requests:[],
   dailyGoals:[], dailyDate:null,
   roomBg:'aaa',
@@ -1018,6 +1035,18 @@ function go(id){
   const nav=document.getElementById('bnav');
   if(NAV_SCREENS.includes(id)) nav.classList.add('show'); else nav.classList.remove('show');
   document.querySelectorAll('.bnav-item').forEach(b=>b.classList.toggle('on', b.dataset.s===id));
+  const nc=document.getElementById('navCenter');
+  if(nc){
+    if(id==='scr-home'){
+      nc.classList.add('callmode');
+      document.getElementById('navCenterIcon').textContent='📞';
+      document.getElementById('navCenterLabel').textContent='作業を始める';
+    } else {
+      nc.classList.remove('callmode');
+      document.getElementById('navCenterIcon').textContent='🏠';
+      document.getElementById('navCenterLabel').textContent='ホーム';
+    }
+  }
   if(id==='scr-home') renderHome();
   if(id==='scr-records') renderRecords();
   if(id==='scr-shop') renderShop();
@@ -1027,7 +1056,10 @@ function go(id){
   if(id==='scr-roomedit') renderRoomEdit();
   window.scrollTo(0,0);
 }
-document.querySelectorAll('.bnav-item').forEach(b=>b.addEventListener('click',()=>go(b.dataset.s)));
+document.querySelectorAll('.bnav-item').forEach(b=>b.addEventListener('click',()=>{
+  if(b.id==='navCenter' && document.getElementById('scr-home').classList.contains('active')){ startWork(); return; }
+  go(b.dataset.s);
+}));
 
 /* ============================================================ NPC（日替わり固定ロスター） ============================================================ */
 function ensureNpcs(){
@@ -1318,6 +1350,7 @@ function togglePickTag(t){
 function renderHome(){
   const p=state.profile;
   document.getElementById('hName').textContent=p.name;
+  document.getElementById('hGoalMini').textContent=goalLabel();
   document.getElementById('hLv').textContent='Lv.'+(Math.floor(state.totalMin/300)+1);
   document.getElementById('hStreak').textContent=`🔥 ${state.streak}日継続中`;
   document.getElementById('hToday').innerHTML=fmtMin(state.todayMin);
@@ -1437,15 +1470,21 @@ function showProfile(u){
   const btn=document.getElementById('pmInvite'), note=document.getElementById('pmNote');
   if(mapWaiting){ btn.disabled=true; btn.textContent='招待できません'; note.textContent='ランダムマッチ待機中は招待できないよ'; }
   else if(u.isBreak){ btn.disabled=true; btn.textContent='休憩中（招待不可）'; note.textContent='休憩が終わるまで待ってあげてね☕'; }
-  else if(u.isReal){ btn.disabled=true; btn.textContent='招待（Part 3で実装）'; note.textContent='本物のプレイヤーへの招待はもうすぐ！'; }
+  else if(u.isReal){ btn.disabled=false; btn.textContent='📞 作業に招待する'; note.textContent='本物のプレイヤーだよ！返事を待ってね'; }
   else { btn.disabled=false; btn.textContent='作業に招待する'; note.textContent=''; }
   showModal('profileModal');
 }
 function sendInvite(){
   if(!selectedUser||mapWaiting) return;
   closeModal();
-  toast(`${selectedUser.name}さんに招待を送りました…`);
   const u=selectedUser;
+  if(u.isReal){
+    if(!window.fbApi){ toast('オフラインだから招待できないみたい…'); return; }
+    toast(`${u.name}さんに招待を送ったよ。返事を待ってる…📞`);
+    window.fbApi.sendInvite(u);
+    return;
+  }
+  toast(`${u.name}さんに招待を送りました…`);
   setTimeout(()=>{ toast(`${u.name}さんが承諾しました！🎉`); setTimeout(()=>enterRoom(u),800); },1600);
 }
 function startRandom(){
@@ -1539,7 +1578,12 @@ const THRESHOLDS=(()=>{const a=[25];const st=[20,15,10,5];let c=25;st.forEach(s=
 function applyRoomBg(){
   const el=document.getElementById('roomBg');
   const bg=BGS.find(b=>b.id===state.roomBg)||BGS[0];
-  if(bg.img){ el.style.backgroundImage=`url('${bg.img}')`; }
+  if(bg.img){
+    el.style.backgroundImage=`url('${bg.img}')`;
+    const t=new Image();
+    t.onerror=()=>toast('背景画像 '+bg.img+' が見つからないよ。HTMLと同じフォルダに置いてね');
+    t.src=bg.img;
+  }
   else if(bg.grad){ el.style.backgroundImage=bg.grad; }
   else { el.style.backgroundImage='none'; }
 }
@@ -1555,27 +1599,14 @@ function enterRoom(partner){
   document.getElementById('rPGoal').textContent=partner.emoji+' '+pg;
   document.getElementById('rPav').textContent=partner.emoji;
   document.getElementById('rGoal').textContent='目標 '+goalLabel();
-  document.getElementById('theirProgName').textContent=partner.name;
   updateGiftFloat(); updatePomoRing();
   renderTodos(); renderStamps(); updatePomoUI();
-  renderMyProg(); renderTheirProg();
+  renderMyProg();
   go('scr-room');
   clearInterval(elapsedTimer);
   elapsedTimer=setInterval(tickElapsed,1000);
   tickElapsed();
-  // 相手の進捗シミュレーション（リアルタイム共有はPart 3でFirebase化）
   clearInterval(partnerSimTimer);
-  partnerSimTimer=setInterval(()=>{
-    if(!room) return;
-    const g=room.partner.goals && rnd(room.partner.goals.filter(g=>g.done<g.target));
-    if(g && Math.random()<.6){
-      g.done++;
-      const npc=state.npcs.find(n=>n.name===room.partner.name);
-      if(npc){ const ng=npc.goals.find(x=>x.tx===g.tx); if(ng) ng.done=g.done; save(); }
-      renderTheirProg();
-      if(g.done>=g.target) toast(`${room.partner.name}さんが「${g.tx}」を達成！🎉`);
-    }
-  }, 22000);
 }
 function tickElapsed(){
   if(!room) return;
@@ -1584,9 +1615,6 @@ function tickElapsed(){
   const h=Math.floor(total/3600), m=Math.floor(total%3600/60), s=total%60;
   document.getElementById('elapsed').textContent=
     `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  const gp=Math.min(100, Math.round(total/60/state.profile.goalMin*100));
-  document.getElementById('goalPct').textContent=gp+'%';
-  document.getElementById('goalLine').style.width=gp+'%';
   // 報酬（今回セッション分で判定）
   const min=sec/60;
   let prev=0, next=THRESHOLDS[0];
@@ -1594,6 +1622,8 @@ function tickElapsed(){
     if(min<THRESHOLDS[i]){ next=THRESHOLDS[i]; prev=i>0?THRESHOLDS[i-1]:0; break; }
   }
   document.getElementById('rewardLeft').textContent=`🎁 次の報酬まで あと${Math.max(1,Math.ceil(next-min))}分`;
+  const remain=Math.max(0,(next-min)/(next-prev));
+  document.getElementById('rewardBar').style.width=(remain*100)+'%';
   THRESHOLDS.forEach(t=>{
     if(min>=t && !grantedThresholds.includes(t)){
       grantedThresholds.push(t); pendingGifts++;
@@ -1727,13 +1757,21 @@ function updatePomoUI(keepBtn){
   if(!keepBtn) document.getElementById('pomoBtn').textContent=pomoRunning?'一時停止':'スタート';
 }
 function updatePomoRing(){
-  const ring=document.getElementById('pomoRing');
-  if(!pomoActive){ ring.classList.remove('show'); return; }
-  ring.classList.add('show');
+  const svg=document.getElementById('pomoSvg');
+  const rect=document.getElementById('pomoRect');
+  if(!pomoActive){ svg.classList.remove('show'); return; }
+  svg.classList.add('show');
+  const w=svg.clientWidth, h=svg.clientHeight;
+  const sw=5, rx=30;
+  rect.setAttribute('x',sw/2); rect.setAttribute('y',sw/2);
+  rect.setAttribute('width',w-sw); rect.setAttribute('height',h-sw);
+  rect.setAttribute('rx',rx);
+  const P=2*((w-sw)+(h-sw)) - 8*rx + 2*Math.PI*rx;
   const total=pomoPhase==='work'?25*60:5*60;
-  const used=(1-pomoSec/total)*100;
-  const color=pomoPhase==='work'?'#EDA9AE':'#9CBF9C';
-  ring.style.background=`conic-gradient(from 0deg, transparent 0% ${used}%, ${color} ${used}% 100%)`;
+  const used=1-pomoSec/total;
+  rect.setAttribute('stroke', pomoPhase==='work'?'#EDA9AE':'#9CBF9C');
+  rect.setAttribute('stroke-dasharray', P);
+  rect.setAttribute('stroke-dashoffset', P*used);
 }
 /* ToDo */
 function addTodo(){
@@ -1768,6 +1806,7 @@ function sendStamp(i){
   closeModal();
   playPop(2);
   floatStamp(STAMPS[i],0.3);
+  if(room && room.partner.isReal && window.fbApi) window.fbApi.sendRoomStamp(STAMPS[i].e, STAMPS[i].l);
   // NPCは無反応勢：返さない
 }
 function floatStamp(s,xRatio){
@@ -1820,6 +1859,7 @@ function openAllGifts(){
   const list=document.getElementById('giftBatchList');
   list.style.display='flex'; list.innerHTML='';
   const n=pendingGifts;
+  let delay=0, gap=320;
   for(let i=0;i<n;i++){
     setTimeout(()=>{
       const r=rollReward(); applyReward(r);
@@ -1828,9 +1868,11 @@ function openAllGifts(){
       row.className='reward-row';
       row.innerHTML=`<span class="re">${r.e}</span>${r.n}`;
       list.appendChild(row);
+      list.scrollTop=list.scrollHeight;
       pendingGifts--; updateGiftFloat();
       if(i===n-1) document.getElementById('giftActions').style.display='flex';
-    }, i*200);
+    }, delay);
+    delay+=gap; gap=Math.max(60, gap*0.76); // どんどん加速！
   }
 }
 function afterGift(){
@@ -1857,6 +1899,11 @@ function leaveFlow(){
   state.todayMin+=min; state.totalMin+=min;
   const today=todayStr();
   state.history[today]=(state.history[today]||0)+min;
+  if(min>0){
+    const cl=state.profile.detail||(state.profile.cat?CATS[state.profile.cat].name:'その他');
+    if(!state.catMin) state.catMin={};
+    state.catMin[cl]=(state.catMin[cl]||0)+min;
+  }
   if(state.lastWorkDate && state.lastWorkDate!==today){
     const y=new Date(); y.setDate(y.getDate()-1);
     state.streak=(state.lastWorkDate===y.toDateString())?state.streak+1:1;
@@ -1866,6 +1913,7 @@ function leaveFlow(){
   leaveResults=[];
   for(let i=0;i<boxes;i++){ const r=rollReward(); applyReward(r); leaveResults.push(r); }
   pendingGifts=0; save();
+  if(room && room.partner.isReal && window.fbApi) window.fbApi.leaveRoomSync();
   clearInterval(elapsedTimer); clearInterval(pomoTimer); clearInterval(partnerSimTimer);
   pomoRunning=false; pomoActive=false;
   leaveResults.forEach((r,i)=>setTimeout(()=>playGiftOpen(i), i*180));
@@ -1981,9 +2029,36 @@ function renderRecords(){
       days.push({label:(d.getMonth()+1)+'/'+d.getDate(), min});
       if(min>max) max=min;
     }
+    const CCOLORS=['#C9A87C','#A8C2A0','#7FB5A3','#B8C4D6','#D9A8A8','#C9B0D6'];
+    const entries=Object.entries(state.catMin||{}).sort((a,b)=>b[1]-a[1]);
+    const top=entries.slice(0,5);
+    const restSum=entries.slice(5).reduce((a,[,v])=>a+v,0);
+    if(restSum>0) top.push(['その他',restSum]);
+    const ctotal=top.reduce((a,[,v])=>a+v,0);
+    let acc=0;
+    const stops=top.map(([n,v],i)=>{
+      const from=acc/ctotal*100; acc+=v; const to=acc/ctotal*100;
+      return `${CCOLORS[i%CCOLORS.length]} ${from}% ${to}%`;
+    }).join(', ');
+    const legend=top.map(([n,v],i)=>{
+      const pct=Math.round(v/ctotal*100);
+      return `<div class="cat-row"><span class="cdot" style="background:${CCOLORS[i%CCOLORS.length]}"></span>
+        <span class="cname">${n}</span><span class="ctime">${fmtMinPlain(v)}</span><span class="cpct">${pct}%</span></div>`;
+    }).join('');
+    const donutHtml = ctotal>0 ? `
+      <div style="font-weight:700;font-size:14px;margin:20px 0 6px">カテゴリ別</div>
+      <div class="cat-wrap">
+        <div class="donut" style="background:conic-gradient(${stops})">
+          <div class="hole">合計<b>${fmtMinPlain(ctotal)}</b></div>
+        </div>
+        <div class="cat-legend">${legend}</div>
+      </div>` : `
+      <div style="font-weight:700;font-size:14px;margin:20px 0 6px">カテゴリ別</div>
+      <div style="font-size:12px;color:var(--ink3);padding:6px 0">作業するとここに内訳が出るよ🌱</div>`;
     body.innerHTML=`<div style="font-weight:700;font-size:14px;margin-bottom:12px">📊 直近14日の作業時間</div>
       <div class="graph">${days.map(d=>`
-        <div class="gbar"><i style="height:${Math.max(2,d.min/max*100)}%"></i><span>${d.label}</span></div>`).join('')}</div>`;
+        <div class="gbar"><i style="height:${Math.max(2,d.min/max*100)}%"></i><span>${d.label}</span></div>`).join('')}</div>
+      ${donutHtml}`;
   } else {
     const now=new Date();
     const y=now.getFullYear(), m=now.getMonth();
@@ -2050,6 +2125,70 @@ function pickBg(id,owned){
 }
 
 /* ============================================================ Firebase ============================================================ */
+/* --- リアルプレイヤー連携の窓口 --- */
+let pendingInvite=null;
+window.onIncomingInvite=function(v){
+  pendingInvite=v;
+  document.getElementById('invFrom').textContent=v.fromName||'だれか';
+  playChime();
+  showModal('inviteModal');
+};
+function acceptInvite(){
+  if(!pendingInvite) return;
+  const v=pendingInvite; pendingInvite=null;
+  closeModal();
+  if(window.fbApi) window.fbApi.respondInvite(true);
+  const pr=v.profile||{};
+  const partner={ id:v.from, name:v.fromName||'プレイヤー', cat:pr.cat||'study',
+    detail:pr.detail||null, detail2:pr.detail2||null, style:pr.style||'cowork',
+    tags:(pr.tags||[]), streak:pr.streak||1, todayMin:pr.todayMin||0,
+    isBreak:false, emoji:pr.emoji||'🙂', border:'#C9A87C', isReal:true, goals:[] };
+  enterRoom(partner);
+  if(window.fbApi) window.fbApi.joinRoomSync(v.roomId, v.from);
+}
+function declineInvite(){
+  if(pendingInvite && window.fbApi) window.fbApi.respondInvite(false);
+  pendingInvite=null; closeModal();
+}
+window.onInviteAnswered=function(ok, target, roomId){
+  if(ok){
+    toast(`${target.name}さんが承諾したよ！🎉`);
+    setTimeout(()=>{ enterRoom(target); if(window.fbApi) window.fbApi.joinRoomSync(roomId, target.id); },600);
+  } else {
+    toast('返事がなかったみたい…またさそってみよう');
+  }
+};
+window.onPartnerStamp=function(v){ floatStamp({e:v.e,l:v.l||''},0.72); playPop(4); };
+window.onPartnerGone=function(){ if(room && room.partner.isReal){ showModal('dcModal'); } };
+window.onMapStamp=function(v){
+  const u=mapUsers.find(x=>x.id===v.uid);
+  if(u && u.el){
+    const r=u.el.getBoundingClientRect();
+    const d=document.createElement('div');
+    d.className='float-stamp';
+    d.style.left=(r.left+r.width/2-22)+'px';
+    d.style.top=(r.top-10)+'px';
+    d.innerHTML=`<div class="fe" style="font-size:30px">${v.e}</div>`;
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),2300);
+  } else {
+    toast(`${v.name||'だれか'}さん ${v.e}`);
+  }
+};
+function mapStamp(e){
+  playPop(1);
+  const area=document.getElementById('mapArea');
+  const r=area.getBoundingClientRect();
+  const d=document.createElement('div');
+  d.className='float-stamp';
+  d.style.left=(r.left+r.width/2-22)+'px';
+  d.style.top=(r.top+r.height/2-40)+'px';
+  d.innerHTML=`<div class="fe">${e}</div>`;
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),2300);
+  if(window.fbApi) window.fbApi.sendMapStamp(e);
+}
+
 window.fbApi=null;
 function fbSaveProfile(){ if(window.fbApi) window.fbApi.saveProfile(); }
 function fbSendMove(){ /* リアルタイム位置共有はPart 3 */ }
@@ -2099,6 +2238,7 @@ load();
   save();
 })();
 ensureNpcs();
+applyRoomBg();
 go('scr-home');
 if(needDailyGoals()){ setTimeout(()=>openDailyGoals(false), 400); }
 </script>
@@ -2110,6 +2250,8 @@ try{
   const { getAuth, signInAnonymously, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
   const { getFirestore, doc, setDoc, getDocs, collection, query, where, limit, serverTimestamp, updateDoc } =
     await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js');
+  const { getDatabase, ref, set, onValue, remove, onDisconnect, update } =
+    await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js');
 
   const firebaseConfig = {
     apiKey: "AIzaSyBmgtx4FW_3_0zy1MvAvZLPHmE_CE1txuE",
@@ -2123,6 +2265,7 @@ try{
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+  const rtdb = getDatabase(app);
   let uid = null;
 
   async function saveProfile(){
@@ -2154,15 +2297,97 @@ try{
     try{ await updateDoc(doc(db,'users',uid), {isOnline:false}); }catch(e){}
   }
 
+  /* ===== RTDB：招待・部屋同期・マップスタンプ ===== */
+  let inviteUnsub=null, inviteTimeout=null;
+  let roomRefPath=null, partnerUnsub=null, stampUnsub=null, joinT=0, joinedOnce=false;
+
+  function myProfileSnapshot(){
+    const p=state.profile;
+    return {cat:p.cat||'study', detail:p.detail||null, detail2:p.detail2||null, style:p.style||'cowork',
+      tags:p.tags||[], streak:state.streak, todayMin:state.todayMin, emoji:'🧸'};
+  }
+  async function sendInvite(target){
+    const roomId = uid<target.id ? uid+'_'+target.id : target.id+'_'+uid;
+    try{
+      await set(ref(rtdb,'invites/'+target.id), {
+        from:uid, fromName:state.profile.name, profile:myProfileSnapshot(),
+        roomId, status:'pending', t:Date.now()
+      });
+    }catch(e){ window.onInviteAnswered(false, target, roomId); return; }
+    if(inviteUnsub) inviteUnsub();
+    inviteUnsub=onValue(ref(rtdb,'invites/'+target.id+'/status'), snap=>{
+      const s=snap.val();
+      if(s==='accepted' || s==='declined'){
+        clearTimeout(inviteTimeout);
+        if(inviteUnsub){ inviteUnsub(); inviteUnsub=null; }
+        remove(ref(rtdb,'invites/'+target.id)).catch(()=>{});
+        window.onInviteAnswered(s==='accepted', target, roomId);
+      }
+    });
+    inviteTimeout=setTimeout(()=>{
+      if(inviteUnsub){ inviteUnsub(); inviteUnsub=null; }
+      remove(ref(rtdb,'invites/'+target.id)).catch(()=>{});
+      window.onInviteAnswered(false, target, roomId);
+    }, 30000);
+  }
+  function respondInvite(accept){
+    update(ref(rtdb,'invites/'+uid), {status: accept?'accepted':'declined'}).catch(()=>{});
+  }
+  function joinRoomSync(roomId, partnerUid){
+    roomRefPath='rooms/'+roomId;
+    joinT=Date.now(); joinedOnce=false;
+    const meRef=ref(rtdb, roomRefPath+'/p/'+uid);
+    set(meRef,{name:state.profile.name, t:joinT}).catch(()=>{});
+    onDisconnect(meRef).remove();
+    partnerUnsub=onValue(ref(rtdb, roomRefPath+'/p/'+partnerUid), snap=>{
+      if(snap.exists()) joinedOnce=true;
+      else if(joinedOnce) window.onPartnerGone();
+    });
+    stampUnsub=onValue(ref(rtdb, roomRefPath+'/stamp'), snap=>{
+      const v=snap.val();
+      if(v && v.from!==uid && v.t>joinT) window.onPartnerStamp(v);
+    });
+  }
+  function sendRoomStamp(e,l){
+    if(!roomRefPath) return;
+    set(ref(rtdb, roomRefPath+'/stamp'), {from:uid, e, l, t:Date.now()}).catch(()=>{});
+  }
+  function leaveRoomSync(){
+    if(partnerUnsub){ partnerUnsub(); partnerUnsub=null; }
+    if(stampUnsub){ stampUnsub(); stampUnsub=null; }
+    if(roomRefPath){ remove(ref(rtdb, roomRefPath+'/p/'+uid)).catch(()=>{}); roomRefPath=null; }
+  }
+  const mapSeen={};
+  function sendMapStamp(e){
+    set(ref(rtdb,'mapStamps/'+uid), {uid, name:state.profile.name, e, t:Date.now()}).catch(()=>{});
+  }
+
   onAuthStateChanged(auth, user=>{
     if(user){
       uid = user.uid;
-      window.fbApi = { saveProfile, getOnline, setOffline };
+      window.fbApi = { saveProfile, getOnline, setOffline,
+        sendInvite, respondInvite, joinRoomSync, sendRoomStamp, leaveRoomSync, sendMapStamp };
       saveProfile();
+      // 招待の受信（どの画面でも届く）
+      onValue(ref(rtdb,'invites/'+uid), snap=>{
+        const v=snap.val();
+        if(v && v.status==='pending' && Date.now()-v.t<60000) window.onIncomingInvite(v);
+      });
+      // マップスタンプの受信
+      onValue(ref(rtdb,'mapStamps'), snap=>{
+        const all=snap.val()||{};
+        Object.values(all).forEach(v=>{
+          if(!v || v.uid===uid) return;
+          if(Date.now()-v.t>10000) return;
+          if(mapSeen[v.uid]>=v.t) return;
+          mapSeen[v.uid]=v.t;
+          if(document.getElementById('scr-map').classList.contains('active')) window.onMapStamp(v);
+        });
+      });
     }
   });
   signInAnonymously(auth).catch(e=>console.log('auth skip', e.message));
-  window.addEventListener('beforeunload', setOffline);
+  window.addEventListener('beforeunload', ()=>{ setOffline(); leaveRoomSync(); });
 }catch(e){
   console.log('Firebase未接続（オフラインモードで動作）', e.message);
 }
