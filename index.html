@@ -1013,7 +1013,8 @@ let state={
   signedIn:false, signedProvider:null,
 };
 function save(){ localStorage.setItem('tonari_v2', JSON.stringify(state)); }
-function load(){ try{ const s=localStorage.getItem('tonari_v2'); if(s) state=Object.assign(state, JSON.parse(s)); }catch(e){} }
+function load(){ try{ const s=localStorage.getItem('tonari_v2'); if(s) state=Object.assign(state, JSON.parse(s)); }catch(e){} window.state=state; }
+window.state=state;
 
 /* ============================================================ 音 ============================================================ */
 let actx=null;
@@ -1205,6 +1206,7 @@ function loginGoogle(){
     toast('Googleログイン準備中…ゲストでも始められるよ');
   }
 }
+function startWork(){
   if(!state.setupDone){ openWizard(); return; }
   openMap();
 }
@@ -2387,12 +2389,13 @@ try{
 
   async function saveProfile(){
     if(!uid) return;
-    const p = state.profile;
+    const st=window.state; if(!st) return;
+    const p = st.profile;
     try{
       await setDoc(doc(db,'users',uid), {
         name:p.name, style:p.style, cat:p.cat, detail:p.detail||null, detail2:p.detail2||null,
         tags:p.tags, goalMin:p.goalMin,
-        todayMin:state.todayMin, streak:state.streak,
+        todayMin:st.todayMin, streak:st.streak,
         isOnline:true, platform:'web', lastUpdated:serverTimestamp(),
       },{merge:true});
     }catch(e){ console.log('profile sync skip', e.message); }
