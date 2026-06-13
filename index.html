@@ -123,8 +123,13 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .home-name{display:flex; align-items:center}
 .goal-mini{margin-left:8px; background:var(--gold-soft); border:none; border-radius:99px;
   padding:3px 10px; font-size:11px; font-weight:700; color:var(--gold2); font-family:inherit; cursor:pointer}
-.home-actions{display:flex; flex-direction:column; gap:8px}
-.home-actions .icon-btn{width:40px; height:40px; font-size:16px; position:relative}
+.home-actions{display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:flex-end; margin-top:10px}
+.home-actions .icon-btn{width:42px; height:42px; font-size:17px; position:relative}
+.home-greet{font-size:13px; color:var(--ink2); font-weight:700; margin:14px 2px 0}
+.daily-pill{display:flex; align-items:center; justify-content:space-between; gap:8px;
+  width:62%; min-width:210px; margin-top:10px; background:var(--card); border:none;
+  border-radius:14px; box-shadow:var(--sh); padding:11px 14px; font-family:inherit;
+  font-size:12.5px; font-weight:700; color:var(--ink2); cursor:pointer}
 .home-top-row{display:flex; align-items:stretch; gap:10px; margin-top:16px}
 .home-top-row .home-top{flex:1; margin-top:0}
 .streak-badge{margin-left:auto; background:#FBEFD9; border-radius:999px; padding:6px 12px;
@@ -549,32 +554,22 @@ button.pcard{cursor:pointer}
           </div>
           <div class="streak-badge" id="hStreak">🔥 1日継続中</div>
         </div>
-        <div class="home-actions">
-          <button class="icon-btn" onclick="go('scr-friends')">👥<span class="req-dot" id="navReqDotHome" style="display:none"></span></button>
-          <button class="icon-btn" onclick="openGoal()">🎯</button>
-          <button class="icon-btn" onclick="toast('通知はまだありません')">🔔</button>
-        </div>
       </div>
+      <div class="home-actions">
+        <button class="icon-btn" onclick="go('scr-friends')">👥<span class="req-dot" id="navReqDotHome" style="display:none"></span></button>
+        <button class="icon-btn" onclick="openGoal()">🎯</button>
+        <button class="icon-btn" onclick="toast('通知はまだありません')">🔔</button>
+      </div>
+      <div class="home-greet" id="hGreet">こんにちは</div>
       <div class="card today-card">
         <div class="today-label">⏱ 今日の記録</div>
         <div class="today-time" id="hToday">0<small>分</small></div>
         <div class="bar"><i id="hBar" style="width:0%"></i></div>
         <div class="today-goal"><span id="hGoal">目標：2時間</span></div>
       </div>
+      <button class="daily-pill" onclick="openDailyGoals(true)"><span id="hDaily">🌱 今日の目標を立てよう</span><span style="color:var(--gold2)">›</span></button>
     </div>
-    <div class="home-bottom">
-      <div class="menu3">
-        <button class="m-card" onclick="go('scr-skin')">
-          <div class="m-emoji">🧥</div><div class="m-name">スキン</div><div class="m-desc">アバター・<br>お部屋</div>
-        </button>
-        <button class="m-card" onclick="openGoal()">
-          <div class="m-emoji">🎯</div><div class="m-name">目標設定</div><div class="m-desc">目標を<br>編集しよう</div>
-        </button>
-        <button class="m-card" onclick="go('scr-shop')">
-          <div class="m-emoji">🛍️</div><div class="m-name">ショップ</div><div class="m-desc">アイテムを<br>手に入れよう</div>
-        </button>
-      </div>
-    </div>
+    <div class="home-bottom"></div>
   </section>
 
   <!-- ===== 目標編集 ===== -->
@@ -743,6 +738,11 @@ button.pcard{cursor:pointer}
       <div class="card" style="margin-top:14px">
         <div style="font-weight:700;font-size:14px">🎒 もっているアイテム</div>
         <div class="item-list" id="mpItems"><span style="font-size:12px;color:var(--ink3)">まだありません</span></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div style="font-weight:700;font-size:14px;margin-bottom:4px">アカウント</div>
+        <div style="font-size:11.5px;color:var(--ink2);margin-bottom:12px" id="mpAccount">ゲストでログイン中</div>
+        <div id="mpAuthBtns"></div>
       </div>
     </div>
   </section>
@@ -1035,6 +1035,10 @@ function playGiftOpen(i=0){ tone(520*Math.pow(1.122,i%8), 0, .2, .13); tone(780*
 
 /* ============================================================ ユーティリティ ============================================================ */
 function rnd(a){ return a[Math.floor(Math.random()*a.length)]; }
+/* 安全DOMヘルパー：IDが無くても落ちない */
+function setText(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
+function setHTML(id,v){ const e=document.getElementById(id); if(e) e.innerHTML=v; }
+function setWidth(id,v){ const e=document.getElementById(id); if(e) e.style.width=v; }
 let toastT=null;
 function toast(msg){
   const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
@@ -1404,13 +1408,21 @@ function togglePickTag(t){
 /* ============================================================ ホーム ============================================================ */
 function renderHome(){
   const p=state.profile;
-  document.getElementById('hName').textContent=p.name;
-  document.getElementById('hLv').textContent='Lv.'+(Math.floor(state.totalMin/300)+1);
-  document.getElementById('hStreak').textContent=`🔥 ${state.streak}日継続中`;
-  document.getElementById('hToday').innerHTML=fmtMin(state.todayMin);
+  setText('hName',p.name);
+  setText('hLv','Lv.'+(Math.floor(state.totalMin/300)+1));
+  setText('hStreak',`🔥 ${state.streak}日継続中`);
+  setHTML('hToday',fmtMin(state.todayMin));
   const pct=Math.min(100, Math.round(state.todayMin/p.goalMin*100));
-  document.getElementById('hBar').style.width=pct+'%';
-  document.getElementById('hGoal').textContent=`目標：${goalLabel()}（${pct}%）`;
+  setWidth('hBar',pct+'%');
+  setText('hGoal',`目標：${goalLabel()}（${pct}%）`);
+  // 時間帯のあいさつ
+  const hr=new Date().getHours();
+  const greet = hr<5?'おそくまでおつかれさま':hr<11?'おはよう':hr<17?'こんにちは':hr<22?'こんばんは':'おつかれさま';
+  setText('hGreet',`${greet}、${p.name}さん`);
+  // 今日の目標の達成ぐあい
+  const dg=state.dailyGoals||[];
+  const doneCnt=dg.filter(g=>g.done>=g.target).length;
+  setText('hDaily', dg.length?`🌱 今日の目標 ${doneCnt}/${dg.length} 達成`:'🌱 今日の目標を立てよう');
   updateReqDots();
 }
 
@@ -1646,17 +1658,16 @@ function enterRoom(partner){
   pendingGifts=0; grantedThresholds=[];
   pomoSec=25*60; pomoRunning=false; pomoPhase='work'; pomoActive=false;
   applyRoomBg();
-  document.getElementById('rMyName').textContent=state.profile.name;
-  document.getElementById('rMyGoal').textContent='📖 '+profileCatLabel();
-  document.getElementById('rMyGoalChip').textContent=goalLabel().replace('時間','h').replace('分','m');
-  document.getElementById('rPName').textContent=partner.name;
+  setText('rMyName',state.profile.name);
+  setText('rMyGoal','📖 '+profileCatLabel());
+  setText('rMyGoalChip',goalLabel().replace('時間','h').replace('分','m'));
+  setText('rPName',partner.name);
   let pg=partner.detail||CATS[partner.cat].name; if(partner.detail2) pg+='・'+partner.detail2;
-  document.getElementById('rPGoal').textContent=partner.emoji+' '+pg;
-  document.getElementById('rPGoalChip').textContent=
-    GOALS.find(g=>g.m===(partner.goalMin||120))?GOALS.find(g=>g.m===(partner.goalMin||120)).t.replace('時間','h').replace('分','m'):'2h';
-  document.getElementById('rPav').textContent=partner.emoji;
-  document.getElementById('rGoal').textContent='目標 '+goalLabel();
-  document.getElementById('theirProgName').textContent=partner.name;
+  setText('rPGoal',partner.emoji+' '+pg);
+  const pgm=GOALS.find(g=>g.m===(partner.goalMin||120));
+  setText('rPGoalChip', pgm?pgm.t.replace('時間','h').replace('分','m'):'2h');
+  setText('rPav',partner.emoji);
+  setText('theirProgName',partner.name);
   updateGiftFloat(); updatePomoRing();
   renderTodos(); renderStamps(); updatePomoUI();
   renderMyProg(); renderTheirProg();
@@ -2182,13 +2193,40 @@ function buyItem(i){
   renderShop(); toast(`${it.n} を手に入れた！🎉`);
 }
 function renderMyPage(){
-  document.getElementById('mpName').textContent=state.profile.name;
-  document.getElementById('mpTags').textContent=state.profile.tags.join('　')||'タグ未設定';
-  document.getElementById('mpTotal').textContent=fmtMinPlain(state.totalMin);
-  document.getElementById('mpStreak').textContent=state.streak+'日';
-  document.getElementById('mpCoins').textContent=state.coins;
+  setText('mpName',state.profile.name);
+  setText('mpTags',state.profile.tags.join('　')||'タグ未設定');
+  setText('mpTotal',fmtMinPlain(state.totalMin));
+  setText('mpStreak',state.streak+'日');
+  setText('mpCoins',state.coins);
   const el=document.getElementById('mpItems');
-  if(state.items.length) el.innerHTML=state.items.map(n=>`<span class="tag gold">${n}</span>`).join('');
+  if(el && state.items.length) el.innerHTML=state.items.map(n=>`<span class="tag gold">${n}</span>`).join('');
+  // アカウント
+  const isGoogle=state.signedProvider==='google';
+  setText('mpAccount', isGoogle?'🅖 Googleでログイン中（記録は安全に保存）':'👤 ゲストでログイン中（端末を変えると消えちゃう）');
+  const btns=document.getElementById('mpAuthBtns');
+  if(btns){
+    if(isGoogle){
+      btns.innerHTML=`<button class="btn btn-ghost" onclick="doLogout()" style="width:100%;padding:13px;font-size:14px">ログアウト</button>`;
+    } else {
+      btns.innerHTML=`<button class="btn btn-gold" onclick="upgradeGoogle()" style="width:100%;padding:13px;font-size:14px">🅖 Googleでログインして記録を保存</button>`;
+    }
+  }
+}
+function doLogout(){
+  document.getElementById('cfTitle').textContent='ログアウトしますか？';
+  document.getElementById('cfDesc').textContent='またGoogleでログインすれば記録は戻ります';
+  document.getElementById('cfYes').onclick=()=>{
+    closeModal();
+    if(window.fbLogout) window.fbLogout();
+    state.signedIn=false; state.signedProvider=null; save();
+    go('scr-login');
+    document.getElementById('bnav').classList.remove('show');
+  };
+  showModal('confirmModal');
+}
+function upgradeGoogle(){
+  if(window.fbGoogleSignIn){ window.fbGoogleSignIn(); }
+  else toast('Googleログインの準備中…');
 }
 let skMode='av';
 function skTab(m){
@@ -2365,7 +2403,7 @@ if(!state.signedIn){
 <script type="module">
 try{
   const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js');
-  const { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
+  const { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
   const { getFirestore, doc, setDoc, getDocs, collection, query, where, limit, serverTimestamp, updateDoc } =
     await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js');
   const { getDatabase, ref, set, onValue, remove, onDisconnect, update } =
@@ -2480,6 +2518,10 @@ try{
   function sendMapStamp(e){
     set(ref(rtdb,'mapStamps/'+uid), {uid, name:state.profile.name, e, t:Date.now()}).catch(()=>{});
   }
+
+  window.fbLogout=async function(){
+    try{ await setOffline(); await signOut(auth); await signInAnonymously(auth); }catch(e){ console.log('logout skip',e.message); }
+  };
 
   window.fbGoogleSignIn=async function(){
     try{
