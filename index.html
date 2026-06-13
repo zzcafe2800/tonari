@@ -178,53 +178,16 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .grow .gv{font-size:14px; font-weight:700; margin-top:1px}
 .grow .ar{margin-left:auto; color:var(--ink3)}
 
-/* ---------- マップ ---------- */
-#scr-map{display:none; flex-direction:column}
-#scr-map.active{display:flex}
-.goal-card{margin:4px 18px 0; display:flex; align-items:center; gap:12px; padding:13px 16px}
-.goal-info{flex:1; min-width:0}
-.goal-line1{font-size:14px; font-weight:700}
-.goal-line2{font-size:12.5px; color:var(--ink2); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-.goal-change{background:var(--gold-soft); color:var(--gold2); border:none; border-radius:999px;
-  padding:8px 16px; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; flex-shrink:0}
-#mapArea{flex:1; position:relative; min-height:440px; margin:6px 0; cursor:pointer; overflow:hidden;
-  background:radial-gradient(circle at 50% 40%, #F2EBDD 0%, #EDE4D2 100%)}
-.muser{position:absolute; left:50%; top:50%; width:60px; display:flex; flex-direction:column;
-  align-items:center; transition:transform .55s cubic-bezier(.3,1.1,.4,1); cursor:pointer; will-change:transform}
-.mav{width:46px; height:46px; border-radius:50%; background:var(--card); box-shadow:var(--sh);
-  display:flex; align-items:center; justify-content:center; font-size:21px;
-  border:2.5px solid var(--bd,#D9CBB5); position:relative}
-.mav .stat{position:absolute; right:-2px; bottom:-2px; width:12px; height:12px; border-radius:50%;
-  border:2.5px solid var(--card); background:var(--green)}
-.mav .stat.brk{background:#D4BC93}
-.mname{margin-top:3px; font-size:10px; font-weight:700; color:var(--ink2);
-  background:rgba(255,253,249,.92); padding:1px 8px; border-radius:99px; opacity:0;
-  transition:opacity .3s; white-space:nowrap}
-.muser.near .mname{opacity:1}
-.muser.me{z-index:10; transition:none}
-.muser.real .mav{box-shadow:0 0 0 2px rgba(201,168,124,.35), var(--sh)}
-.muser.on-home .mav{border-color:#E08A8A !important; box-shadow:0 0 0 3px rgba(224,138,138,.4), var(--sh)}
-.muser.in-room .mav{opacity:.5}
-.sub-av{position:absolute; right:-6px; top:-6px; width:20px; height:20px; border-radius:50%;
-  background:var(--card); border:2px solid #fff; box-shadow:var(--sh); font-size:11px;
-  display:none; align-items:center; justify-content:center; line-height:1}
-.muser.me .mav{width:52px; height:52px; font-size:24px; border-color:#D9A85C; background:#FDF6E8}
-.muser.me.hop .mav{animation:hop .35s ease}
-@keyframes hop{0%{transform:scale(1)} 40%{transform:scale(1.12) translateY(-4px)} 100%{transform:scale(1)}}
-.me-tip{position:absolute; top:-25px; left:50%; transform:translateX(-50%); background:#5C5247;
-  color:#fff; font-size:10px; font-weight:700; padding:3px 10px; border-radius:99px; white-space:nowrap}
-.me-tip:after{content:''; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);
-  border:5px solid transparent; border-top-color:#5C5247; border-bottom:0}
-.map-bottom{padding:0 18px 18px}
-.rand-btn{width:100%; padding:16px; font-size:16px; position:relative; overflow:hidden}
-.rand-btn .wait-bar{position:absolute; left:0; top:0; bottom:0; width:0%;
-  background:rgba(255,255,255,.25); transition:width 1s linear}
-.rand-cancel{text-align:center; font-size:12.5px; color:var(--ink3); margin-top:8px; cursor:pointer; display:none}
-.rand-cancel.show{display:block}
-.map-stamps{position:absolute; right:12px; bottom:12px; display:flex; flex-direction:column; gap:8px; z-index:5}
-.map-stamps button{width:46px; height:46px; border-radius:50%; border:none; background:rgba(255,253,249,.95);
-  box-shadow:var(--sh); font-size:20px; cursor:pointer; font-family:inherit; transition:transform .1s}
-.map-stamps button:active{transform:scale(.85)}
+/* ---------- 待機モーダル ---------- */
+.wait-spinner{font-size:54px; text-align:center; margin:8px 0 4px; animation:wobble 1.6s ease infinite}
+.wait-count{text-align:center; font-size:15px; font-weight:700; color:var(--gold2); margin-top:8px}
+.wait-card{display:flex; align-items:center; gap:14px; background:var(--card2); border-radius:18px;
+  padding:14px; margin:16px 0 4px; text-align:left}
+.wait-card .wc-av{width:54px; height:54px; border-radius:50%; flex-shrink:0; display:flex;
+  align-items:center; justify-content:center; font-size:28px; background:linear-gradient(135deg,#EADBC4,#DCC8AA);
+  border:2.5px solid #D9A85C}
+.wait-card .wc-name{font-weight:700; font-size:15px}
+.wait-card .wc-role{font-size:11.5px; color:var(--ink2); margin-top:3px; line-height:1.6}
 
 /* ---------- フレンド ---------- */
 .fr-tabs{display:flex; gap:8px; padding:4px 18px 0}
@@ -594,37 +557,6 @@ button.pcard{cursor:pointer}
     <div class="goal-rows" id="goalRows"></div>
   </section>
 
-  <!-- ===== マップ ===== -->
-  <section class="screen nonav" id="scr-map">
-    <div class="hd">
-      <button class="icon-btn" onclick="go('scr-home')">‹</button>
-      <div class="hd-c"><div class="hd-title">マッチングマップ</div>
-        <div class="hd-sub">クリックした方向に歩けるよ</div></div>
-      <button class="icon-btn" onclick="openGoal()">⚙</button>
-    </div>
-    <div class="card goal-card">
-      <div style="font-size:22px">🎯</div>
-      <div class="goal-info">
-        <div class="goal-line1" id="mapGoalTime">目標 2時間</div>
-        <div class="goal-line2" id="mapGoalCat">未設定</div>
-      </div>
-      <button class="goal-change" onclick="openGoal()">変更</button>
-    </div>
-    <div id="mapArea">
-      <div class="map-stamps">
-        <button onclick="event.stopPropagation();mapStamp('✋')">✋</button>
-        <button onclick="event.stopPropagation();mapStamp('👋')">👋</button>
-      </div>
-    </div>
-    <div class="map-bottom">
-      <button class="btn btn-gold rand-btn" id="randBtn" onclick="startRandom()">
-        <div class="wait-bar" id="waitBar"></div>
-        <span id="randLabel">⤨ ランダムマッチ</span>
-      </button>
-      <div class="rand-cancel" id="randCancel" onclick="cancelRandom()">キャンセル</div>
-    </div>
-  </section>
-
   <!-- ===== フレンド ===== -->
   <section class="screen" id="scr-friends">
     <div class="hd"><div style="width:44px"></div>
@@ -794,25 +726,6 @@ button.pcard{cursor:pointer}
     </div>
   </div>
 
-  <!-- マップ：プロフィール -->
-  <div class="modal" id="profileModal" style="display:none">
-    <div class="pm-head">
-      <div class="pm-av" id="pmAv">📖</div>
-      <div><div class="pm-name" id="pmName">ゆい</div><div class="pm-goal" id="pmGoal">資格勉強</div></div>
-    </div>
-    <div class="pm-stats">
-      <span>🔥 継続 <b id="pmStreak">12日</b></span>
-      <span>🕐 今日 <b id="pmToday">01:24</b></span>
-    </div>
-    <div class="pm-tags" id="pmTags"></div>
-    <div class="pm-top3" id="pmTop3"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">閉じる</button>
-      <button class="btn btn-gold" id="pmInvite" onclick="sendInvite()">作業に招待する</button>
-    </div>
-    <div style="text-align:center;font-size:11.5px;color:var(--ink3);margin-top:10px" id="pmNote"></div>
-  </div>
-
   <!-- 部屋：相手プロフィール -->
   <div class="modal" id="partnerModal" style="display:none">
     <div class="pm-head">
@@ -875,6 +788,17 @@ button.pcard{cursor:pointer}
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="finishGallery()">おわる</button>
       <button class="btn btn-gold" onclick="nextGallery()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- 待機中（マッチング） -->
+  <div class="modal center-modal" id="waitModal" style="display:none">
+    <div class="wait-spinner" id="waitSpin">📞</div>
+    <div class="modal-title" id="waitTitle">仲間をさがしています</div>
+    <div class="wait-count" id="waitCount">待機中（60）</div>
+    <div class="modal-desc" id="waitDesc">あなたにぴったりの相手をさがすね</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cancelWait()" style="flex:1">やめる</button>
     </div>
   </div>
 
@@ -1060,6 +984,7 @@ function showModal(id,lock=false){
   document.getElementById(id).style.display='block';
 }
 function closeModal(){ if(modalLock) return; document.getElementById('modalBg').classList.remove('show'); }
+function closeModalForce(){ modalLock=false; document.getElementById('modalBg').classList.remove('show'); }
 function bgClose(e){ if(e.target.id==='modalBg') closeModal(); }
 function openSheet(id){ showModal(id); }
 function fmtMin(m){ return m>=60? `${Math.floor(m/60)}<small>時間</small>${m%60>0?(m%60)+'<small>分</small>':''}` : `${m}<small>分</small>`; }
@@ -1104,7 +1029,7 @@ function go(id){
   if(id==='scr-roomedit') renderRoomEdit();
   if(id==='scr-skin') renderSkin();
   // プレゼンス（マップ以外で部屋でなければ home 状態として共有。マップ／部屋は各々が設定）
-  if(window.fbSetScreen && id!=='scr-map' && id!=='scr-room' && !room){
+  if(window.fbSetScreen && id!=='scr-room' && !room && !matchWaiting){
     window.fbSetScreen('home');
   }
   window.scrollTo(0,0);
@@ -1226,7 +1151,7 @@ function loginGoogle(){
 }
 function startWork(){
   if(!state.setupDone){ openWizard(); return; }
-  openMap();
+  startWaiting();
 }
 function openWizard(){
   genCounts();
@@ -1298,8 +1223,9 @@ function finishSetup(){
   Object.assign(state.profile,{style:su.style, cat:su.cat, detail:su.detail, detail2:su.detail2, tags:[...su.tags], goalMin:su.goalMin});
   state.setupDone=true; save();
   fbSaveProfile();
-  toast('せってい完了！マップへ🌱');
-  openMap();
+  toast('せってい完了！🌱');
+  go('scr-home');
+  startWaiting();
 }
 document.getElementById('setupBack').addEventListener('click',()=>{
   if(su.step===3 && su.detail && CATS[su.cat].details[su.detail]){ su.detail=null; renderSetup(); return; }
@@ -1441,165 +1367,172 @@ function renderHome(){
 }
 
 /* ============================================================ マップ（なめらか移動） ============================================================ */
-let mapUsers=[], myWorld={x:0,y:0}, mapWaiting=false, waitTimer=null, waitLeft=30, selectedUser=null;
-const STEP=85, WORLD=750;
-let wanderTimer=null;
-let meEl=null;
+/* ============================================================ マッチング（待機式） ============================================================ */
+let mapUsers=[]; // 互換のため残置（ギャラリーがisRealを参照）
+let matchWaiting=false, matchTimer=null, matchSec=0, livePool=[];
 
-function buildMapUsers(){
-  ensureNpcs();
-  mapUsers=state.npcs.map(n=>Object.assign({}, n));
-  const sorted=[...mapUsers].sort((a,b)=>score(b)-score(a));
-  sorted.forEach((u,i)=>{
-    const r=85 + i*92 + Math.random()*55;
-    const ang=(i*137.5 + Math.random()*40)*Math.PI/180;
-    u.x=Math.cos(ang)*r;
-    u.y=Math.sin(ang)*r*0.85;
-  });
+// ゆめ（受付NPC）
+const YUME = {
+  id:'yume_host', name:'ユメ', emoji:'🐈‍⬛', isNPC:true, isYume:true,
+  cat:'other', detail:'まったり', detail2:null, style:'casual',
+  tags:['👀 誰でも歓迎', NPC_TAG], streak:99, todayMin:120, goalMin:120, border:'#5C5247',
+  goals:[{tx:'みんなを見守る', target:99, done:42}, {tx:'コーヒーを淹れる', target:10, done:7}],
+};
+
+// 段階ごとのマッチ条件（経過秒で緩くなる）
+function matchStage(sec){
+  if(sec<10) return {style:'must', timePct:0.2, cat:'must', detail:'near', tag:'prefer'};
+  if(sec<25) return {style:'must', timePct:0.4, cat:'must', detail:'prefer', tag:'ignore'};
+  if(sec<45) return {style:'prefer', timePct:0.8, cat:'near', detail:'ignore', tag:'ignore'};
+  if(sec<60) return {style:'ok', timePct:Infinity, cat:'ignore', detail:'ignore', tag:'ignore'};
+  return {style:'matchonly', timePct:Infinity, cat:'ignore', detail:'ignore', tag:'ignore'};
 }
-function score(u){
+// 近いカテゴリ（ざっくり）
+const CAT_NEAR = { study:['study','other'], work:['work','create','job'], create:['create','work'], job:['job','work'], other:['other','study'] };
+function catNear(a,b){ return a===b || (CAT_NEAR[a]||[]).includes(b); }
+
+// 候補がその段階の条件を満たすか
+function matchesStage(cand, st){
+  const p=state.profile;
+  // 利用スタイル
+  if(st.style==='must' && cand.style!==p.style) return false;
+  if(st.style==='matchonly' && cand.style!==p.style) return false;
+  // 今日やる時間
+  if(st.timePct!==Infinity){
+    const a=cand.goalMin||120, b=p.goalMin||120;
+    if(Math.abs(a-b) > b*st.timePct) return false;
+  }
+  // カテゴリ
+  if(st.cat==='must' && cand.cat!==p.cat) return false;
+  if(st.cat==='near' && !catNear(p.cat, cand.cat)) return false;
+  return true;
+}
+// 相性スコア（高いほど近い）
+function affinity(cand){
   const p=state.profile; let s=0;
-  if(u.style===p.style) s+=5;
-  if(u.cat===p.cat) s+=4;
-  if(u.detail && u.detail===p.detail) s+=3;
-  if(u.detail2 && u.detail2===p.detail2) s+=2;
-  s+=u.tags.filter(t=>p.tags.includes(t)).length;
+  if(cand.style===p.style) s+=5;
+  if(cand.cat===p.cat) s+=4; else if(catNear(p.cat,cand.cat)) s+=1;
+  if(cand.detail && cand.detail===p.detail) s+=3;
+  if(cand.detail2 && cand.detail2===p.detail2) s+=2;
+  const gd=Math.abs((cand.goalMin||120)-(p.goalMin||120));
+  s += Math.max(0, 3 - gd/30);
+  s += (cand.tags||[]).filter(t=>(p.tags||[]).includes(t)).length;
   return s;
 }
-function openMap(){
+
+// 待機開始（ホームの電話ボタンから）
+function startWaiting(){
   if(!state.setupDone){ openWizard(); return; }
-  buildMapUsers();
-  myWorld={x:0,y:0};
-  document.getElementById('mapGoalTime').textContent='目標 '+goalLabel();
-  document.getElementById('mapGoalCat').textContent=profileCatLabel();
-  cancelRandom(true);
-  go('scr-map');
-  buildMapDom();
-  updateMapPositions(false);
-  if(window.fbSetScreen) window.fbSetScreen('map');
-  if(window.fbSetLoc) window.fbSetLoc(myWorld.x, myWorld.y);
-  syncLivePlayersOnMap();
-  clearInterval(wanderTimer);
-  wanderTimer=setInterval(()=>{
-    if(!document.getElementById('scr-map').classList.contains('active')){ clearInterval(wanderTimer); return; }
-    mapUsers.forEach(u=>{
-      if(u.isNPC && Math.random()<.25){
-        const a=Math.random()*Math.PI*2;
-        u.x=Math.max(-WORLD,Math.min(WORLD, u.x+Math.cos(a)*STEP*.7));
-        u.y=Math.max(-WORLD,Math.min(WORLD, u.y+Math.sin(a)*STEP*.7));
-      }
-    });
-    updateMapPositions(true);
-  }, 9000);
+  if(matchWaiting) return;
+  if(needDailyGoals()){ openDailyGoals(false); return; }
+  matchWaiting=true; matchSec=0;
+  livePool=[]; mapUsers=[]; // 本物プレイヤー候補をためる場所
+  // 自分の状態を「待機中」として共有
+  if(window.fbSetScreen) window.fbSetScreen('waiting');
+  // ゆめの紹介カードを出す
+  document.getElementById('waitSpin').textContent='📞';
+  document.getElementById('waitTitle').textContent='仲間をさがしています';
+  document.getElementById('waitDesc').innerHTML=
+    `<div class="wait-card">
+      <div class="wc-av">${YUME.emoji}</div>
+      <div><div class="wc-name">ユメ（受付）</div>
+      <div class="wc-role">Zzカフェの店長で、元はクロネコ。<br>仲間が見つかるまでわたしが隣にいるね。<br>誰かとマッチしたら、そっとお別れするよ。</div></div>
+    </div>`;
+  setWaitCount();
+  showModal('waitModal', true);
+  clearInterval(matchTimer);
+  matchTimer=setInterval(tickMatch, 1000);
+  tickMatch();
 }
-function buildMapDom(){
-  const area=document.getElementById('mapArea');
-  area.querySelectorAll('.muser').forEach(e=>e.remove());
-  mapUsers.forEach(u=>{
-    const d=document.createElement('div');
-    d.className='muser';
-    d.innerHTML=`<div class="mav" style="--bd:${u.border}">${u.emoji}<div class="stat ${u.isBreak?'brk':''}"></div></div>
-      <div class="mname">${u.name}</div>`;
-    d.addEventListener('click',e=>{ e.stopPropagation(); showProfile(u); });
-    area.appendChild(d);
-    u.el=d;
-  });
-  meEl=document.createElement('div');
-  meEl.className='muser me near';
-  meEl.style.transform='translate(-50%,-50%)';
-  meEl.innerHTML='<div class="mav">🧸<div class="stat"></div><div class="me-tip">あなた</div></div>';
-  area.appendChild(meEl);
+function setWaitCount(){
+  const left=Math.max(0, 60-(matchSec%60));
+  document.getElementById('waitCount').textContent=`待機中（${left}）`;
 }
-function updateMapPositions(smooth){
-  mapUsers.forEach(u=>{
-    if(!u.el) return;
-    const sx=u.x-myWorld.x, sy=u.y-myWorld.y;
-    u.el.style.transition = smooth ? '' : 'none';
-    u.el.style.transform=`translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
-    const dist=Math.hypot(sx,sy);
-    u.el.classList.toggle('near', dist<150);
-    if(!smooth) requestAnimationFrame(()=>{ u.el.style.transition=''; });
-  });
-}
-document.getElementById('mapArea').addEventListener('click',e=>{
-  const area=document.getElementById('mapArea');
-  const rect=area.getBoundingClientRect();
-  const cx=e.clientX-rect.left-rect.width/2;
-  const cy=e.clientY-rect.top-rect.height/2;
-  const len=Math.hypot(cx,cy);
-  if(len<10) return;
-  myWorld.x=Math.max(-WORLD,Math.min(WORLD, myWorld.x+cx/len*STEP));
-  myWorld.y=Math.max(-WORLD,Math.min(WORLD, myWorld.y+cy/len*STEP));
-  if(meEl){ meEl.classList.remove('hop'); void meEl.offsetWidth; meEl.classList.add('hop'); }
-  updateMapPositions(true);
-  fbSendMove();
-});
-function showProfile(u){
-  selectedUser=u;
-  document.getElementById('pmAv').textContent=u.emoji;
-  document.getElementById('pmAv').style.setProperty('--bd',u.border);
-  document.getElementById('pmName').textContent=u.name;
-  let g=u.detail||CATS[u.cat].name; if(u.detail2) g+='・'+u.detail2;
-  document.getElementById('pmGoal').textContent=g;
-  document.getElementById('pmStreak').textContent=u.streak+'日';
-  const h=Math.floor(u.todayMin/60), m=u.todayMin%60;
-  document.getElementById('pmToday').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-  document.getElementById('pmTags').innerHTML=u.tags.map(t=>{
-    const cls=t.includes('本気')?'red':t.includes('初心')?'green':t.includes('無反応')?'gray':'gold';
-    return `<span class="tag ${cls}">${t}</span>`;
-  }).join('');
-  renderTop3('pmTop3', u.name);
-  const btn=document.getElementById('pmInvite'), note=document.getElementById('pmNote');
-  if(mapWaiting){ btn.disabled=true; btn.textContent='招待できません'; note.textContent='ランダムマッチ待機中は招待できないよ'; }
-  else if(u.isBreak){ btn.disabled=true; btn.textContent='休憩中（招待不可）'; note.textContent='休憩が終わるまで待ってあげてね☕'; }
-  else if(u.isReal){ btn.disabled=false; btn.textContent='📞 作業に招待する'; note.textContent='本物のプレイヤーだよ！返事を待ってね'; }
-  else { btn.disabled=false; btn.textContent='作業に招待する'; note.textContent=''; }
-  showModal('profileModal');
-}
-function sendInvite(){
-  if(!selectedUser||mapWaiting) return;
-  closeModal();
-  const u=selectedUser;
-  if(u.isReal){
-    if(!window.fbApi){ toast('オフラインだから招待できないみたい…'); return; }
-    toast(`${u.name}さんに招待を送ったよ。返事を待ってる…📞`);
-    window.fbApi.sendInvite(u);
+function tickMatch(){
+  if(!matchWaiting) return;
+  const st=matchStage(matchSec);
+  setWaitCount();
+  // 本物のプレイヤー候補（live配下の待機中の人）から探す
+  const cands=livePool.filter(u=>u.uid && u.uid!==myUid() && matchesStage(u, st));
+  if(cands.length){
+    cands.sort((a,b)=>affinity(b)-affinity(a));
+    const best=cands[0];
+    matchFound(best, true);
     return;
   }
-  toast(`${u.name}さんに招待を送りました…`);
-  setTimeout(()=>{ toast(`${u.name}さんが承諾しました！🎉`); setTimeout(()=>enterRoom(u),800); },1600);
+  // 60秒経過 → ユメと強制マッチ（ただし待機は継続：内部で0に戻してループ）
+  if(matchSec>=60 && matchSec%60===0){
+    // ユメの部屋へ（マッチング継続中）
+    if(!room){ matchFoundYume(); }
+  }
+  matchSec++;
 }
-function startRandom(){
-  if(mapWaiting) return;
-  mapWaiting=true; waitLeft=30;
-  const btn=document.getElementById('randBtn'), label=document.getElementById('randLabel'), bar=document.getElementById('waitBar');
-  document.getElementById('randCancel').classList.add('show');
-  btn.style.pointerEvents='none';
-  label.textContent=`待機中… ${waitLeft}秒`; bar.style.width='0%';
-  waitTimer=setInterval(()=>{
-    waitLeft--;
-    label.textContent=`待機中… ${waitLeft}秒`;
-    bar.style.width=((30-waitLeft)/30*100)+'%';
-    if(waitLeft<=0){
-      clearInterval(waitTimer);
-      const cands=mapUsers.filter(u=>!u.isBreak&&!u.isReal);
-      if(!cands.length){ cancelRandom(); toast('いまマッチできる人がいないみたい…'); return; }
-      cands.sort((a,b)=>score(b)-score(a));
-      const best=cands[0];
-      toast(`${best.name}さんとマッチしました！✨`);
-      setTimeout(()=>{ cancelRandom(true); enterRoom(best); },800);
-    }
-  },1000);
+function matchFound(partner, isReal){
+  matchWaiting=false; clearInterval(matchTimer);
+  closeModalForce();
+  toast(`${partner.name}さんとマッチしました！✨`);
+  if(isReal && window.fbApi){
+    // 本物：招待を送って即合流（待機者同士なので承諾待ちは簡略化）
+    const roomId = myUid()<partner.uid ? myUid()+'_'+partner.uid : partner.uid+'_'+myUid();
+    partner.id=partner.uid;
+    setTimeout(()=>{
+      enterRoom(partner);
+      if(window.fbApi){ window.fbApi.joinRoomSync(roomId, partner.uid); }
+      if(window.fbSetScreen) window.fbSetScreen('room');
+      if(window.fbSetPartnerEmoji) window.fbSetPartnerEmoji(partner.emoji||'🙂');
+    },700);
+  } else {
+    setTimeout(()=>enterRoom(partner),700);
+  }
 }
-function cancelRandom(silent){
-  mapWaiting=false; clearInterval(waitTimer);
-  document.getElementById('randLabel').textContent='⤨ ランダムマッチ';
-  document.getElementById('waitBar').style.width='0%';
-  document.getElementById('randCancel').classList.remove('show');
-  document.getElementById('randBtn').style.pointerEvents='auto';
-  if(!silent) toast('待機をキャンセルしました');
+function matchFoundYume(){
+  // ユメと作業部屋へ。待機継続中フラグを立てる
+  const yume=Object.assign({}, YUME, {goals:YUME.goals.map(g=>({...g, stamps:{}}))});
+  enterRoom(yume);
+  room.waitingForReal=true; // この部屋では本物が来たら切り替え
+  toast('ユメが隣に来てくれたよ🐈‍⬛（仲間も探し続けるね）');
+  // 待機ループは継続（本物が現れたら乗り換え）
+  matchWaiting=true;
+  if(!matchTimer || true){ clearInterval(matchTimer); matchTimer=setInterval(tickMatchInRoom,1000); }
 }
+// ユメ部屋で待機中：本物が来たら乗り換え
+function tickMatchInRoom(){
+  if(!room || !room.waitingForReal){ clearInterval(matchTimer); return; }
+  matchSec++;
+  const st=matchStage(matchSec%60===0?60:matchSec%60); // ループ
+  const cands=livePool.filter(u=>u.uid && u.uid!==myUid() && matchesStage(u, st));
+  if(cands.length){
+    cands.sort((a,b)=>affinity(b)-affinity(a));
+    const best=cands[0];
+    clearInterval(matchTimer);
+    room.waitingForReal=false;
+    toast(`${best.name}さんが来たよ！ユメとお別れ👋`);
+    // ユメ部屋を出て本物の部屋へ
+    if(window.fbApi && room.partner.isReal) window.fbApi.leaveRoomSync();
+    room=null;
+    setTimeout(()=>matchFound(best, true), 600);
+  }
+}
+function cancelWait(){
+  matchWaiting=false; clearInterval(matchTimer);
+  closeModalForce();
+  if(window.fbSetScreen) window.fbSetScreen('home');
+  toast('待機をやめました');
+}
+function myUid(){ return window.__uid||null; }
 
+// live配下の「待機中」プレイヤーを候補プールに反映（onLivePlayersから呼ばれる）
+function updateLivePool(arr){
+  livePool = (arr||[]).filter(v=>v.screen==='waiting').map(v=>({
+    uid:v.uid, name:v.name||'プレイヤー', emoji:v.emoji||'🙂',
+    cat:v.cat||'study', detail:v.detail||null, detail2:v.detail2||null,
+    style:v.style||'cowork', tags:(v.tags||[]).filter(t=>t!==NPC_TAG),
+    streak:v.streak||1, todayMin:v.todayMin||0, goalMin:v.goalMin||120,
+    isReal:true, goals:[], border:'#C9A87C',
+  }));
+  // ギャラリー用に本物プレイヤーをmapUsersにも反映
+  mapUsers = livePool.slice();
+}
 /* ============================================================ フレンド ============================================================ */
 let frMode='list';
 function frTab(m){
@@ -2037,6 +1970,9 @@ function leaveFlow(){
   leaveResults=[];
   for(let i=0;i<boxes;i++){ const r=rollReward(); applyReward(r); leaveResults.push(r); }
   pendingGifts=0; save();
+  // 待機ループ停止（ユメ部屋の継続待機も含む）
+  matchWaiting=false; clearInterval(matchTimer);
+  if(room) room.waitingForReal=false;
   galLeftPartner = (room && room.partner.isReal) ? room.partner : null;
   if(room && room.partner.isReal && window.fbApi) window.fbApi.leaveRoomSync();
   if(window.fbSetScreen) window.fbSetScreen('home');
@@ -2358,96 +2294,16 @@ window.onPartnerGoals=function(goals){
   room.partner.goals = Array.isArray(goals) ? goals.map(g=>({tx:g.tx, target:g.target, done:g.done||0, stamps:g.stamps||{}})) : [];
   renderTheirProg();
 };
-window.onMapStamp=function(v){
-  const u=mapUsers.find(x=>x.id===v.uid);
-  if(u && u.el){
-    const r=u.el.getBoundingClientRect();
-    const d=document.createElement('div');
-    d.className='float-stamp';
-    d.style.left=(r.left+r.width/2-22)+'px';
-    d.style.top=(r.top-10)+'px';
-    d.innerHTML=`<div class="fe" style="font-size:30px">${v.e}</div>`;
-    document.body.appendChild(d);
-    setTimeout(()=>d.remove(),2300);
-  } else {
-    toast(`${v.name||'だれか'}さん ${v.e}`);
-  }
-};
-function mapStamp(e){
-  playPop(1);
-  const area=document.getElementById('mapArea');
-  const r=area.getBoundingClientRect();
-  const d=document.createElement('div');
-  d.className='float-stamp';
-  d.style.left=(r.left+r.width/2-22)+'px';
-  d.style.top=(r.top+r.height/2-40)+'px';
-  d.innerHTML=`<div class="fe">${e}</div>`;
-  document.body.appendChild(d);
-  setTimeout(()=>d.remove(),2300);
-  if(window.fbApi) window.fbApi.sendMapStamp(e);
-}
+window.onMapStamp=function(v){ /* マップ廃止 */ };
 
-/* 全プレイヤーの生存情報を受信→共有マップへ反映 */
-let livePlayers=[];
+/* 全プレイヤーの生存情報を受信→マッチング候補プールへ */
 window.onLivePlayers=function(arr){
-  livePlayers=arr||[];
-  if(document.getElementById('scr-map').classList.contains('active')) syncLivePlayersOnMap();
+  if(typeof updateLivePool==='function') updateLivePool(arr);
 };
-function liveStateOf(v){
-  // 'home'=赤縁, 'room'=薄く＋相手アイコン, 'map'=通常
-  return v.screen||'map';
-}
 
 window.fbApi=null;
 function fbSaveProfile(){ if(window.fbApi) window.fbApi.saveProfile(); }
-function fbSendMove(){ if(window.fbSetLoc) window.fbSetLoc(myWorld.x, myWorld.y); }
 
-/* 共有マップ：live配下の全プレイヤーをマップ上に同期 */
-function syncLivePlayersOnMap(){
-  const area=document.getElementById('mapArea');
-  if(!area) return;
-  const seen={};
-  livePlayers.forEach(v=>{
-    seen[v.uid]=true;
-    let u=mapUsers.find(x=>x.id===v.uid);
-    if(!u){
-      u={ id:v.uid, name:v.name||'プレイヤー', cat:v.cat||'study',
-        detail:v.detail||null, detail2:v.detail2||null, style:v.style||'cowork',
-        tags:(v.tags||[]).filter(t=>t!==NPC_TAG),
-        streak:v.streak||1, todayMin:v.todayMin||0, goalMin:v.goalMin||120,
-        isBreak:false, emoji:v.emoji||'🙂', border:'#C9A87C', isReal:true, goals:[], uid:v.uid };
-      // 相手の共有座標を採用（無ければランダム）
-      u.x = (typeof v.x==='number')?v.x : Math.cos(Math.random()*6.28)*350;
-      u.y = (typeof v.y==='number')?v.y : Math.sin(Math.random()*6.28)*300;
-      mapUsers.push(u);
-      const d=document.createElement('div');
-      d.className='muser real';
-      d.innerHTML=`<div class="mav" style="--bd:${u.border}">${u.emoji}<div class="stat"></div><div class="sub-av"></div></div>
-        <div class="mname">🌐${u.name}</div>`;
-      d.addEventListener('click',e=>{ e.stopPropagation(); showProfile(u); });
-      area.appendChild(d);
-      u.el=d;
-    }
-    // 位置・状態の更新
-    u.todayMin=v.todayMin||u.todayMin; u.streak=v.streak||u.streak; u.screen=v.screen||'map';
-    u.partnerEmoji=v.partnerEmoji||null;
-    if(typeof v.x==='number'){ u.x=v.x; u.y=v.y; }
-    // 見た目（赤縁／薄く＋相手アイコン）
-    if(u.el){
-      const mav=u.el.querySelector('.mav');
-      const sub=u.el.querySelector('.sub-av');
-      u.el.classList.toggle('on-home', u.screen==='home');
-      u.el.classList.toggle('in-room', u.screen==='room');
-      if(sub){ sub.textContent = (u.screen==='room' && u.partnerEmoji)?u.partnerEmoji:''; sub.style.display = (u.screen==='room' && u.partnerEmoji)?'flex':'none'; }
-    }
-  });
-  // 消えたプレイヤーを除去
-  mapUsers.filter(u=>u.isReal && !seen[u.id]).forEach(u=>{
-    if(u.el) u.el.remove();
-  });
-  mapUsers=mapUsers.filter(u=>!u.isReal || seen[u.id]);
-  updateMapPositions(true);
-}
 
 /* ============================================================ 起動 ============================================================ */
 load();
@@ -2712,6 +2568,7 @@ try{
   onAuthStateChanged(auth, user=>{
     if(user){
       uid = user.uid;
+      window.__uid = uid;
       liveRef=ref(rtdb,'live/'+uid);
       onDisconnect(liveRef).remove();
       window.fbApi = { saveProfile, getOnline, setOffline,
