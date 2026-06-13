@@ -110,9 +110,6 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 
 /* ---------- ホーム ---------- */
 #scr-home{background:linear-gradient(180deg,#F3EADC 0%, #F6F1E8 45%)}
-.home-illust{position:absolute; top:0; left:0; right:0; height:330px;
-  background:linear-gradient(180deg,#E8D9C2 0%, #EFE4D2 60%, var(--bg) 100%);
-  display:flex; align-items:center; justify-content:center; color:#B8A78E; font-size:13px; z-index:0}
 .home-body{position:relative; z-index:1; padding:0 18px}
 .home-top{display:flex; align-items:center; gap:12px; background:rgba(255,253,249,.92);
   border-radius:999px; padding:9px 14px 9px 9px; margin-top:16px; box-shadow:var(--sh)}
@@ -123,15 +120,14 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .home-name{display:flex; align-items:center}
 .goal-mini{margin-left:8px; background:var(--gold-soft); border:none; border-radius:99px;
   padding:3px 10px; font-size:11px; font-weight:700; color:var(--gold2); font-family:inherit; cursor:pointer}
-.home-actions{display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:flex-end; margin-top:10px}
+.home-actions{display:flex; flex-direction:row; gap:8px; align-items:center; margin-left:auto}
 .home-actions .icon-btn{width:42px; height:42px; font-size:17px; position:relative}
-.home-greet{font-size:13px; color:var(--ink2); font-weight:700; margin:14px 2px 0}
 .daily-pill{display:flex; align-items:center; justify-content:space-between; gap:8px;
   width:62%; min-width:210px; margin-top:10px; background:var(--card); border:none;
   border-radius:14px; box-shadow:var(--sh); padding:11px 14px; font-family:inherit;
   font-size:12.5px; font-weight:700; color:var(--ink2); cursor:pointer}
-.home-top-row{display:flex; align-items:stretch; gap:10px; margin-top:16px}
-.home-top-row .home-top{flex:1; margin-top:0}
+.home-top-row{display:flex; align-items:center; gap:11px; margin-top:18px}
+.home-id{min-width:0}
 .streak-badge{margin-left:auto; background:#FBEFD9; border-radius:999px; padding:6px 12px;
   font-size:12px; font-weight:700; color:#C98B3D; white-space:nowrap}
 .today-card{margin-top:12px; padding:14px 16px; width:62%; min-width:210px; margin-right:auto}
@@ -178,16 +174,21 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .grow .gv{font-size:14px; font-weight:700; margin-top:1px}
 .grow .ar{margin-left:auto; color:var(--ink3)}
 
-/* ---------- 待機モーダル ---------- */
-.wait-spinner{font-size:54px; text-align:center; margin:8px 0 4px; animation:wobble 1.6s ease infinite}
-.wait-count{text-align:center; font-size:15px; font-weight:700; color:var(--gold2); margin-top:8px}
-.wait-card{display:flex; align-items:center; gap:14px; background:var(--card2); border-radius:18px;
-  padding:14px; margin:16px 0 4px; text-align:left}
-.wait-card .wc-av{width:54px; height:54px; border-radius:50%; flex-shrink:0; display:flex;
-  align-items:center; justify-content:center; font-size:28px; background:linear-gradient(135deg,#EADBC4,#DCC8AA);
-  border:2.5px solid #D9A85C}
-.wait-card .wc-name{font-weight:700; font-size:15px}
-.wait-card .wc-role{font-size:11.5px; color:var(--ink2); margin-top:3px; line-height:1.6}
+/* ---------- 待機フローティングカード ---------- */
+#waitCard{position:fixed; left:50%; transform:translateX(-50%); bottom:84px;
+  width:100%; max-width:480px; padding:0 14px; z-index:60}
+.wc-row{display:flex; align-items:center; gap:11px; background:rgba(255,253,249,.98);
+  border-radius:18px; box-shadow:0 8px 24px rgba(140,115,80,.28); padding:11px 13px;
+  border:1.5px solid var(--gold-soft)}
+.wc-av{width:46px; height:46px; border-radius:50%; flex-shrink:0; display:flex;
+  align-items:center; justify-content:center; font-size:24px;
+  background:linear-gradient(135deg,#EADBC4,#DCC8AA); border:2.5px solid #D9A85C}
+.wc-body{flex:1; min-width:0}
+.wc-name{font-weight:700; font-size:13px}
+.wc-role{font-size:10.5px; color:var(--ink2); margin-top:2px; line-height:1.5;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.wc-stop{flex-shrink:0; border:none; background:var(--red-soft); color:var(--red-ink);
+  border-radius:999px; padding:9px 14px; font-size:12px; font-weight:700; font-family:inherit; cursor:pointer}
 
 /* ---------- フレンド ---------- */
 .fr-tabs{display:flex; gap:8px; padding:4px 18px 0}
@@ -233,6 +234,21 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .eq i:nth-child(5){animation-delay:.72s}
 @keyframes wave{0%,100%{height:7px} 50%{height:22px}}
 .room-prof{display:flex; align-items:center; gap:6px; padding:6px 14px 0}
+.pcard{position:relative}
+.bubble-over{position:absolute; top:-34px; left:50%; transform:translateX(-50%) scale(.6);
+  background:#5C5247; color:#fff; font-size:11px; font-weight:700; padding:5px 11px;
+  border-radius:12px; white-space:nowrap; max-width:140px; overflow:hidden; text-overflow:ellipsis;
+  opacity:0; pointer-events:none; transition:all .25s; z-index:6}
+.bubble-over:after{content:''; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%);
+  border:6px solid transparent; border-top-color:#5C5247; border-bottom:0}
+.bubble-over.show{opacity:1; transform:translateX(-50%) scale(1)}
+/* UI非表示時：吹き出しはカードの下へ */
+.room-ui.hide-ui .bubble-over.show{top:auto; bottom:-34px; opacity:1; pointer-events:none}
+.room-ui.hide-ui .bubble-over.show:after{bottom:auto; top:-5px; border-top-color:transparent; border-bottom:6px solid #5C5247}
+.dg-secret{border:none; background:none; font-size:15px; cursor:pointer; opacity:.35; padding:0 3px; font-family:inherit}
+.dg-secret.on{opacity:1}
+.pstamps{display:inline-flex; gap:4px; flex-wrap:wrap; font-size:10px; color:var(--ink2); white-space:normal}
+.pstamps .ps1{background:var(--pink-soft); border-radius:8px; padding:1px 5px; font-weight:700}
 .pcard{flex:1; background:rgba(255,253,249,.94); border-radius:var(--r-sm); box-shadow:var(--sh);
   padding:7px 10px; display:flex; gap:8px; align-items:center; min-width:0; border:none;
   font-family:inherit; text-align:left}
@@ -289,6 +305,7 @@ button.pcard{cursor:pointer}
   display:flex; align-items:center; justify-content:center; font-size:20px; transition:transform .12s}
 .tool-btn:active .te{transform:scale(.88)}
 .tool-btn .tl{font-size:9.5px; color:var(--ink2); font-weight:700}
+body.focus-on .tool-btn.focus-hide{display:none}
 /* 進捗カード（下バー上の左右） */
 .prog-card{position:fixed; bottom:110px; width:46%; max-width:215px;
   background:rgba(255,253,249,.93); border-radius:15px; box-shadow:var(--sh);
@@ -311,7 +328,6 @@ button.pcard{cursor:pointer}
 .prog-item.tap:active{background:var(--pink-soft)}
 .prog-item .pbtn.heart{background:var(--pink-soft); color:#E08A8A; font-size:10px}
 .prog-item .pbtn.heart:active{transform:scale(.85)}
-.pstamps{display:inline-flex; gap:2px; font-size:9.5px; color:var(--ink2); white-space:nowrap}
 /* 音楽バー（下バー） */
 .music-bar{position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
   width:calc(100% - 32px); max-width:448px; z-index:40;
@@ -451,13 +467,19 @@ button.pcard{cursor:pointer}
   align-items:center; justify-content:center; font-size:22px; border:2px solid var(--gold-soft)}
 .gal-name{font-weight:700; font-size:15px}
 .gal-sub{font-size:11px; color:var(--ink3)}
-.gal-goals{margin-top:10px; display:flex; flex-direction:column; gap:6px}
-.gal-goal{display:flex; align-items:center; gap:6px; font-size:13px; background:var(--card);
-  border-radius:10px; padding:8px 10px}
+.gal-goals-title{font-size:12px; font-weight:700; color:var(--ink2); margin:14px 0 7px}
+.gal-goals{display:flex; flex-direction:column; gap:7px}
+.gal-goal{display:flex; align-items:center; gap:8px; font-size:14.5px; font-weight:700;
+  background:#FDF6E8; border:1.5px solid var(--gold-soft); border-radius:12px; padding:11px 13px}
 .gal-goal .gg-tx{flex:1; min-width:0}
-.gal-goal.full .gg-tx{text-decoration:line-through; color:var(--ink3)}
-.gal-goal .gg-cnt{font-weight:700; color:var(--gold2); font-size:12px}
-.gal-stamp-row{display:flex; gap:6px; margin-top:12px; align-items:center}
+.gal-goal.full{background:var(--green-soft); border-color:#BBD6B5}
+.gal-goal.full .gg-tx{color:#5F8E5F}
+.gal-goal.full .gg-tx:after{content:' ✓'}
+.gal-goal .gg-cnt{font-weight:700; color:var(--gold2); font-size:14px}
+.gal-stamps-got{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; min-height:24px; align-items:center}
+.gal-stamps-got .gc1{background:var(--pink-soft); color:var(--red-ink); border-radius:99px;
+  padding:3px 10px; font-size:12px; font-weight:700}
+.gal-stamp-row{display:flex; gap:6px; margin-top:14px; align-items:center}
 .gal-pick{width:36px; height:36px; border-radius:50%; border:2px solid transparent;
   background:var(--card); font-size:17px; cursor:pointer; font-family:inherit}
 .gal-pick.on{border-color:var(--gold); background:var(--gold-soft)}
@@ -465,7 +487,6 @@ button.pcard{cursor:pointer}
   background:linear-gradient(135deg,#EDB6BA,#E09BA0); font-size:28px; cursor:pointer;
   box-shadow:0 6px 16px rgba(220,150,155,.4); font-family:inherit; transition:transform .08s}
 .gal-big:active{transform:scale(.86)}
-.gal-count{position:absolute; top:12px; right:14px; font-size:12px; font-weight:700; color:var(--gold2)}
 
 #toast{position:fixed; top:18px; left:50%; transform:translateX(-50%) translateY(-90px);
   background:rgba(70,58,44,.92); color:#fff; font-size:13px; font-weight:500; padding:11px 22px;
@@ -513,24 +534,20 @@ button.pcard{cursor:pointer}
 
   <!-- ===== ホーム ===== -->
   <section class="screen" id="scr-home">
-    <div class="home-illust">（ここにホームのイラスト背景が入ります）</div>
     <div class="home-body">
       <div class="home-top-row">
-        <div class="home-top">
-          <div class="home-avatar">🧸</div>
-          <div>
-            <div class="home-name"><span id="hName">ゆめ</span></div>
-            <div class="home-lv" id="hLv">Lv.1</div>
-          </div>
-          <div class="streak-badge" id="hStreak">🔥 1日継続中</div>
+        <div class="home-avatar">🧸</div>
+        <div class="home-id">
+          <div class="home-name"><span id="hName">ゆめ</span></div>
+          <div class="home-lv" id="hLv">Lv.1</div>
+        </div>
+        <div class="home-actions">
+          <button class="icon-btn" onclick="go('scr-friends')">👥<span class="req-dot" id="navReqDotHome" style="display:none"></span></button>
+          <button class="icon-btn" onclick="openGoal()">🎯</button>
+          <button class="icon-btn" onclick="toast('通知はまだありません')">🔔</button>
         </div>
       </div>
-      <div class="home-actions">
-        <button class="icon-btn" onclick="go('scr-friends')">👥<span class="req-dot" id="navReqDotHome" style="display:none"></span></button>
-        <button class="icon-btn" onclick="openGoal()">🎯</button>
-        <button class="icon-btn" onclick="toast('通知はまだありません')">🔔</button>
-      </div>
-      <div class="home-greet" id="hGreet">こんにちは</div>
+      <div class="streak-badge" id="hStreak" style="display:inline-block;margin-top:12px">🔥 1日継続中</div>
       <div class="card today-card">
         <div class="today-label">⏱ 今日の記録</div>
         <div class="today-time" id="hToday">0<small>分</small></div>
@@ -582,6 +599,7 @@ button.pcard{cursor:pointer}
 
       <div class="room-prof">
         <div class="pcard">
+          <div class="bubble-over" id="myBubble"></div>
           <div class="pav">🧸</div>
           <div class="pinfo">
             <div class="pname"><span id="rMyName">あなた</span><span class="goal-chip" id="rMyGoalChip">2h</span></div>
@@ -590,6 +608,7 @@ button.pcard{cursor:pointer}
         </div>
         <div class="connect-mark">⚡</div>
         <button class="pcard" onclick="showPartnerProfile()">
+          <div class="bubble-over" id="partnerBubble"></div>
           <div class="pav" id="rPav">🐰</div>
           <div class="pinfo">
             <div class="pname"><span id="rPName">相手</span><span class="goal-chip" id="rPGoalChip">2h</span></div>
@@ -615,8 +634,8 @@ button.pcard{cursor:pointer}
 
     <div class="tool-bar">
       <button class="tool-btn" onclick="toast('ちょっかい機能はこれから😈')"><div class="te">😈</div><div class="tl">ちょっかい</div></button>
-      <button class="tool-btn" onclick="openSheet('stampSheet')"><div class="te">😊</div><div class="tl">スタンプ</div></button>
-      <button class="tool-btn" onclick="openSheet('pomoSheet')"><div class="te">🍅</div><div class="tl">ポモドーロ</div></button>
+      <button class="tool-btn focus-hide" onclick="openSheet('stampSheet')"><div class="te">😊</div><div class="tl">スタンプ</div></button>
+      <button class="tool-btn focus-hide" onclick="openSheet('pomoSheet')"><div class="te">🍅</div><div class="tl">ポモドーロ</div></button>
       <button class="tool-btn" onclick="toast('モーション機能はこれから🎬')"><div class="te">🎬</div><div class="tl">モーション</div></button>
     </div>
 
@@ -689,7 +708,7 @@ button.pcard{cursor:pointer}
 
   <!-- ===== スキン（着せ替え + ルーム編集 統合） ===== -->
   <section class="screen" id="scr-skin">
-    <div class="hd"><div style="width:44px"></div>
+    <div class="hd"><button class="icon-btn" onclick="go('scr-home')">‹</button>
       <div class="hd-c"><div class="hd-title">スキン</div></div><div style="width:44px"></div></div>
     <div class="fr-tabs">
       <button class="fr-tab on" id="skTabAv" onclick="skTab('av')">アバター</button>
@@ -699,6 +718,18 @@ button.pcard{cursor:pointer}
   </section>
 
   <!-- ===== ボトムナビ ===== -->
+  <!-- 待機中フローティングカード（ホーム・部屋どちらでも操作可能） -->
+  <div id="waitCard" style="display:none">
+    <div class="wc-row">
+      <div class="wc-av" id="wcAv">🐈‍⬛</div>
+      <div class="wc-body">
+        <div class="wc-name" id="wcName">ユメ（受付）</div>
+        <div class="wc-role" id="wcRole">Zzカフェの店長で、元はクロネコ。仲間が見つかるまで隣にいるね。誰かとマッチしたらそっとお別れするよ。</div>
+      </div>
+      <button class="wc-stop" onclick="cancelWait()">やめる</button>
+    </div>
+  </div>
+
   <nav id="bnav">
     <button class="bnav-item" data-s="scr-records"><span class="bi">📊</span>記録</button>
     <button class="bnav-item" data-s="scr-skin"><span class="bi">👗</span>スキン</button>
@@ -791,17 +822,6 @@ button.pcard{cursor:pointer}
     </div>
   </div>
 
-  <!-- 待機中（マッチング） -->
-  <div class="modal center-modal" id="waitModal" style="display:none">
-    <div class="wait-spinner" id="waitSpin">📞</div>
-    <div class="modal-title" id="waitTitle">仲間をさがしています</div>
-    <div class="wait-count" id="waitCount">待機中（60）</div>
-    <div class="modal-desc" id="waitDesc">あなたにぴったりの相手をさがすね</div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="cancelWait()" style="flex:1">やめる</button>
-    </div>
-  </div>
-
   <!-- 招待が届いた -->
   <div class="modal center-modal" id="inviteModal" style="display:none">
     <div class="stub-emoji" style="text-align:center">📞</div>
@@ -850,8 +870,13 @@ button.pcard{cursor:pointer}
 
   <!-- スタンプ選択（相手の完了項目用） -->
   <div class="modal center-modal" id="stampPick" style="display:none">
-    <div class="modal-title">スタンプをおくる</div>
+    <div class="modal-title">スタンプかコメント</div>
+    <div class="modal-desc" style="margin-top:4px">スタンプ1つ、またはコメント（10文字まで）</div>
     <div class="stamp-grid" id="stampPickGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px"></div>
+    <div class="dg-input-row" style="margin-top:14px">
+      <input class="dg-input" id="commentInput" placeholder="コメント…" maxlength="10">
+      <button class="dg-add" onclick="sendComment()">送る</button>
+    </div>
   </div>
 
   <!-- ポモドーロシート -->
@@ -1010,7 +1035,10 @@ function go(id){
   document.querySelectorAll('.bnav-item').forEach(b=>b.classList.toggle('on', b.dataset.s===id));
   const nc=document.getElementById('navCenter');
   if(nc){
-    if(id==='scr-home'){
+    if(matchWaiting){
+      nc.classList.add('callmode');
+      setWaitCount();
+    } else if(id==='scr-home'){
       nc.classList.add('callmode');
       document.getElementById('navCenterIcon').textContent='📞';
       document.getElementById('navCenterLabel').textContent='作業を始める';
@@ -1035,7 +1063,10 @@ function go(id){
   window.scrollTo(0,0);
 }
 document.querySelectorAll('.bnav-item').forEach(b=>b.addEventListener('click',()=>{
-  if(b.id==='navCenter' && document.getElementById('scr-home').classList.contains('active')){ startWork(); return; }
+  if(b.id==='navCenter' && document.getElementById('scr-home').classList.contains('active')){
+    if(matchWaiting){ toast('いま仲間をさがしてるよ📲'); return; }
+    startWork(); return;
+  }
   go(b.dataset.s);
 }));
 
@@ -1099,9 +1130,18 @@ function renderDailyList(){
   el.innerHTML=state.dailyGoals.map((g,i)=>`
     <div class="dg-row">
       <span class="dgt">・${g.tx}</span>
+      <button class="dg-secret ${g.secret?'on':''}" onclick="toggleSecret(${i})" title="ヒミツにする">🤫</button>
       <span class="dgn">${g.done}/${g.target}</span>
       <button class="dgdel" onclick="delDailyGoal(${i})">×</button>
     </div>`).join('') || '<div style="text-align:center;font-size:12px;color:var(--ink3);padding:8px">まだ目標がないよ</div>';
+}
+function toggleSecret(i){
+  state.dailyGoals[i].secret=!state.dailyGoals[i].secret;
+  save(); renderDailyList();
+  if(state.dailyGoals[i].secret) toast('🤫 この目標は相手に「ヒミツ」と表示されるよ');
+  if(window.fbSaveDailyGoals) window.fbSaveDailyGoals();
+  if(room && room.partner.isReal && window.fbApi) window.fbApi.pushMyGoals();
+  renderMyProg();
 }
 function addDailyGoal(){
   if(state.dailyGoals.length>=5){ toast('目標は5個までだよ'); return; }
@@ -1355,10 +1395,6 @@ function renderHome(){
   const pct=Math.min(100, Math.round(state.todayMin/p.goalMin*100));
   setWidth('hBar',pct+'%');
   setText('hGoal',`目標：${goalLabel()}（${pct}%）`);
-  // 時間帯のあいさつ
-  const hr=new Date().getHours();
-  const greet = hr<5?'おそくまでおつかれさま':hr<11?'おはよう':hr<17?'こんにちは':hr<22?'こんばんは':'おつかれさま';
-  setText('hGreet',`${greet}、${p.name}さん`);
   // 今日の目標の達成ぐあい
   const dg=state.dailyGoals||[];
   const doneCnt=dg.filter(g=>g.done>=g.target).length;
@@ -1426,53 +1462,52 @@ function startWaiting(){
   if(matchWaiting) return;
   if(needDailyGoals()){ openDailyGoals(false); return; }
   matchWaiting=true; matchSec=0;
-  livePool=[]; mapUsers=[]; // 本物プレイヤー候補をためる場所
-  // 自分の状態を「待機中」として共有
+  livePool=[]; mapUsers=[];
   if(window.fbSetScreen) window.fbSetScreen('waiting');
-  // ゆめの紹介カードを出す
-  document.getElementById('waitSpin').textContent='📞';
-  document.getElementById('waitTitle').textContent='仲間をさがしています';
-  document.getElementById('waitDesc').innerHTML=
-    `<div class="wait-card">
-      <div class="wc-av">${YUME.emoji}</div>
-      <div><div class="wc-name">ユメ（受付）</div>
-      <div class="wc-role">Zzカフェの店長で、元はクロネコ。<br>仲間が見つかるまでわたしが隣にいるね。<br>誰かとマッチしたら、そっとお別れするよ。</div></div>
-    </div>`;
+  // ユメの紹介カードを表示（フローティング、操作は可能）
+  document.getElementById('wcAv').textContent=YUME.emoji;
+  document.getElementById('wcName').textContent='ユメ（受付）';
+  document.getElementById('wcRole').textContent='Zzカフェの店長で、元はクロネコ。仲間が見つかるまで隣にいるね。誰かとマッチしたらそっとお別れするよ。';
+  showWaitCard(true);
   setWaitCount();
-  showModal('waitModal', true);
+  playWaitBGM();
   clearInterval(matchTimer);
   matchTimer=setInterval(tickMatch, 1000);
   tickMatch();
 }
+function showWaitCard(show){
+  document.getElementById('waitCard').style.display = show?'block':'none';
+}
 function setWaitCount(){
   const left=Math.max(0, 60-(matchSec%60));
-  document.getElementById('waitCount').textContent=`待機中（${left}）`;
+  // 下のバーの中央ボタンを「待機（左）」表示に
+  const ic=document.getElementById('navCenterIcon'), lb=document.getElementById('navCenterLabel');
+  if(matchWaiting){
+    if(ic) ic.textContent='📲';
+    if(lb) lb.textContent=`待機（${left}）`;
+  }
 }
 function tickMatch(){
   if(!matchWaiting) return;
   const st=matchStage(matchSec);
   setWaitCount();
-  // 本物のプレイヤー候補（live配下の待機中の人）から探す
   const cands=livePool.filter(u=>u.uid && u.uid!==myUid() && matchesStage(u, st));
   if(cands.length){
     cands.sort((a,b)=>affinity(b)-affinity(a));
-    const best=cands[0];
-    matchFound(best, true);
+    matchFound(cands[0], true);
     return;
   }
-  // 60秒経過 → ユメと強制マッチ（ただし待機は継続：内部で0に戻してループ）
   if(matchSec>=60 && matchSec%60===0){
-    // ユメの部屋へ（マッチング継続中）
     if(!room){ matchFoundYume(); }
   }
   matchSec++;
 }
 function matchFound(partner, isReal){
   matchWaiting=false; clearInterval(matchTimer);
-  closeModalForce();
+  showWaitCard(false); stopWaitBGM();
+  restoreNavCenter();
   toast(`${partner.name}さんとマッチしました！✨`);
   if(isReal && window.fbApi){
-    // 本物：招待を送って即合流（待機者同士なので承諾待ちは簡略化）
     const roomId = myUid()<partner.uid ? myUid()+'_'+partner.uid : partner.uid+'_'+myUid();
     partner.id=partner.uid;
     setTimeout(()=>{
@@ -1486,39 +1521,57 @@ function matchFound(partner, isReal){
   }
 }
 function matchFoundYume(){
-  // ユメと作業部屋へ。待機継続中フラグを立てる
   const yume=Object.assign({}, YUME, {goals:YUME.goals.map(g=>({...g, stamps:{}}))});
   enterRoom(yume);
-  room.waitingForReal=true; // この部屋では本物が来たら切り替え
+  room.waitingForReal=true;
+  // ユメ部屋でも待機カードは出したまま、作業もできる
+  showWaitCard(true);
   toast('ユメが隣に来てくれたよ🐈‍⬛（仲間も探し続けるね）');
-  // 待機ループは継続（本物が現れたら乗り換え）
   matchWaiting=true;
-  if(!matchTimer || true){ clearInterval(matchTimer); matchTimer=setInterval(tickMatchInRoom,1000); }
+  clearInterval(matchTimer); matchTimer=setInterval(tickMatchInRoom,1000);
 }
-// ユメ部屋で待機中：本物が来たら乗り換え
 function tickMatchInRoom(){
   if(!room || !room.waitingForReal){ clearInterval(matchTimer); return; }
   matchSec++;
-  const st=matchStage(matchSec%60===0?60:matchSec%60); // ループ
+  setWaitCount();
+  const st=matchStage(matchSec%60===0?60:matchSec%60);
   const cands=livePool.filter(u=>u.uid && u.uid!==myUid() && matchesStage(u, st));
   if(cands.length){
     cands.sort((a,b)=>affinity(b)-affinity(a));
     const best=cands[0];
     clearInterval(matchTimer);
     room.waitingForReal=false;
+    showWaitCard(false);
     toast(`${best.name}さんが来たよ！ユメとお別れ👋`);
-    // ユメ部屋を出て本物の部屋へ
-    if(window.fbApi && room.partner.isReal) window.fbApi.leaveRoomSync();
     room=null;
     setTimeout(()=>matchFound(best, true), 600);
   }
 }
 function cancelWait(){
   matchWaiting=false; clearInterval(matchTimer);
-  closeModalForce();
+  showWaitCard(false); stopWaitBGM();
+  restoreNavCenter();
+  // ユメ部屋にいたら退出
+  if(room && room.partner && room.partner.isYume){ room.waitingForReal=false; room=null; clearInterval(elapsedTimer); go('scr-home'); }
   if(window.fbSetScreen) window.fbSetScreen('home');
   toast('待機をやめました');
 }
+function restoreNavCenter(){
+  const onHome=document.getElementById('scr-home').classList.contains('active');
+  const ic=document.getElementById('navCenterIcon'), lb=document.getElementById('navCenterLabel');
+  if(onHome){ if(ic) ic.textContent='📞'; if(lb) lb.textContent='作業を始める'; }
+  else { if(ic) ic.textContent='🏠'; if(lb) lb.textContent='ホーム'; }
+}
+/* 待機中BGM（同フォルダの wait.mp3 を再生。無ければ無音） */
+let waitAudio=null;
+function playWaitBGM(){
+  try{
+    if(!waitAudio){ waitAudio=new Audio('wait.mp3'); waitAudio.loop=true; waitAudio.volume=0.5; }
+    waitAudio.currentTime=0;
+    waitAudio.play().catch(()=>{});
+  }catch(e){}
+}
+function stopWaitBGM(){ try{ if(waitAudio){ waitAudio.pause(); } }catch(e){} }
 function myUid(){ return window.__uid||null; }
 
 // live配下の「待機中」プレイヤーを候補プールに反映（onLivePlayersから呼ばれる）
@@ -1607,6 +1660,9 @@ function enterRoom(partner){
   room={partner, start:Date.now(), todos:[]};
   pendingGifts=0; grantedThresholds=[];
   myGoalStamps={};
+  focusMode=false; partnerFocusing=false;
+  document.body.classList.remove('focus-on');
+  const fb=document.getElementById('focusBtn'); if(fb) fb.style.background='';
   pomoSec=25*60; pomoRunning=false; pomoPhase='work'; pomoActive=false;
   applyRoomBg();
   setText('rMyName',state.profile.name);
@@ -1683,17 +1739,31 @@ function updateGiftFloat(){
   else c.style.display='none';
 }
 /* 進捗カード */
-window.onMyGoalStamps=function(st){ myGoalStamps=st||{}; renderMyProg(); };
+window.onMyGoalMarks=function(marks){
+  myGoalStamps=marks||{};
+  renderMyProg();
+  // 最新のマークを吹き出しで自分の上に表示
+  const vals=Object.values(myGoalStamps);
+  if(vals.length){
+    const last=vals[vals.length-1];
+    const b=document.getElementById('myBubble');
+    if(b && last){
+      b.textContent = last.comment || last.stamp || '';
+      if(b.textContent){ b.classList.add('show'); clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('show'),6000); }
+    }
+  }
+};
 function renderMyProg(){
   const el=document.getElementById('myProg');
   if(!el) return;
   el.innerHTML=state.dailyGoals.map((g,i)=>{
     const full=g.done>=g.target;
-    const st=myGoalStamps[i]||{};
-    const stampStr=Object.entries(st).map(([e,n])=>`${e}${n>1?n:''}`).join('');
+    const mk=myGoalStamps[i]||{};
+    const markStr = mk.comment ? `<span class="pstamps"><span class="ps1">💬${mk.comment}</span></span>`
+                  : mk.stamp ? `<span class="pstamps"><span class="ps1">${mk.stamp}</span></span>` : '';
     return `<div class="prog-item ${full?'full':''}">
-      <span class="ptx">・${g.tx}</span>
-      ${stampStr?`<span class="pstamps">${stampStr}</span>`:''}
+      <span class="ptx">${g.secret?'🤫':'・'}${g.tx}</span>
+      ${markStr}
       <span class="pcnt">${g.done}/${g.target}</span>
       <button class="pbtn" onclick="myProgChange(${i},-1)">−</button>
       <button class="pbtn" onclick="myProgChange(${i},1)">＋</button>
@@ -1717,40 +1787,69 @@ function renderTheirProg(){
   const goals=room.partner.goals||[];
   el.innerHTML=goals.map((g,i)=>{
     const full=g.done>=g.target;
-    const stampStr=Object.entries(g.stamps||{}).map(([e,n])=>`${e}${n>1?n:''}`).join('');
+    const markStr = g.comment ? `<span class="pstamps"><span class="ps1">💬${g.comment}</span></span>`
+      : Object.keys(g.stamps||{}).length ? `<span class="pstamps">${Object.entries(g.stamps).map(([e,n])=>`<span class="ps1">${e}${n>1?'×'+n:''}</span>`).join('')}</span>` : '';
+    const isSecret=g.secret;
     return `<div class="prog-item ${full?'full':''}">
-      <span class="ptx">・${g.tx}</span>
-      ${stampStr?`<span class="pstamps">${stampStr}</span>`:''}
+      <span class="ptx">・${isSecret?'<i>ヒミツ</i>':g.tx}</span>
+      ${markStr}
       <span class="pcnt">${g.done}/${g.target}</span>
-      ${full?`<button class="pbtn heart" onclick="pickStampFor(${i})">❤</button>`:''}
+      <button class="pbtn heart" onclick="pickStampFor(${i})">💬</button>
     </div>`;
   }).join('') || '<div style="font-size:10px;color:var(--ink3);text-align:center;padding:6px">目標がないみたい</div>';
 }
 let stampTargetIdx=null;
 function pickStampFor(i){
+  if(partnerFocusing){ toast('相手は集中モード中。そっとしておこう🎧'); return; }
   stampTargetIdx=i;
   document.getElementById('stampPickGrid').innerHTML=STAMPS.map((s,si)=>`
     <button class="stamp-btn" onclick="applyItemStamp(${si})" style="background:var(--card2);border:none;border-radius:14px;padding:12px 4px;cursor:pointer;font-family:inherit">
       <div style="font-size:25px">${s.e}</div><div style="font-size:10px;color:var(--ink2);font-weight:700;margin-top:3px">${s.l}</div>
     </button>`).join('');
+  const ci=document.getElementById('commentInput'); if(ci) ci.value='';
   showModal('stampPick');
 }
 function applyItemStamp(si){
   if(stampTargetIdx===null || !room) return;
-  const g=room.partner.goals[stampTargetIdx];
-  if(!g.stamps) g.stamps={};
-  g.stamps[STAMPS[si].e]=(g.stamps[STAMPS[si].e]||0)+1;
+  const idx=stampTargetIdx;
+  // スタンプは1個だけ：その項目のstampsを上書き（コメントとの二択）
+  const g=room.partner.goals[idx];
   if(room.partner.isReal && window.fbApi){
-    // 相手の目標配下のstampsに加算（相手の画面にも反映）
-    window.fbApi.stampPartnerGoal(room.partner.uid, stampTargetIdx, STAMPS[si].e);
+    window.fbApi.setPartnerMark(room.partner.uid, idx, {stamp:STAMPS[si].e});
   } else {
+    g.stamps={}; g.stamps[STAMPS[si].e]=1; g.comment='';
     const npc=state.npcs.find(n=>n.name===room.partner.name);
-    if(npc){ const ng=npc.goals.find(x=>x.tx===g.tx); if(ng){ ng.stamps=ng.stamps||{}; ng.stamps[STAMPS[si].e]=(ng.stamps[STAMPS[si].e]||0)+1; } }
+    if(npc){ const ng=npc.goals.find(x=>x.tx===g.tx); if(ng){ ng.stamps={[STAMPS[si].e]:1}; } }
   }
   logStamp(room.partner.name, g.tx, STAMPS[si].e);
   playPop(3);
+  showPartnerBubble(STAMPS[si].e);
   closeModal(); renderTheirProg();
-  toast(`${STAMPS[si].e} を送ったよ！`);
+}
+function sendComment(){
+  if(stampTargetIdx===null || !room) return;
+  const idx=stampTargetIdx;
+  const tx=(document.getElementById('commentInput').value||'').trim().slice(0,10);
+  if(!tx){ toast('コメントを入れてね（10文字まで）'); return; }
+  const g=room.partner.goals[idx];
+  if(room.partner.isReal && window.fbApi){
+    window.fbApi.setPartnerMark(room.partner.uid, idx, {comment:tx});
+  } else {
+    g.comment=tx; g.stamps={};
+  }
+  playPop(2);
+  showPartnerBubble(tx);
+  closeModal(); renderTheirProg();
+  toast('コメントを送ったよ💬');
+}
+/* 相手の上に出る吹き出し（UI非表示時は下に移動） */
+function showPartnerBubble(text){
+  const b=document.getElementById('partnerBubble');
+  if(!b) return;
+  b.textContent=text;
+  b.classList.add('show');
+  clearTimeout(b._t);
+  b._t=setTimeout(()=>b.classList.remove('show'), 6000);
 }
 /* 相手プロフィール */
 function showPartnerProfile(){
@@ -1987,8 +2086,17 @@ let focusMode=false;
 function toggleFocus(){
   focusMode=!focusMode;
   document.getElementById('focusBtn').style.background = focusMode?'var(--gold-soft)':'';
-  toast(focusMode?'🎧 集中モード ON':'🎧 集中モード OFF');
+  document.body.classList.toggle('focus-on', focusMode);
+  // 相手に集中状態を共有（相手はスタンプ/コメントを送れなくなる）
+  if(room && room.partner.isReal && window.fbSetFocus) window.fbSetFocus(focusMode);
+  toast(focusMode?'🎧 集中モード ON（スタンプ・ポモを隠したよ）':'🎧 集中モード OFF');
 }
+window.onPartnerFocus=function(on){
+  // 相手が集中モード → 自分はその相手にスタンプ/コメントを送れない
+  partnerFocusing=!!on;
+  if(on) toast('相手が集中モードに入ったよ🎧');
+};
+let partnerFocusing=false;
 function simulateDC(){
   closeModal();
   setTimeout(()=>{ showModal('dcModal'); },400);
@@ -2012,21 +2120,23 @@ function renderGallery(){
   const u=galList[galIdx];
   document.getElementById('galIndex').textContent=`${galIdx+1}/${galList.length}`;
   const goals=(u.goals||[]).slice(0,5);
-  const total=Object.values(state.npcStampLog[u.name]||{}).reduce((a,b)=>a+b,0);
   const sub=u.detail||(CATS[u.cat]?CATS[u.cat].name:'作業');
+  if(!u._galStamps) u._galStamps={};
+  const countsRow=Object.entries(u._galStamps).map(([e,n])=>`<span class="gc1">${e} ${n}</span>`).join('') || '<span style="color:var(--ink3);font-size:11px">まだスタンプなし</span>';
   document.getElementById('galBody').innerHTML=`
     <div class="gal-card">
-      <div class="gal-count">💗 ${total}</div>
       <div class="gal-head">
         <div class="gal-av">${u.emoji}</div>
         <div><div class="gal-name">${u.name}</div>
         <div class="gal-sub">${sub}${state.friends.some(f=>f.name===u.name)?'・フレンド':''}</div></div>
       </div>
+      <div class="gal-goals-title">📝 今日がんばってること</div>
       <div class="gal-goals">
         ${goals.length?goals.map(g=>`<div class="gal-goal ${g.done>=g.target?'full':''}">
-          <span class="gg-tx">・${g.tx}</span>
+          <span class="gg-tx">${g.secret?'🤫 ヒミツ':g.tx}</span>
           <span class="gg-cnt">${g.done}/${g.target}</span></div>`).join(''):'<div style="font-size:12px;color:var(--ink3);padding:6px">今日の目標は未設定だったみたい</div>'}
       </div>
+      <div class="gal-stamps-got" id="galStampsGot">${countsRow}</div>
       <div class="gal-stamp-row">
         ${STAMPS.map(s=>`<button class="gal-pick ${galStamp===s.e?'on':''}" onclick="galPick('${s.e}')">${s.e}</button>`).join('')}
         <button class="gal-big" id="galBig" onclick="galTap(event)">${galStamp}</button>
@@ -2037,16 +2147,14 @@ function galPick(e){ galStamp=e; renderGallery(); }
 function galTap(ev){
   const u=galList[galIdx];
   const g=(u.goals||[])[0];
-  if(g){
-    if(!g.stamps) g.stamps={};
-    g.stamps[galStamp]=(g.stamps[galStamp]||0)+1;
-    logStamp(u.name, g.tx, galStamp);
-  }
+  if(g){ if(!g.stamps) g.stamps={}; g.stamps[galStamp]=(g.stamps[galStamp]||0)+1; logStamp(u.name, g.tx, galStamp); }
+  // 絵文字ごとに別々にカウント
+  if(!u._galStamps) u._galStamps={};
+  u._galStamps[galStamp]=(u._galStamps[galStamp]||0)+1;
   galCombo++;
   clearTimeout(galComboT);
   galComboT=setTimeout(()=>galCombo=0, 650);
   playPop(galCombo);
-  // バースト演出
   const b=document.createElement('div');
   b.className='burst'; b.textContent=galStamp;
   const r=ev.target.getBoundingClientRect();
@@ -2056,8 +2164,9 @@ function galTap(ev){
   b.style.setProperty('--dy',(-60-Math.random()*50)+'px');
   document.body.appendChild(b);
   setTimeout(()=>b.remove(),950);
-  const cnt=document.querySelector('.gal-count');
-  if(cnt){ const total=Object.values(state.npcStampLog[u.name]||{}).reduce((a,b)=>a+b,0); cnt.textContent=`💗 ${total}`; }
+  // 取得スタンプ表示だけ更新（再描画は重いので部分更新）
+  const got=document.getElementById('galStampsGot');
+  if(got){ got.innerHTML=Object.entries(u._galStamps).map(([e,n])=>`<span class="gc1">${e} ${n}</span>`).join(''); }
 }
 function nextGallery(){
   if(galIdx<galList.length-1){ galIdx++; galCombo=0; renderGallery(); }
@@ -2468,43 +2577,56 @@ try{
       const v=snap.val();
       if(v) window.onPartnerGoals(mergeGoalStamps(v, partnerUid));
     });
-    // 相手が押してくれた「自分の目標へのスタンプ」を受信
+    // 相手が押してくれた「自分の目標へのマーク」を受信（スタンプ/コメント）
     myStampUnsub=onValue(ref(rtdb, roomRefPath+'/gstamps/'+uid), snap=>{
       partnerStampsOnMe = snap.val()||{};
-      window.onMyGoalStamps(partnerStampsOnMe);
+      window.onMyGoalMarks(partnerStampsOnMe);
     });
-    // 相手の進捗に付いたスタンプ（自分が押したぶん）も購読してマージ表示
+    // 自分が相手に付けたマークも購読してマージ表示
     partnerStampsUnsub=onValue(ref(rtdb, roomRefPath+'/gstamps/'+partnerUid), snap=>{
       partnerGstamps = snap.val()||{};
-      // 相手の最新goalsを再マージ
       window.onPartnerGoals(mergeGoalStamps(lastPartnerGoals, partnerUid));
     });
+    // 相手の集中モード状態を受信
+    focusUnsub=onValue(ref(rtdb, roomRefPath+'/focus/'+partnerUid), snap=>{
+      window.onPartnerFocus(!!snap.val());
+    });
   }
+  let focusUnsub=null;
+  function setFocus(on){
+    if(!roomRefPath || !uid) return;
+    set(ref(rtdb, roomRefPath+'/focus/'+uid), !!on).catch(()=>{});
+  }
+  window.fbSetFocus=setFocus;
   let myPartnerUid=null, myStampUnsub=null, partnerStampsUnsub=null;
   let partnerStampsOnMe={}, partnerGstamps={}, lastPartnerGoals=null;
   function mergeGoalStamps(goals, partnerUid){
     lastPartnerGoals = goals;
     if(!Array.isArray(goals)) return goals;
     return goals.map((g,i)=>{
-      const st = (partnerGstamps && partnerGstamps[i]) ? partnerGstamps[i] : {};
-      return Object.assign({}, g, {stamps: st});
+      const mark = (partnerGstamps && partnerGstamps[i]) ? partnerGstamps[i] : null;
+      const out = Object.assign({}, g, {stamps:{}, comment:''});
+      if(mark){
+        if(mark.stamp) out.stamps={[mark.stamp]:1};
+        if(mark.comment) out.comment=mark.comment;
+      }
+      return out;
     });
   }
   function pushMyGoals(){
     if(!roomRefPath || !uid) return;
-    // 進捗のみ書き込み（スタンプは gstamps 配下で別管理＝上書きしない）
-    const lite=(state.dailyGoals||[]).map(g=>({tx:g.tx, target:g.target, done:g.done||0}));
+    const st=window.state;
+    const lite=(st.dailyGoals||[]).map(g=>({tx: g.secret?'ヒミツ':g.tx, target:g.target, done:g.done||0, secret:!!g.secret}));
     set(ref(rtdb, roomRefPath+'/goals/'+uid), lite).catch(()=>{});
   }
   function sendRoomStamp(e,l){
     if(!roomRefPath) return;
     set(ref(rtdb, roomRefPath+'/stamp'), {from:uid, e, l, t:Date.now()}).catch(()=>{});
   }
-  // 相手の完了項目にハートを押す → gstamps/{相手uid}/{goalIdx}/{emoji} を加算
-  function stampPartnerGoal(partnerUid, goalIdx, e){
+  // 相手の目標にマーク（スタンプ1つ or コメント）を付ける＝gstamps/{相手uid}/{idx} を上書き
+  function setPartnerMark(partnerUid, goalIdx, mark){
     if(!roomRefPath) return;
-    const r=ref(rtdb, roomRefPath+'/gstamps/'+partnerUid+'/'+goalIdx+'/'+e);
-    runTransaction(r, cur=>(cur||0)+1).catch(()=>{ set(r,1).catch(()=>{}); });
+    set(ref(rtdb, roomRefPath+'/gstamps/'+partnerUid+'/'+goalIdx), mark).catch(()=>{});
   }
   function leaveRoomSync(){
     if(partnerUnsub){ partnerUnsub(); partnerUnsub=null; }
@@ -2512,9 +2634,11 @@ try{
     if(pgoalsUnsub){ pgoalsUnsub(); pgoalsUnsub=null; }
     if(myStampUnsub){ myStampUnsub(); myStampUnsub=null; }
     if(partnerStampsUnsub){ partnerStampsUnsub(); partnerStampsUnsub=null; }
+    if(focusUnsub){ focusUnsub(); focusUnsub=null; }
     if(roomRefPath){
       remove(ref(rtdb, roomRefPath+'/p/'+uid)).catch(()=>{});
       remove(ref(rtdb, roomRefPath+'/goals/'+uid)).catch(()=>{});
+      remove(ref(rtdb, roomRefPath+'/focus/'+uid)).catch(()=>{});
       roomRefPath=null;
     }
     myRoomId=null; myPartnerEmoji=null; myPartnerUid=null;
@@ -2573,7 +2697,7 @@ try{
       onDisconnect(liveRef).remove();
       window.fbApi = { saveProfile, getOnline, setOffline,
         sendInvite, respondInvite, joinRoomSync, sendRoomStamp, leaveRoomSync, sendMapStamp,
-        pushMyGoals, stampPartnerGoal, saveDailyGoals };
+        pushMyGoals, setPartnerMark, saveDailyGoals };
       saveProfile();
       writeLive();
       clearInterval(presenceTimer);
