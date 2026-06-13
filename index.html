@@ -131,6 +131,17 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .streak-badge{margin-left:auto; background:#FBEFD9; border-radius:999px; padding:6px 12px;
   font-size:12px; font-weight:700; color:#C98B3D; white-space:nowrap}
 .today-card{margin-top:12px; padding:14px 16px; width:62%; min-width:210px; margin-right:auto}
+.home-goals-card{padding:14px 16px}
+.hg-head{font-size:13px; font-weight:700; color:var(--ink); display:flex; align-items:center; margin-bottom:8px}
+.hg-edit{margin-left:auto; border:none; background:none; color:var(--gold2); font-weight:700; font-size:12px; font-family:inherit; cursor:pointer}
+.hg-item{display:flex; align-items:center; gap:8px; font-size:13.5px; padding:7px 10px;
+  background:#FDF6E8; border-radius:10px; margin-bottom:6px}
+.hg-item:last-child{margin-bottom:0}
+.hg-item .hg-tx{flex:1; min-width:0}
+.hg-item .hg-cnt{font-weight:700; color:var(--gold2); font-size:12.5px}
+.hg-item.full{background:var(--green-soft)}
+.hg-item.full .hg-tx{color:#5F8E5F}
+.hg-item.full .hg-tx:after{content:' ✓'}
 .today-label{font-size:12.5px; color:var(--ink2); display:flex; align-items:center; gap:6px}
 .today-time{font-size:28px; font-weight:700; margin:6px 0 10px}
 .today-time small{font-size:15px}
@@ -177,9 +188,12 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 /* ---------- 待機フローティングカード ---------- */
 #waitCard{position:fixed; left:50%; transform:translateX(-50%); bottom:84px;
   width:100%; max-width:480px; padding:0 14px; z-index:60}
-.wc-row{display:flex; align-items:center; gap:11px; background:rgba(255,253,249,.98);
-  border-radius:18px; box-shadow:0 8px 24px rgba(140,115,80,.28); padding:11px 13px;
+.wc-row{position:relative; display:flex; align-items:center; gap:11px; background:rgba(255,253,249,.98);
+  border-radius:18px; box-shadow:0 8px 24px rgba(140,115,80,.28); padding:13px 13px;
   border:1.5px solid var(--gold-soft)}
+.wc-close{position:absolute; top:6px; right:8px; border:none; background:none; font-size:18px;
+  color:var(--ink3); cursor:pointer; line-height:1; padding:2px 6px; font-family:inherit}
+.wc-sec{font-size:12px; color:var(--gold2); font-weight:700; margin-top:2px}
 .wc-av{width:46px; height:46px; border-radius:50%; flex-shrink:0; display:flex;
   align-items:center; justify-content:center; font-size:24px;
   background:linear-gradient(135deg,#EADBC4,#DCC8AA); border:2.5px solid #D9A85C}
@@ -187,8 +201,6 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .wc-name{font-weight:700; font-size:13px}
 .wc-role{font-size:10.5px; color:var(--ink2); margin-top:2px; line-height:1.5;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
-.wc-stop{flex-shrink:0; border:none; background:var(--red-soft); color:var(--red-ink);
-  border-radius:999px; padding:9px 14px; font-size:12px; font-weight:700; font-family:inherit; cursor:pointer}
 
 /* ---------- フレンド ---------- */
 .fr-tabs{display:flex; gap:8px; padding:4px 18px 0}
@@ -305,13 +317,25 @@ button.pcard{cursor:pointer}
   display:flex; align-items:center; justify-content:center; font-size:20px; transition:transform .12s}
 .tool-btn:active .te{transform:scale(.88)}
 .tool-btn .tl{font-size:9.5px; color:var(--ink2); font-weight:700}
-body.focus-on .tool-btn.focus-hide{display:none}
+body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 /* 進捗カード（下バー上の左右） */
 .prog-card{position:fixed; bottom:110px; width:46%; max-width:215px;
   background:rgba(255,253,249,.93); border-radius:15px; box-shadow:var(--sh);
-  padding:9px 10px; z-index:39; max-height:165px; overflow-y:auto}
+  padding:9px 10px; z-index:39}
+.prog-card .prog-scroll{max-height:150px; overflow-y:auto}
 .prog-card.mine{left:max(8px, calc(50% - 232px))}
 .prog-card.theirs{right:max(8px, calc(50% - 232px))}
+.prog-bubble{position:absolute; left:10px; right:10px; bottom:100%; margin-bottom:8px;
+  background:#5C5247; color:#fff; font-size:11px; font-weight:700; padding:6px 11px;
+  border-radius:12px; line-height:1.4; opacity:0; transform:translateY(6px); transition:all .25s;
+  pointer-events:none; z-index:41}
+.prog-bubble:after{content:''; position:absolute; bottom:-5px; left:24px;
+  border:6px solid transparent; border-top-color:#5C5247; border-bottom:0}
+.prog-bubble.show{opacity:1; transform:none}
+/* UI非表示時：吹き出しは進捗カードの下へ */
+.room-ui.hide-ui ~ .prog-card .prog-bubble.show,
+#scr-room.hide-ui .prog-card .prog-bubble.show{bottom:auto; top:100%; margin-top:8px; margin-bottom:0}
+#scr-room.hide-ui .prog-bubble:after{bottom:auto; top:-5px; border-top-color:transparent; border-bottom:6px solid #5C5247}
 .prog-head{font-size:10.5px; font-weight:700; color:var(--ink2); display:flex;
   align-items:center; gap:5px; margin-bottom:5px}
 .prog-head .edit{margin-left:auto; border:none; background:none; cursor:pointer;
@@ -555,6 +579,10 @@ body.focus-on .tool-btn.focus-hide{display:none}
         <div class="today-goal"><span id="hGoal">目標：2時間</span></div>
       </div>
       <button class="daily-pill" onclick="openDailyGoals(true)"><span id="hDaily">🌱 今日の目標を立てよう</span><span style="color:var(--gold2)">›</span></button>
+      <div class="card home-goals-card" id="homeGoalsCard" style="display:none;margin-top:12px">
+        <div class="hg-head">🌱 今日の目標 <button class="hg-edit" onclick="openDailyGoals(true)">✎ 編集</button></div>
+        <div id="homeGoalsList"></div>
+      </div>
     </div>
     <div class="home-bottom"></div>
   </section>
@@ -576,7 +604,7 @@ body.focus-on .tool-btn.focus-hide{display:none}
 
   <!-- ===== フレンド ===== -->
   <section class="screen" id="scr-friends">
-    <div class="hd"><div style="width:44px"></div>
+    <div class="hd"><button class="icon-btn" onclick="go('scr-home')">‹</button>
       <div class="hd-c"><div class="hd-title">フレンド</div></div><div style="width:44px"></div></div>
     <div class="fr-tabs">
       <button class="fr-tab on" id="frTabList" onclick="frTab('list')">フレンド一覧</button>
@@ -599,7 +627,6 @@ body.focus-on .tool-btn.focus-hide{display:none}
 
       <div class="room-prof">
         <div class="pcard">
-          <div class="bubble-over" id="myBubble"></div>
           <div class="pav">🧸</div>
           <div class="pinfo">
             <div class="pname"><span id="rMyName">あなた</span><span class="goal-chip" id="rMyGoalChip">2h</span></div>
@@ -608,7 +635,6 @@ body.focus-on .tool-btn.focus-hide{display:none}
         </div>
         <div class="connect-mark">⚡</div>
         <button class="pcard" onclick="showPartnerProfile()">
-          <div class="bubble-over" id="partnerBubble"></div>
           <div class="pav" id="rPav">🐰</div>
           <div class="pinfo">
             <div class="pname"><span id="rPName">相手</span><span class="goal-chip" id="rPGoalChip">2h</span></div>
@@ -633,26 +659,28 @@ body.focus-on .tool-btn.focus-hide{display:none}
     </div>
 
     <div class="tool-bar">
-      <button class="tool-btn" onclick="toast('ちょっかい機能はこれから😈')"><div class="te">😈</div><div class="tl">ちょっかい</div></button>
-      <button class="tool-btn focus-hide" onclick="openSheet('stampSheet')"><div class="te">😊</div><div class="tl">スタンプ</div></button>
-      <button class="tool-btn focus-hide" onclick="openSheet('pomoSheet')"><div class="te">🍅</div><div class="tl">ポモドーロ</div></button>
+      <button class="tool-btn mute-fade" onclick="chokkai()"><div class="te">😈</div><div class="tl">ちょっかい</div></button>
+      <button class="tool-btn mute-fade" onclick="openStampSheet()"><div class="te">😊</div><div class="tl">スタンプ</div></button>
+      <button class="tool-btn" onclick="openSheet('pomoSheet')"><div class="te">🍅</div><div class="tl">ポモドーロ</div></button>
       <button class="tool-btn" onclick="toast('モーション機能はこれから🎬')"><div class="te">🎬</div><div class="tl">モーション</div></button>
     </div>
 
     <div class="prog-card mine">
-      <div class="prog-head">🧸 わたしの進捗<button class="edit" onclick="openDailyGoals(true)">✎ 編集</button></div>
-      <div id="myProg"></div>
+      <div class="prog-bubble" id="myProgBubble"></div>
+      <div class="prog-head">📝 あなたの目標<button class="edit" onclick="openDailyGoals(true)">✎ 編集</button></div>
+      <div class="prog-scroll"><div id="myProg"></div></div>
     </div>
     <div class="prog-card theirs">
-      <div class="prog-head">🐰 <span id="theirProgName">相手</span>の進捗</div>
-      <div id="theirProg"></div>
+      <div class="prog-bubble" id="theirProgBubble"></div>
+      <div class="prog-head">💬 <span id="theirProgName">相手</span>の目標（押して応援）</div>
+      <div class="prog-scroll"><div id="theirProg"></div></div>
     </div>
 
   </section>
 
   <!-- ===== 記録 ===== -->
   <section class="screen" id="scr-records">
-    <div class="hd"><div style="width:44px"></div>
+    <div class="hd"><button class="icon-btn" onclick="go('scr-home')">‹</button>
       <div class="hd-c"><div class="hd-title">作業記録</div></div><div style="width:44px"></div></div>
     <div class="rec-tabs">
       <button class="fr-tab on" id="recTabG" onclick="recTab('graph')">グラフ</button>
@@ -668,7 +696,7 @@ body.focus-on .tool-btn.focus-hide{display:none}
 
   <!-- ===== ショップ ===== -->
   <section class="screen" id="scr-shop">
-    <div class="hd"><div style="width:44px"></div>
+    <div class="hd"><button class="icon-btn" onclick="go('scr-home')">‹</button>
       <div class="hd-c"><div class="hd-title">ショップ</div></div>
       <div style="background:var(--card);border-radius:99px;padding:8px 14px;font-weight:700;font-size:13px;box-shadow:var(--sh)">🪙 <span id="shopCoins">0</span></div>
     </div>
@@ -679,7 +707,7 @@ body.focus-on .tool-btn.focus-hide{display:none}
 
   <!-- ===== マイページ ===== -->
   <section class="screen" id="scr-mypage">
-    <div class="hd"><div style="width:44px"></div>
+    <div class="hd"><button class="icon-btn" onclick="go('scr-home')">‹</button>
       <div class="hd-c"><div class="hd-title">マイページ</div></div><div style="width:44px"></div></div>
     <div class="stub-wrap">
       <div class="card" style="display:flex;align-items:center;gap:14px">
@@ -721,12 +749,13 @@ body.focus-on .tool-btn.focus-hide{display:none}
   <!-- 待機中フローティングカード（ホーム・部屋どちらでも操作可能） -->
   <div id="waitCard" style="display:none">
     <div class="wc-row">
+      <button class="wc-close" onclick="hideWaitCard()" title="カードを隠す">×</button>
       <div class="wc-av" id="wcAv">🐈‍⬛</div>
       <div class="wc-body">
         <div class="wc-name" id="wcName">ユメ（受付）</div>
+        <div class="wc-sec" id="wcSec">仲間をさがしてるよ（60）</div>
         <div class="wc-role" id="wcRole">Zzカフェの店長で、元はクロネコ。仲間が見つかるまで隣にいるね。誰かとマッチしたらそっとお別れするよ。</div>
       </div>
-      <button class="wc-stop" onclick="cancelWait()">やめる</button>
     </div>
   </div>
 
@@ -871,12 +900,13 @@ body.focus-on .tool-btn.focus-hide{display:none}
   <!-- スタンプ選択（相手の完了項目用） -->
   <div class="modal center-modal" id="stampPick" style="display:none">
     <div class="modal-title">スタンプかコメント</div>
-    <div class="modal-desc" style="margin-top:4px">スタンプ1つ、またはコメント（10文字まで）</div>
+    <div class="modal-desc" id="stampPickTarget" style="margin-top:4px">スタンプ1つ、またはコメント（10文字まで）</div>
     <div class="stamp-grid" id="stampPickGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px"></div>
     <div class="dg-input-row" style="margin-top:14px">
       <input class="dg-input" id="commentInput" placeholder="コメント…" maxlength="10">
       <button class="dg-add" onclick="sendComment()">送る</button>
     </div>
+    <div style="text-align:center;margin-top:12px"><button class="btn btn-ghost" onclick="closeModal()" style="padding:11px 28px">閉じる</button></div>
   </div>
 
   <!-- ポモドーロシート -->
@@ -1012,6 +1042,8 @@ function closeModal(){ if(modalLock) return; document.getElementById('modalBg').
 function closeModalForce(){ modalLock=false; document.getElementById('modalBg').classList.remove('show'); }
 function bgClose(e){ if(e.target.id==='modalBg') closeModal(); }
 function openSheet(id){ showModal(id); }
+function openStampSheet(){ if(isMuted()){ toast('集中モード中はスタンプを送れないよ🎧'); return; } openSheet('stampSheet'); }
+function chokkai(){ if(isMuted()){ toast('集中モード中はちょっかいを出せないよ🎧'); return; } toast('ちょっかい機能はこれから😈'); }
 function fmtMin(m){ return m>=60? `${Math.floor(m/60)}<small>時間</small>${m%60>0?(m%60)+'<small>分</small>':''}` : `${m}<small>分</small>`; }
 function fmtMinPlain(m){ return m>=60? `${Math.floor(m/60)}時間${m%60>0?(m%60)+'分':''}` : `${m}分`; }
 function goalLabel(){ const g=GOALS.find(g=>g.m===state.profile.goalMin); return g?g.t:'2時間'; }
@@ -1063,9 +1095,9 @@ function go(id){
   window.scrollTo(0,0);
 }
 document.querySelectorAll('.bnav-item').forEach(b=>b.addEventListener('click',()=>{
-  if(b.id==='navCenter' && document.getElementById('scr-home').classList.contains('active')){
-    if(matchWaiting){ toast('いま仲間をさがしてるよ📲'); return; }
-    startWork(); return;
+  if(b.id==='navCenter'){
+    if(matchWaiting){ cancelWait(); return; }      // 待機中はバーがやめる判定（最優先）
+    if(document.getElementById('scr-home').classList.contains('active')){ startWork(); return; }
   }
   go(b.dataset.s);
 }));
@@ -1399,6 +1431,19 @@ function renderHome(){
   const dg=state.dailyGoals||[];
   const doneCnt=dg.filter(g=>g.done>=g.target).length;
   setText('hDaily', dg.length?`🌱 今日の目標 ${doneCnt}/${dg.length} 達成`:'🌱 今日の目標を立てよう');
+  // ホームに目標内容を表示
+  const hc=document.getElementById('homeGoalsCard'), hl=document.getElementById('homeGoalsList');
+  if(hc && hl){
+    if(dg.length){
+      hc.style.display='block';
+      hl.innerHTML=dg.map(g=>{
+        const full=g.done>=g.target;
+        return `<div class="hg-item ${full?'full':''}">
+          <span class="hg-tx">${g.secret?'🤫':'・'}${g.tx}</span>
+          <span class="hg-cnt">${g.done}/${g.target}</span></div>`;
+      }).join('');
+    } else { hc.style.display='none'; }
+  }
   updateReqDots();
 }
 
@@ -1462,6 +1507,7 @@ function startWaiting(){
   if(matchWaiting) return;
   if(needDailyGoals()){ openDailyGoals(false); return; }
   matchWaiting=true; matchSec=0;
+  waitCardHidden=false;
   livePool=[]; mapUsers=[];
   if(window.fbSetScreen) window.fbSetScreen('waiting');
   // ユメの紹介カードを表示（フローティング、操作は可能）
@@ -1475,16 +1521,25 @@ function startWaiting(){
   matchTimer=setInterval(tickMatch, 1000);
   tickMatch();
 }
+let waitCardHidden=false;
 function showWaitCard(show){
-  document.getElementById('waitCard').style.display = show?'block':'none';
+  if(show) waitCardHidden=false;
+  document.getElementById('waitCard').style.display = (show && !waitCardHidden)?'block':'none';
+}
+function hideWaitCard(){
+  waitCardHidden=true;
+  document.getElementById('waitCard').style.display='none';
+  toast('カードを隠したよ（下のバーで待機中）');
 }
 function setWaitCount(){
   const left=Math.max(0, 60-(matchSec%60));
-  // 下のバーの中央ボタンを「待機（左）」表示に
+  // カード内に秒数
+  const sc=document.getElementById('wcSec'); if(sc) sc.textContent=`仲間をさがしてるよ（${left}）`;
+  // 下のバーの中央ボタンは「やめる」
   const ic=document.getElementById('navCenterIcon'), lb=document.getElementById('navCenterLabel');
   if(matchWaiting){
     if(ic) ic.textContent='📲';
-    if(lb) lb.textContent=`待機（${left}）`;
+    if(lb) lb.textContent=`やめる（${left}）`;
   }
 }
 function tickMatch(){
@@ -1661,7 +1716,7 @@ function enterRoom(partner){
   pendingGifts=0; grantedThresholds=[];
   myGoalStamps={};
   focusMode=false; partnerFocusing=false;
-  document.body.classList.remove('focus-on');
+  document.body.classList.remove('focus-on'); document.body.classList.remove('muted');
   const fb=document.getElementById('focusBtn'); if(fb) fb.style.background='';
   pomoSec=25*60; pomoRunning=false; pomoPhase='work'; pomoActive=false;
   applyRoomBg();
@@ -1742,15 +1797,10 @@ function updateGiftFloat(){
 window.onMyGoalMarks=function(marks){
   myGoalStamps=marks||{};
   renderMyProg();
-  // 最新のマークを吹き出しで自分の上に表示
   const vals=Object.values(myGoalStamps);
   if(vals.length){
     const last=vals[vals.length-1];
-    const b=document.getElementById('myBubble');
-    if(b && last){
-      b.textContent = last.comment || last.stamp || '';
-      if(b.textContent){ b.classList.add('show'); clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('show'),6000); }
-    }
+    if(last){ showBubble('myProgBubble', last.comment || last.stamp || ''); }
   }
 };
 function renderMyProg(){
@@ -1800,19 +1850,21 @@ function renderTheirProg(){
 }
 let stampTargetIdx=null;
 function pickStampFor(i){
-  if(partnerFocusing){ toast('相手は集中モード中。そっとしておこう🎧'); return; }
+  if(isMuted()){ toast('集中モード中はコメントを送れないよ🎧'); return; }
   stampTargetIdx=i;
   document.getElementById('stampPickGrid').innerHTML=STAMPS.map((s,si)=>`
     <button class="stamp-btn" onclick="applyItemStamp(${si})" style="background:var(--card2);border:none;border-radius:14px;padding:12px 4px;cursor:pointer;font-family:inherit">
       <div style="font-size:25px">${s.e}</div><div style="font-size:10px;color:var(--ink2);font-weight:700;margin-top:3px">${s.l}</div>
     </button>`).join('');
+  const tgt=document.getElementById('stampPickTarget');
+  if(tgt && room && room.partner.goals[i]){ const g=room.partner.goals[i]; tgt.textContent=`「${g.secret?'ヒミツ':g.tx}」に送る`; }
   const ci=document.getElementById('commentInput'); if(ci) ci.value='';
   showModal('stampPick');
 }
 function applyItemStamp(si){
   if(stampTargetIdx===null || !room) return;
+  if(isMuted()){ toast('集中モード中は送れないよ🎧'); return; }
   const idx=stampTargetIdx;
-  // スタンプは1個だけ：その項目のstampsを上書き（コメントとの二択）
   const g=room.partner.goals[idx];
   if(room.partner.isReal && window.fbApi){
     window.fbApi.setPartnerMark(room.partner.uid, idx, {stamp:STAMPS[si].e});
@@ -1823,11 +1875,12 @@ function applyItemStamp(si){
   }
   logStamp(room.partner.name, g.tx, STAMPS[si].e);
   playPop(3);
-  showPartnerBubble(STAMPS[si].e);
+  showBubble('theirProgBubble', STAMPS[si].e);
   closeModal(); renderTheirProg();
 }
 function sendComment(){
   if(stampTargetIdx===null || !room) return;
+  if(isMuted()){ toast('集中モード中は送れないよ🎧'); return; }
   const idx=stampTargetIdx;
   const tx=(document.getElementById('commentInput').value||'').trim().slice(0,10);
   if(!tx){ toast('コメントを入れてね（10文字まで）'); return; }
@@ -1838,19 +1891,22 @@ function sendComment(){
     g.comment=tx; g.stamps={};
   }
   playPop(2);
-  showPartnerBubble(tx);
-  closeModal(); renderTheirProg();
+  showBubble('theirProgBubble', tx);
+  document.getElementById('commentInput').value='';
+  renderTheirProg();
   toast('コメントを送ったよ💬');
+  // モーダルは閉じない（連続でコメントしやすく）
 }
-/* 相手の上に出る吹き出し（UI非表示時は下に移動） */
-function showPartnerBubble(text){
-  const b=document.getElementById('partnerBubble');
+/* 進捗カードの吹き出し（通常は上、UI非表示時は下） */
+function showBubble(id, text){
+  const b=document.getElementById(id);
   if(!b) return;
   b.textContent=text;
   b.classList.add('show');
   clearTimeout(b._t);
   b._t=setTimeout(()=>b.classList.remove('show'), 6000);
 }
+function showPartnerBubble(text){ showBubble('theirProgBubble', text); }
 /* 相手プロフィール */
 function showPartnerProfile(){
   if(!room) return;
@@ -2080,23 +2136,29 @@ function leaveFlow(){
   leaveResults.forEach((r,i)=>setTimeout(()=>playGiftOpen(i), i*180));
   document.getElementById('lrDesc').textContent=`今回の作業：${fmtMinPlain(Math.max(min,0))}　えらい！`;
   document.getElementById('lrList').innerHTML=leaveResults.map(r=>`<div class="reward-row"><span class="re">${r.e}</span>${r.n}</div>`).join('');
+  const hasReal=(galLeftPartner && galLeftPartner.isReal);
+  document.getElementById('lrNext').textContent = hasReal ? 'みんなを応援する ›' : 'ホームに戻る';
   showModal('leaveRewardModal');
 }
 let focusMode=false;
 function toggleFocus(){
   focusMode=!focusMode;
   document.getElementById('focusBtn').style.background = focusMode?'var(--gold-soft)':'';
-  document.body.classList.toggle('focus-on', focusMode);
-  // 相手に集中状態を共有（相手はスタンプ/コメントを送れなくなる）
   if(room && room.partner.isReal && window.fbSetFocus) window.fbSetFocus(focusMode);
-  toast(focusMode?'🎧 集中モード ON（スタンプ・ポモを隠したよ）':'🎧 集中モード OFF');
+  applyMuteState();
+  toast(focusMode?'🎧 集中モード ON':'🎧 集中モード OFF');
 }
 window.onPartnerFocus=function(on){
-  // 相手が集中モード → 自分はその相手にスタンプ/コメントを送れない
   partnerFocusing=!!on;
+  applyMuteState();
   if(on) toast('相手が集中モードに入ったよ🎧');
 };
 let partnerFocusing=false;
+// 自分か相手のどちらかがミュートしてたら、スタンプ・ちょっかいを薄く＆無効化
+function isMuted(){ return focusMode || partnerFocusing; }
+function applyMuteState(){
+  document.body.classList.toggle('muted', isMuted());
+}
 function simulateDC(){
   closeModal();
   setTimeout(()=>{ showModal('dcModal'); },400);
@@ -2173,9 +2235,9 @@ function nextGallery(){
   else finishGallery();
 }
 function finishOrGallery(){
-  const realList=(mapUsers||[]).filter(u=>u.isReal);
-  if(realList.length){
-    document.getElementById('lrNext').textContent='ホームに戻る';
+  // 直前まで一緒だった本物のプレイヤー、または今いる本物プレイヤーがいればギャラリーへ
+  const hasReal = (galLeftPartner && galLeftPartner.isReal) || (mapUsers||[]).some(u=>u.isReal);
+  if(hasReal){
     openGallery();
   } else {
     closeModal(); room=null; go('scr-home');
