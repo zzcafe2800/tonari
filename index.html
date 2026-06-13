@@ -202,6 +202,12 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
   transition:opacity .3s; white-space:nowrap}
 .muser.near .mname{opacity:1}
 .muser.me{z-index:10; transition:none}
+.muser.real .mav{box-shadow:0 0 0 2px rgba(201,168,124,.35), var(--sh)}
+.muser.on-home .mav{border-color:#E08A8A !important; box-shadow:0 0 0 3px rgba(224,138,138,.4), var(--sh)}
+.muser.in-room .mav{opacity:.5}
+.sub-av{position:absolute; right:-6px; top:-6px; width:20px; height:20px; border-radius:50%;
+  background:var(--card); border:2px solid #fff; box-shadow:var(--sh); font-size:11px;
+  display:none; align-items:center; justify-content:center; line-height:1}
 .muser.me .mav{width:52px; height:52px; font-size:24px; border-color:#D9A85C; background:#FDF6E8}
 .muser.me.hop .mav{animation:hop .35s ease}
 @keyframes hop{0%{transform:scale(1)} 40%{transform:scale(1.12) translateY(-4px)} 100%{transform:scale(1)}}
@@ -247,7 +253,6 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 #scr-room{position:relative; background:linear-gradient(180deg,#E7DCC6 0%, #F1E9DA 50%, #F6F1E8 100%)}
 .room-ui.hide-ui .hd,
 .room-ui.hide-ui .room-prof,
-.room-ui.hide-ui .gift-float,
 #scr-room.hide-ui .tool-bar{ opacity:0; pointer-events:none; transition:opacity .5s }
 .room-ui .hd, .room-ui .room-prof, .room-ui .gift-float,
 #scr-room .tool-bar { transition:opacity .3s }
@@ -283,7 +288,6 @@ button.pcard{cursor:pointer}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,168,124,.45)} 60%{box-shadow:0 0 0 9px rgba(201,168,124,0)}}
 /* タイマー（ガラス＋ポモリング） */
 .timer-wrap{position:relative; width:min(80%,300px); height:138px; margin:14px auto 0; cursor:pointer}
-.tc-rbar{margin-top:14px}
 .pomo-svg{position:absolute; inset:-7px; width:calc(100% + 14px); height:calc(100% + 14px); display:none; pointer-events:none}
 .pomo-svg.show{display:block}
 .timer-circle{position:absolute; inset:0; border-radius:26px;
@@ -295,10 +299,11 @@ button.pcard{cursor:pointer}
 .tc-time{font-size:38px; font-weight:700; letter-spacing:1.5px; margin:3px 0 1px;
   text-shadow:0 2px 10px rgba(0,0,0,.35)}
 .tc-reward{font-size:11.5px; color:rgba(255,255,255,.85); margin-top:10px; font-weight:700}
-.tc-rbar{width:54%; height:5px; background:rgba(255,255,255,.22); border-radius:99px; overflow:hidden; margin-top:6px}
+.tc-rbar{width:54%; height:5px; background:rgba(255,255,255,.22); border-radius:99px; overflow:hidden; margin-top:7px}
+.tc-rlabel{font-size:11px; color:rgba(255,255,255,.9); font-weight:700; margin-top:9px; text-shadow:0 1px 4px rgba(0,0,0,.35)}
 .tc-rbar i{display:block; height:100%; width:100%; background:linear-gradient(90deg,#F5D98E,#E8B86B);
   border-radius:99px; transition:width 1s linear}
-.gift-float{position:absolute; top:248px; left:18%; width:54px; height:54px; border-radius:50%;
+.gift-float{position:absolute; top:312px; left:18%; width:54px; height:54px; border-radius:50%;
   background:linear-gradient(135deg,#FBE9C8,#F4D9A5); border:none; font-size:25px; cursor:pointer;
   box-shadow:0 6px 16px rgba(190,150,90,.35); display:none; align-items:center; justify-content:center;
   z-index:5; animation:gpop .3s ease, wobble 1.6s ease .3s infinite; font-family:inherit}
@@ -341,6 +346,8 @@ button.pcard{cursor:pointer}
   justify-content:center; background:var(--gold-soft); color:var(--gold2); flex-shrink:0}
 .prog-item.tap{cursor:pointer}
 .prog-item.tap:active{background:var(--pink-soft)}
+.prog-item .pbtn.heart{background:var(--pink-soft); color:#E08A8A; font-size:10px}
+.prog-item .pbtn.heart:active{transform:scale(.85)}
 .pstamps{display:inline-flex; gap:2px; font-size:9.5px; color:var(--ink2); white-space:nowrap}
 /* 音楽バー（下バー） */
 .music-bar{position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
@@ -663,6 +670,7 @@ button.pcard{cursor:pointer}
         <svg class="pomo-svg" id="pomoSvg"><rect id="pomoRect" fill="none" stroke-width="5" stroke-linecap="round"/></svg>
         <div class="timer-circle">
           <div class="tc-time" id="elapsed">00:00:00</div>
+          <div class="tc-rlabel" id="rewardLeft">🎁 次の報酬まで あと15分</div>
           <div class="tc-rbar"><i id="rewardBar"></i></div>
         </div>
       </div>
@@ -1095,6 +1103,10 @@ function go(id){
   if(id==='scr-goal') renderGoalEdit();
   if(id==='scr-roomedit') renderRoomEdit();
   if(id==='scr-skin') renderSkin();
+  // プレゼンス（マップ以外で部屋でなければ home 状態として共有。マップ／部屋は各々が設定）
+  if(window.fbSetScreen && id!=='scr-map' && id!=='scr-room' && !room){
+    window.fbSetScreen('home');
+  }
   window.scrollTo(0,0);
 }
 document.querySelectorAll('.bnav-item').forEach(b=>b.addEventListener('click',()=>{
@@ -1183,6 +1195,8 @@ function closeDailyGoals(){
   state.dailyDate=todayStr(); save();
   modalLock=false; closeModal();
   renderMyProg();
+  if(window.fbSaveDailyGoals) window.fbSaveDailyGoals();
+  if(room && room.partner.isReal && window.fbApi) window.fbApi.pushMyGoals();
 }
 
 /* ============================================================ セットアップ ============================================================ */
@@ -1455,7 +1469,6 @@ function score(u){
 function openMap(){
   if(!state.setupDone){ openWizard(); return; }
   buildMapUsers();
-  fbMergeOnlineUsers();
   myWorld={x:0,y:0};
   document.getElementById('mapGoalTime').textContent='目標 '+goalLabel();
   document.getElementById('mapGoalCat').textContent=profileCatLabel();
@@ -1463,6 +1476,9 @@ function openMap(){
   go('scr-map');
   buildMapDom();
   updateMapPositions(false);
+  if(window.fbSetScreen) window.fbSetScreen('map');
+  if(window.fbSetLoc) window.fbSetLoc(myWorld.x, myWorld.y);
+  syncLivePlayersOnMap();
   clearInterval(wanderTimer);
   wanderTimer=setInterval(()=>{
     if(!document.getElementById('scr-map').classList.contains('active')){ clearInterval(wanderTimer); return; }
@@ -1637,6 +1653,7 @@ function updateReqDots(){
 
 /* ============================================================ 作業部屋 ============================================================ */
 let room=null, elapsedTimer=null, pomoTimer=null, partnerSimTimer=null;
+let myGoalStamps={}; // 相手が自分の目標に押してくれたスタンプ {goalIdx:{emoji:count}}
 let pomoSec=25*60, pomoRunning=false, pomoPhase='work', pomoActive=false;
 let pendingGifts=0, grantedThresholds=[];
 const THRESHOLDS=(()=>{const a=[15,25,30];let c=30;for(let i=0;i<30;i++){c+=5;a.push(c)}return a;})();
@@ -1656,6 +1673,7 @@ function applyRoomBg(){
 function enterRoom(partner){
   room={partner, start:Date.now(), todos:[]};
   pendingGifts=0; grantedThresholds=[];
+  myGoalStamps={};
   pomoSec=25*60; pomoRunning=false; pomoPhase='work'; pomoActive=false;
   applyRoomBg();
   setText('rMyName',state.profile.name);
@@ -1677,23 +1695,25 @@ function enterRoom(partner){
   tickElapsed();
   pingActivity();
   clearInterval(partnerSimTimer);
-  partnerSimTimer=setInterval(()=>{
-    if(!room) return;
-    const cand=(room.partner.goals||[]).filter(g=>g.done<g.target);
-    if(cand.length && Math.random()<.6){
-      const g=rnd(cand);
-      g.done++;
-      const npc=state.npcs.find(n=>n.name===room.partner.name);
-      if(npc){ const ng=npc.goals.find(x=>x.tx===g.tx); if(ng) ng.done=g.done; save(); }
-      renderTheirProg();
-      if(g.done>=g.target) toast(`${room.partner.name}さんが「${g.tx}」を達成！🎉`);
-    }
-  }, 22000);
+  // NPC相手のときだけローカルでシミュレーション。本物はFirebaseで同期
+  if(!partner.isReal){
+    partnerSimTimer=setInterval(()=>{
+      if(!room) return;
+      const cand=(room.partner.goals||[]).filter(g=>g.done<g.target);
+      if(cand.length && Math.random()<.6){
+        const g=rnd(cand);
+        g.done++;
+        const npc=state.npcs.find(n=>n.name===room.partner.name);
+        if(npc){ const ng=npc.goals.find(x=>x.tx===g.tx); if(ng) ng.done=g.done; save(); }
+        renderTheirProg();
+        if(g.done>=g.target) toast(`${room.partner.name}さんが「${g.tx}」を達成！🎉`);
+      }
+    }, 22000);
+  }
 }
 let timerMode='session';
 function toggleTimerMode(){
   timerMode = timerMode==='session' ? 'pomo' : 'session';
-  document.getElementById('rewardBar').parentElement.style.display = timerMode==='session' ? 'block' : 'none';
   tickElapsed();
 }
 function tickElapsed(){
@@ -1714,7 +1734,8 @@ function tickElapsed(){
     if(min<THRESHOLDS[i]){ next=THRESHOLDS[i]; prev=i>0?THRESHOLDS[i-1]:0; break; }
   }
   const remain=Math.max(0,(next-min)/(next-prev));
-  document.getElementById('rewardBar').style.width=(remain*100)+'%';
+  setWidth('rewardBar',(remain*100)+'%');
+  setText('rewardLeft',`🎁 次の報酬まで あと${Math.max(1,Math.ceil(next-min))}分`);
   THRESHOLDS.forEach(t=>{
     if(min>=t && !grantedThresholds.includes(t)){
       grantedThresholds.push(t); pendingGifts++;
@@ -1729,13 +1750,17 @@ function updateGiftFloat(){
   else c.style.display='none';
 }
 /* 進捗カード */
+window.onMyGoalStamps=function(st){ myGoalStamps=st||{}; renderMyProg(); };
 function renderMyProg(){
   const el=document.getElementById('myProg');
   if(!el) return;
   el.innerHTML=state.dailyGoals.map((g,i)=>{
     const full=g.done>=g.target;
+    const st=myGoalStamps[i]||{};
+    const stampStr=Object.entries(st).map(([e,n])=>`${e}${n>1?n:''}`).join('');
     return `<div class="prog-item ${full?'full':''}">
       <span class="ptx">・${g.tx}</span>
+      ${stampStr?`<span class="pstamps">${stampStr}</span>`:''}
       <span class="pcnt">${g.done}/${g.target}</span>
       <button class="pbtn" onclick="myProgChange(${i},-1)">−</button>
       <button class="pbtn" onclick="myProgChange(${i},1)">＋</button>
@@ -1749,6 +1774,9 @@ function myProgChange(i,d){
   if(d>0 && g.done>was) playPop(g.done);
   if(g.done>=g.target && was<g.target){ playChime(); toast(`「${g.tx}」達成！えらい！🎉`); }
   save(); renderMyProg();
+  // 相手にリアルタイム共有
+  if(room && room.partner.isReal && window.fbApi) window.fbApi.pushMyGoals();
+  if(window.fbSaveDailyGoals) window.fbSaveDailyGoals();
 }
 function renderTheirProg(){
   const el=document.getElementById('theirProg');
@@ -1757,10 +1785,11 @@ function renderTheirProg(){
   el.innerHTML=goals.map((g,i)=>{
     const full=g.done>=g.target;
     const stampStr=Object.entries(g.stamps||{}).map(([e,n])=>`${e}${n>1?n:''}`).join('');
-    return `<div class="prog-item ${full?'full':''} ${full?'tap':''}" ${full?`onclick="pickStampFor(${i})"`:''}>
+    return `<div class="prog-item ${full?'full':''}">
       <span class="ptx">・${g.tx}</span>
       ${stampStr?`<span class="pstamps">${stampStr}</span>`:''}
       <span class="pcnt">${g.done}/${g.target}</span>
+      ${full?`<button class="pbtn heart" onclick="pickStampFor(${i})">❤</button>`:''}
     </div>`;
   }).join('') || '<div style="font-size:10px;color:var(--ink3);text-align:center;padding:6px">目標がないみたい</div>';
 }
@@ -1778,8 +1807,13 @@ function applyItemStamp(si){
   const g=room.partner.goals[stampTargetIdx];
   if(!g.stamps) g.stamps={};
   g.stamps[STAMPS[si].e]=(g.stamps[STAMPS[si].e]||0)+1;
-  const npc=state.npcs.find(n=>n.name===room.partner.name);
-  if(npc){ const ng=npc.goals.find(x=>x.tx===g.tx); if(ng){ ng.stamps=ng.stamps||{}; ng.stamps[STAMPS[si].e]=(ng.stamps[STAMPS[si].e]||0)+1; } }
+  if(room.partner.isReal && window.fbApi){
+    // 相手の目標配下のstampsに加算（相手の画面にも反映）
+    window.fbApi.stampPartnerGoal(room.partner.uid, stampTargetIdx, STAMPS[si].e);
+  } else {
+    const npc=state.npcs.find(n=>n.name===room.partner.name);
+    if(npc){ const ng=npc.goals.find(x=>x.tx===g.tx); if(ng){ ng.stamps=ng.stamps||{}; ng.stamps[STAMPS[si].e]=(ng.stamps[STAMPS[si].e]||0)+1; } }
+  }
   logStamp(room.partner.name, g.tx, STAMPS[si].e);
   playPop(3);
   closeModal(); renderTheirProg();
@@ -2003,7 +2037,9 @@ function leaveFlow(){
   leaveResults=[];
   for(let i=0;i<boxes;i++){ const r=rollReward(); applyReward(r); leaveResults.push(r); }
   pendingGifts=0; save();
+  galLeftPartner = (room && room.partner.isReal) ? room.partner : null;
   if(room && room.partner.isReal && window.fbApi) window.fbApi.leaveRoomSync();
+  if(window.fbSetScreen) window.fbSetScreen('home');
   clearInterval(elapsedTimer); clearInterval(pomoTimer); clearInterval(partnerSimTimer);
   pomoRunning=false; pomoActive=false;
   leaveResults.forEach((r,i)=>setTimeout(()=>playGiftOpen(i), i*180));
@@ -2024,11 +2060,13 @@ function simulateDC(){
 function dcLeave(){ leaveFlow(); }
 
 /* ============================================================ 終了後ギャラリー ============================================================ */
-let galList=[], galIdx=0, galCombo=0, galComboT=null, galStamp='💗';
+let galList=[], galIdx=0, galCombo=0, galComboT=null, galStamp='💗', galLeftPartner=null;
 function openGallery(){
-  // 本物のプレイヤー（マップ上のisReal）のみ。NPCには意味がないので含めない
-  const realList=(mapUsers||[]).filter(u=>u.isReal);
-  galList=realList.slice(0,2);
+  // 本物のプレイヤーの投稿のみ（NPCは意味がないので除外）。最大2件
+  const list=[];
+  if(galLeftPartner && galLeftPartner.isReal) list.push(galLeftPartner);
+  (mapUsers||[]).filter(u=>u.isReal && (!galLeftPartner || u.id!==galLeftPartner.id)).forEach(u=>list.push(u));
+  galList=list.slice(0,2);
   galIdx=0; galStamp='💗';
   if(!galList.length){ finishGallery(); return; }
   renderGallery();
@@ -2037,20 +2075,21 @@ function openGallery(){
 function renderGallery(){
   const u=galList[galIdx];
   document.getElementById('galIndex').textContent=`${galIdx+1}/${galList.length}`;
-  const goals=(u.goals||[]).slice(0,2);
+  const goals=(u.goals||[]).slice(0,5);
   const total=Object.values(state.npcStampLog[u.name]||{}).reduce((a,b)=>a+b,0);
+  const sub=u.detail||(CATS[u.cat]?CATS[u.cat].name:'作業');
   document.getElementById('galBody').innerHTML=`
     <div class="gal-card">
       <div class="gal-count">💗 ${total}</div>
       <div class="gal-head">
         <div class="gal-av">${u.emoji}</div>
         <div><div class="gal-name">${u.name}</div>
-        <div class="gal-sub">${u.detail||CATS[u.cat].name}${state.friends.some(f=>f.name===u.name)?'・フレンド':''}</div></div>
+        <div class="gal-sub">${sub}${state.friends.some(f=>f.name===u.name)?'・フレンド':''}</div></div>
       </div>
       <div class="gal-goals">
-        ${goals.map(g=>`<div class="gal-goal ${g.done>=g.target?'full':''}">
+        ${goals.length?goals.map(g=>`<div class="gal-goal ${g.done>=g.target?'full':''}">
           <span class="gg-tx">・${g.tx}</span>
-          <span class="gg-cnt">${g.done}/${g.target}</span></div>`).join('')}
+          <span class="gg-cnt">${g.done}/${g.target}</span></div>`).join(''):'<div style="font-size:12px;color:var(--ink3);padding:6px">今日の目標は未設定だったみたい</div>'}
       </div>
       <div class="gal-stamp-row">
         ${STAMPS.map(s=>`<button class="gal-pick ${galStamp===s.e?'on':''}" onclick="galPick('${s.e}')">${s.e}</button>`).join('')}
@@ -2095,10 +2134,12 @@ function finishOrGallery(){
     openGallery();
   } else {
     closeModal(); room=null; go('scr-home');
+    if(window.fbSetScreen) window.fbSetScreen('home');
   }
 }
 function finishGallery(){
   modalLock=false; closeModal(); room=null; go('scr-home');
+  if(window.fbSetScreen) window.fbSetScreen('home');
 }
 
 /* ============================================================ 記録 ============================================================ */
@@ -2271,7 +2312,7 @@ function pingActivity(){
     if(!room) return;
     if(ui) ui.classList.add('hide-ui');
     if(scr) scr.classList.add('hide-ui');
-  }, 7000);
+  }, 10000);
 }
 ['click','touchstart','keydown','mousemove'].forEach(ev=>{
   document.addEventListener(ev,()=>{ if(room) pingActivity(); }, {passive:true});
@@ -2292,10 +2333,10 @@ function acceptInvite(){
   const pr=v.profile||{};
   const partner={ id:v.from, name:v.fromName||'プレイヤー', cat:pr.cat||'study',
     detail:pr.detail||null, detail2:pr.detail2||null, style:pr.style||'cowork',
-    tags:(pr.tags||[]), streak:pr.streak||1, todayMin:pr.todayMin||0,
-    isBreak:false, emoji:pr.emoji||'🙂', border:'#C9A87C', isReal:true, goals:[] };
+    tags:(pr.tags||[]), streak:pr.streak||1, todayMin:pr.todayMin||0, goalMin:pr.goalMin||120,
+    isBreak:false, emoji:pr.emoji||'🙂', border:'#C9A87C', isReal:true, goals:[], uid:v.from };
   enterRoom(partner);
-  if(window.fbApi) window.fbApi.joinRoomSync(v.roomId, v.from);
+  if(window.fbApi){ window.fbApi.joinRoomSync(v.roomId, v.from); window.fbSetScreen&&window.fbSetScreen('room'); window.fbSetPartnerEmoji&&window.fbSetPartnerEmoji(partner.emoji); }
 }
 function declineInvite(){
   if(pendingInvite && window.fbApi) window.fbApi.respondInvite(false);
@@ -2304,13 +2345,19 @@ function declineInvite(){
 window.onInviteAnswered=function(ok, target, roomId){
   if(ok){
     toast(`${target.name}さんが承諾したよ！🎉`);
-    setTimeout(()=>{ enterRoom(target); if(window.fbApi) window.fbApi.joinRoomSync(roomId, target.id); },600);
+    target.uid=target.id;
+    setTimeout(()=>{ enterRoom(target); if(window.fbApi){ window.fbApi.joinRoomSync(roomId, target.id); window.fbSetScreen&&window.fbSetScreen('room'); window.fbSetPartnerEmoji&&window.fbSetPartnerEmoji(target.emoji||'🙂'); } },600);
   } else {
     toast('返事がなかったみたい…またさそってみよう');
   }
 };
 window.onPartnerStamp=function(v){ floatStamp({e:v.e,l:v.l||''},0.72); playPop(4); };
 window.onPartnerGone=function(){ if(room && room.partner.isReal){ showModal('dcModal'); } };
+window.onPartnerGoals=function(goals){
+  if(!room || !room.partner.isReal) return;
+  room.partner.goals = Array.isArray(goals) ? goals.map(g=>({tx:g.tx, target:g.target, done:g.done||0, stamps:g.stamps||{}})) : [];
+  renderTheirProg();
+};
 window.onMapStamp=function(v){
   const u=mapUsers.find(x=>x.id===v.uid);
   if(u && u.el){
@@ -2340,37 +2387,66 @@ function mapStamp(e){
   if(window.fbApi) window.fbApi.sendMapStamp(e);
 }
 
+/* 全プレイヤーの生存情報を受信→共有マップへ反映 */
+let livePlayers=[];
+window.onLivePlayers=function(arr){
+  livePlayers=arr||[];
+  if(document.getElementById('scr-map').classList.contains('active')) syncLivePlayersOnMap();
+};
+function liveStateOf(v){
+  // 'home'=赤縁, 'room'=薄く＋相手アイコン, 'map'=通常
+  return v.screen||'map';
+}
+
 window.fbApi=null;
 function fbSaveProfile(){ if(window.fbApi) window.fbApi.saveProfile(); }
-function fbSendMove(){ /* リアルタイム位置共有はPart 3 */ }
-async function fbMergeOnlineUsers(){
-  if(!window.fbApi) return;
-  try{
-    const users=await window.fbApi.getOnline();
-    users.forEach(u=>{
-      const ang=Math.random()*Math.PI*2;
-      const r=280+Math.random()*420;
-      const nu={
-        id:u.id, name:u.name||'プレイヤー', cat:u.cat||'study',
-        detail:u.detail||null, detail2:u.detail2||null, style:u.style||'cowork',
-        tags:(u.tags||[]).filter(t=>t!==NPC_TAG),
-        streak:u.streak||1, todayMin:u.todayMin||0,
-        isBreak:false, emoji:rnd(CAT_EMOJI[u.cat||'study']),
-        border:'#C9A87C', isReal:true, goals:[],
-        x:Math.cos(ang)*r, y:Math.sin(ang)*r*0.85,
-      };
-      mapUsers.push(nu);
-      const area=document.getElementById('mapArea');
+function fbSendMove(){ if(window.fbSetLoc) window.fbSetLoc(myWorld.x, myWorld.y); }
+
+/* 共有マップ：live配下の全プレイヤーをマップ上に同期 */
+function syncLivePlayersOnMap(){
+  const area=document.getElementById('mapArea');
+  if(!area) return;
+  const seen={};
+  livePlayers.forEach(v=>{
+    seen[v.uid]=true;
+    let u=mapUsers.find(x=>x.id===v.uid);
+    if(!u){
+      u={ id:v.uid, name:v.name||'プレイヤー', cat:v.cat||'study',
+        detail:v.detail||null, detail2:v.detail2||null, style:v.style||'cowork',
+        tags:(v.tags||[]).filter(t=>t!==NPC_TAG),
+        streak:v.streak||1, todayMin:v.todayMin||0, goalMin:v.goalMin||120,
+        isBreak:false, emoji:v.emoji||'🙂', border:'#C9A87C', isReal:true, goals:[], uid:v.uid };
+      // 相手の共有座標を採用（無ければランダム）
+      u.x = (typeof v.x==='number')?v.x : Math.cos(Math.random()*6.28)*350;
+      u.y = (typeof v.y==='number')?v.y : Math.sin(Math.random()*6.28)*300;
+      mapUsers.push(u);
       const d=document.createElement('div');
-      d.className='muser';
-      d.innerHTML=`<div class="mav" style="--bd:${nu.border}">${nu.emoji}<div class="stat"></div></div>
-        <div class="mname">🌐${nu.name}</div>`;
-      d.addEventListener('click',e=>{ e.stopPropagation(); showProfile(nu); });
+      d.className='muser real';
+      d.innerHTML=`<div class="mav" style="--bd:${u.border}">${u.emoji}<div class="stat"></div><div class="sub-av"></div></div>
+        <div class="mname">🌐${u.name}</div>`;
+      d.addEventListener('click',e=>{ e.stopPropagation(); showProfile(u); });
       area.appendChild(d);
-      nu.el=d;
-    });
-    if(users.length){ updateMapPositions(false); toast(`🌐 本物のプレイヤーが${users.length}人いるよ！`); }
-  }catch(e){ console.log('online users fetch skip', e); }
+      u.el=d;
+    }
+    // 位置・状態の更新
+    u.todayMin=v.todayMin||u.todayMin; u.streak=v.streak||u.streak; u.screen=v.screen||'map';
+    u.partnerEmoji=v.partnerEmoji||null;
+    if(typeof v.x==='number'){ u.x=v.x; u.y=v.y; }
+    // 見た目（赤縁／薄く＋相手アイコン）
+    if(u.el){
+      const mav=u.el.querySelector('.mav');
+      const sub=u.el.querySelector('.sub-av');
+      u.el.classList.toggle('on-home', u.screen==='home');
+      u.el.classList.toggle('in-room', u.screen==='room');
+      if(sub){ sub.textContent = (u.screen==='room' && u.partnerEmoji)?u.partnerEmoji:''; sub.style.display = (u.screen==='room' && u.partnerEmoji)?'flex':'none'; }
+    }
+  });
+  // 消えたプレイヤーを除去
+  mapUsers.filter(u=>u.isReal && !seen[u.id]).forEach(u=>{
+    if(u.el) u.el.remove();
+  });
+  mapUsers=mapUsers.filter(u=>!u.isReal || seen[u.id]);
+  updateMapPositions(true);
 }
 
 /* ============================================================ 起動 ============================================================ */
@@ -2406,7 +2482,7 @@ try{
   const { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
   const { getFirestore, doc, setDoc, getDocs, collection, query, where, limit, serverTimestamp, updateDoc } =
     await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js');
-  const { getDatabase, ref, set, onValue, remove, onDisconnect, update } =
+  const { getDatabase, ref, set, onValue, remove, onDisconnect, update, runTransaction } =
     await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js');
 
   const firebaseConfig = {
@@ -2449,20 +2525,44 @@ try{
     });
     return arr;
   }
+  /* ===== RTDB：プレゼンス・共有マップ・招待・部屋同期 ===== */
+  let inviteUnsub=null, inviteTimeout=null;
+  let roomRefPath=null, partnerUnsub=null, stampUnsub=null, pgoalsUnsub=null, joinT=0, joinedOnce=false;
+  let liveRef=null, presenceTimer=null;
+  let myScreen='home', myLoc={x:0,y:0}, myRoomId=null, myPartnerName=null;
+
+  function emoji(){ return state.profile.emoji||'🧸'; }
+  function myProfileSnapshot(){
+    const p=state.profile;
+    return {name:p.name, cat:p.cat||'study', detail:p.detail||null, detail2:p.detail2||null, style:p.style||'cowork',
+      tags:p.tags||[], streak:state.streak, todayMin:state.todayMin, goalMin:p.goalMin||120, emoji:emoji()};
+  }
+  // 自分の生存情報を書き込む（マップ全員共有のもと）
+  function writeLive(){
+    if(!uid) return;
+    const data={
+      uid, name:state.profile.name, emoji:emoji(),
+      screen:myScreen,                 // 'home' | 'map' | 'room'
+      x:Math.round(myLoc.x), y:Math.round(myLoc.y),
+      cat:state.profile.cat||'study', detail:state.profile.detail||null, detail2:state.profile.detail2||null,
+      style:state.profile.style||'cowork', tags:state.profile.tags||[],
+      streak:state.streak, todayMin:state.todayMin, goalMin:state.profile.goalMin||120,
+      partnerEmoji: myPartnerEmoji||null,
+      t:Date.now(),
+    };
+    set(liveRef, data).catch(()=>{});
+  }
+  let myPartnerEmoji=null;
+  window.fbSetScreen=function(scr){ myScreen=scr; writeLive(); };
+  window.fbSetLoc=function(x,y){ myLoc={x,y}; writeLive(); };
+  window.fbSetPartnerEmoji=function(e){ myPartnerEmoji=e; writeLive(); };
+
   async function setOffline(){
     if(!uid) return;
     try{ await updateDoc(doc(db,'users',uid), {isOnline:false}); }catch(e){}
+    try{ if(liveRef) await remove(liveRef); }catch(e){}
   }
 
-  /* ===== RTDB：招待・部屋同期・マップスタンプ ===== */
-  let inviteUnsub=null, inviteTimeout=null;
-  let roomRefPath=null, partnerUnsub=null, stampUnsub=null, joinT=0, joinedOnce=false;
-
-  function myProfileSnapshot(){
-    const p=state.profile;
-    return {cat:p.cat||'study', detail:p.detail||null, detail2:p.detail2||null, style:p.style||'cowork',
-      tags:p.tags||[], streak:state.streak, todayMin:state.todayMin, emoji:'🧸'};
-  }
   async function sendInvite(target){
     const roomId = uid<target.id ? uid+'_'+target.id : target.id+'_'+uid;
     try{
@@ -2492,10 +2592,13 @@ try{
   }
   function joinRoomSync(roomId, partnerUid){
     roomRefPath='rooms/'+roomId;
+    myRoomId=roomId; myPartnerUid=partnerUid;
     joinT=Date.now(); joinedOnce=false;
     const meRef=ref(rtdb, roomRefPath+'/p/'+uid);
     set(meRef,{name:state.profile.name, t:joinT}).catch(()=>{});
     onDisconnect(meRef).remove();
+    // 自分の今日の目標を部屋に共有（進捗のみ。スタンプは別ツリー）
+    pushMyGoals();
     partnerUnsub=onValue(ref(rtdb, roomRefPath+'/p/'+partnerUid), snap=>{
       if(snap.exists()) joinedOnce=true;
       else if(joinedOnce) window.onPartnerGone();
@@ -2504,20 +2607,78 @@ try{
       const v=snap.val();
       if(v && v.from!==uid && v.t>joinT) window.onPartnerStamp(v);
     });
+    // 相手の目標進捗をリアルタイム受信
+    pgoalsUnsub=onValue(ref(rtdb, roomRefPath+'/goals/'+partnerUid), snap=>{
+      const v=snap.val();
+      if(v) window.onPartnerGoals(mergeGoalStamps(v, partnerUid));
+    });
+    // 相手が押してくれた「自分の目標へのスタンプ」を受信
+    myStampUnsub=onValue(ref(rtdb, roomRefPath+'/gstamps/'+uid), snap=>{
+      partnerStampsOnMe = snap.val()||{};
+      window.onMyGoalStamps(partnerStampsOnMe);
+    });
+    // 相手の進捗に付いたスタンプ（自分が押したぶん）も購読してマージ表示
+    partnerStampsUnsub=onValue(ref(rtdb, roomRefPath+'/gstamps/'+partnerUid), snap=>{
+      partnerGstamps = snap.val()||{};
+      // 相手の最新goalsを再マージ
+      window.onPartnerGoals(mergeGoalStamps(lastPartnerGoals, partnerUid));
+    });
+  }
+  let myPartnerUid=null, myStampUnsub=null, partnerStampsUnsub=null;
+  let partnerStampsOnMe={}, partnerGstamps={}, lastPartnerGoals=null;
+  function mergeGoalStamps(goals, partnerUid){
+    lastPartnerGoals = goals;
+    if(!Array.isArray(goals)) return goals;
+    return goals.map((g,i)=>{
+      const st = (partnerGstamps && partnerGstamps[i]) ? partnerGstamps[i] : {};
+      return Object.assign({}, g, {stamps: st});
+    });
+  }
+  function pushMyGoals(){
+    if(!roomRefPath || !uid) return;
+    // 進捗のみ書き込み（スタンプは gstamps 配下で別管理＝上書きしない）
+    const lite=(state.dailyGoals||[]).map(g=>({tx:g.tx, target:g.target, done:g.done||0}));
+    set(ref(rtdb, roomRefPath+'/goals/'+uid), lite).catch(()=>{});
   }
   function sendRoomStamp(e,l){
     if(!roomRefPath) return;
     set(ref(rtdb, roomRefPath+'/stamp'), {from:uid, e, l, t:Date.now()}).catch(()=>{});
   }
+  // 相手の完了項目にハートを押す → gstamps/{相手uid}/{goalIdx}/{emoji} を加算
+  function stampPartnerGoal(partnerUid, goalIdx, e){
+    if(!roomRefPath) return;
+    const r=ref(rtdb, roomRefPath+'/gstamps/'+partnerUid+'/'+goalIdx+'/'+e);
+    runTransaction(r, cur=>(cur||0)+1).catch(()=>{ set(r,1).catch(()=>{}); });
+  }
   function leaveRoomSync(){
     if(partnerUnsub){ partnerUnsub(); partnerUnsub=null; }
     if(stampUnsub){ stampUnsub(); stampUnsub=null; }
-    if(roomRefPath){ remove(ref(rtdb, roomRefPath+'/p/'+uid)).catch(()=>{}); roomRefPath=null; }
+    if(pgoalsUnsub){ pgoalsUnsub(); pgoalsUnsub=null; }
+    if(myStampUnsub){ myStampUnsub(); myStampUnsub=null; }
+    if(partnerStampsUnsub){ partnerStampsUnsub(); partnerStampsUnsub=null; }
+    if(roomRefPath){
+      remove(ref(rtdb, roomRefPath+'/p/'+uid)).catch(()=>{});
+      remove(ref(rtdb, roomRefPath+'/goals/'+uid)).catch(()=>{});
+      roomRefPath=null;
+    }
+    myRoomId=null; myPartnerEmoji=null; myPartnerUid=null;
+    partnerStampsOnMe={}; partnerGstamps={}; lastPartnerGoals=null;
   }
   const mapSeen={};
   function sendMapStamp(e){
     set(ref(rtdb,'mapStamps/'+uid), {uid, name:state.profile.name, e, t:Date.now()}).catch(()=>{});
   }
+  // Google ユーザーの今日の目標を Firestore に保存（その人のみ）
+  async function saveDailyGoals(){
+    if(!uid || state.signedProvider!=='google') return;
+    try{
+      await setDoc(doc(db,'users',uid), {
+        dailyGoals: state.dailyGoals||[], dailyDate: state.dailyDate||null,
+      },{merge:true});
+    }catch(e){ console.log('daily save skip', e.message); }
+  }
+  window.fbPushMyGoals=pushMyGoals;
+  window.fbSaveDailyGoals=saveDailyGoals;
 
   window.fbLogout=async function(){
     try{ await setOffline(); await signOut(auth); await signInAnonymously(auth); }catch(e){ console.log('logout skip',e.message); }
@@ -2530,11 +2691,17 @@ try{
       state.signedIn=true; state.signedProvider='google';
       if(res.user && res.user.displayName && !state.profile.name) state.profile.name=res.user.displayName;
       save();
+      // クラウドから今日の目標を復元
+      try{
+        const snap=await getDocs(query(collection(db,'users'), where('__name__','==',uid)));
+        snap.forEach(d=>{ const v=d.data();
+          if(v.dailyDate===new Date().toDateString() && Array.isArray(v.dailyGoals)){ state.dailyGoals=v.dailyGoals; state.dailyDate=v.dailyDate; save(); }
+        });
+      }catch(e){}
       go('scr-home');
       if(needDailyGoals()) setTimeout(()=>openDailyGoals(false),300);
     }catch(e){
       console.log('google login failed', e.message);
-      // フォールバック：匿名で続行
       state.signedIn=true; state.signedProvider='guest';
       save();
       go('scr-home');
@@ -2545,9 +2712,15 @@ try{
   onAuthStateChanged(auth, user=>{
     if(user){
       uid = user.uid;
+      liveRef=ref(rtdb,'live/'+uid);
+      onDisconnect(liveRef).remove();
       window.fbApi = { saveProfile, getOnline, setOffline,
-        sendInvite, respondInvite, joinRoomSync, sendRoomStamp, leaveRoomSync, sendMapStamp };
+        sendInvite, respondInvite, joinRoomSync, sendRoomStamp, leaveRoomSync, sendMapStamp,
+        pushMyGoals, stampPartnerGoal, saveDailyGoals };
       saveProfile();
+      writeLive();
+      clearInterval(presenceTimer);
+      presenceTimer=setInterval(writeLive, 4000); // ハートビート
       // 招待の受信（どの画面でも届く）
       onValue(ref(rtdb,'invites/'+uid), snap=>{
         const v=snap.val();
@@ -2561,8 +2734,20 @@ try{
           if(Date.now()-v.t>10000) return;
           if(mapSeen[v.uid]>=v.t) return;
           mapSeen[v.uid]=v.t;
-          if(document.getElementById('scr-map').classList.contains('active')) window.onMapStamp(v);
+          window.onMapStamp(v);
         });
+      });
+      // 全プレイヤーの生存情報（共有マップ）
+      onValue(ref(rtdb,'live'), snap=>{
+        const all=snap.val()||{};
+        const arr=[];
+        const now=Date.now();
+        Object.values(all).forEach(v=>{
+          if(!v || v.uid===uid) return;
+          if(now-(v.t||0)>15000) return; // 15秒以上更新なし＝オフライン扱い
+          arr.push(v);
+        });
+        window.onLivePlayers(arr);
       });
     }
   });
