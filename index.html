@@ -79,6 +79,9 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 @keyframes callpulse{0%,100%{box-shadow:0 5px 14px rgba(220,150,155,.45)}
   50%{box-shadow:0 6px 26px rgba(220,150,155,.85)}}
 .req-dot{position:absolute; top:2px; right:6px; width:9px; height:9px; border-radius:50%; background:#E08A8A}
+.req-badge{position:absolute; top:-2px; right:-2px; min-width:17px; height:17px; padding:0 4px;
+  border-radius:99px; background:#E08A8A; color:#fff; font-size:10px; font-weight:800;
+  display:flex; align-items:center; justify-content:center; line-height:1; box-shadow:0 1px 3px rgba(0,0,0,.2)}
 
 /* ---------- セットアップ ---------- */
 #scr-setup{padding:0 20px 30px}
@@ -118,47 +121,61 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .home-name{font-weight:700; font-size:15px}
 .home-lv{font-size:11px; color:var(--ink2)}
 .home-name{display:flex; align-items:center}
+.home-top-row{display:flex; align-items:center; gap:11px; margin-top:18px}
+.startup-card{position:relative; margin-top:16px; background:linear-gradient(135deg,#FFF3DD,#FCE9CC);
+  border-radius:16px; padding:14px 16px; box-shadow:var(--sh)}
+.su-close{position:absolute; top:8px; right:10px; border:none; background:none; font-size:17px;
+  color:var(--ink3); cursor:pointer; font-family:inherit; line-height:1}
+.su-title{font-size:13px; font-weight:800; color:#C98B3D; margin-bottom:8px}
+.su-row{font-size:12.5px; color:var(--ink); margin-top:5px; line-height:1.5}
+.su-row b{color:#C98B3D}
+.home-id{min-width:0; flex:1}
 .goal-mini{margin-left:8px; background:var(--gold-soft); border:none; border-radius:99px;
   padding:3px 10px; font-size:11px; font-weight:700; color:var(--gold2); font-family:inherit; cursor:pointer}
 .home-actions{display:flex; flex-direction:row; gap:8px; align-items:center; margin-left:auto}
 .home-actions .icon-btn{width:42px; height:42px; font-size:17px; position:relative}
 .home-main-card{margin-top:14px; padding:0; width:100%; overflow:hidden;
   background:linear-gradient(180deg,#FFFDF8 0%, #FFF9EF 55%, #FCFBF6 56%, #FCFBF6 100%)}
-.hmc-header{display:flex; align-items:center; padding:16px 18px 0}
+.hmc-header{display:flex; align-items:center; padding:13px 16px 0}
 .today-label{font-size:14px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:7px}
 .streak-inline{margin-left:8px; background:#FBEFD9; border-radius:999px; padding:3px 10px;
   font-size:11px; font-weight:700; color:#D08A35; white-space:nowrap}
-.hmc-top{display:flex; align-items:center; gap:6px; padding:6px 18px 8px}
-.ring-wrap{position:relative; width:148px; height:148px; flex-shrink:0}
-.ring-svg{width:148px; height:148px; transform:rotate(-90deg)}
+.hmc-top{display:flex; align-items:center; gap:4px; padding:4px 16px 4px}
+.ring-wrap{position:relative; width:118px; height:118px; flex-shrink:0}
+.ring-svg{width:118px; height:118px; transform:rotate(-90deg)}
 .ring-bg{fill:none; stroke:#F1E7D6; stroke-width:9}
 .ring-fg{fill:none; stroke:url(#ringgrad); stroke-width:9; stroke-linecap:round;
   stroke-dasharray:326.7; stroke-dashoffset:326.7; transition:stroke-dashoffset .7s ease}
 .ring-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center}
-.ring-star{font-size:20px; margin-bottom:-2px}
-.ring-time{font-size:21px; font-weight:800; color:var(--ink); letter-spacing:-.5px}
-.ring-time small{font-size:13px; font-weight:700}
-.ring-pct{margin-top:4px; background:#fff; border-radius:999px; padding:2px 13px;
-  font-size:13px; font-weight:800; color:#E8A23D; box-shadow:0 2px 6px rgba(200,160,90,.18)}
+.ring-star{font-size:16px; margin-bottom:-1px}
+.ring-time{font-size:17px; font-weight:800; color:var(--ink); letter-spacing:-.5px}
+.ring-time small{font-size:11px; font-weight:700}
+.ring-pct{margin-top:3px; background:#fff; border-radius:999px; padding:1px 11px;
+  font-size:11px; font-weight:800; color:#E8A23D; box-shadow:0 2px 6px rgba(200,160,90,.18)}
 .hmc-side{flex:1; min-width:0; position:relative; padding-left:4px}
-.hmc-goal-lbl{font-size:12.5px; color:var(--ink2); font-weight:700}
-.hmc-remain{font-size:21px; font-weight:800; color:#E8A23D; margin-top:6px; line-height:1.1}
-.hmc-cheer{font-size:11.5px; color:var(--ink2); margin-top:5px}
-.hmc-bear{font-size:40px; text-align:right; margin-top:6px; line-height:1}
-.hmc-cloud{height:30px; background:#FCFBF6; border-radius:50% 50% 0 0 / 100% 100% 0 0;
-  margin-top:-14px; position:relative; box-shadow:0 -2px 0 #FFF9EF}
-.hmc-sprout{position:absolute; top:-12px; left:50%; transform:translateX(-50%); font-size:22px}
-.hmc-goals{padding:4px 18px 16px; background:#FCFBF6}
-.hg-section-head{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700; color:var(--ink); margin-bottom:10px}
+.hmc-goal-lbl{font-size:11.5px; color:var(--ink2); font-weight:700}
+.hmc-remain{font-size:18px; font-weight:800; color:#E8A23D; margin-top:4px; line-height:1.1}
+.hmc-cheer{font-size:10.5px; color:var(--ink2); margin-top:4px}
+.hmc-bear{font-size:32px; text-align:right; margin-top:2px; line-height:1}
+.hmc-cloud{height:22px; background:#FCFBF6; border-radius:50% 50% 0 0 / 100% 100% 0 0;
+  margin-top:-10px; position:relative; box-shadow:0 -2px 0 #FFF9EF}
+.hmc-sprout{position:absolute; top:-11px; left:50%; transform:translateX(-50%); font-size:20px}
+.hmc-goals{padding:2px 16px 14px; background:#FCFBF6}
+.hg-section-head{display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:var(--ink); margin-bottom:8px}
 .hg-count{margin-left:auto; background:#EFE7D8; border-radius:999px; padding:3px 11px; font-size:11px; font-weight:700; color:var(--ink2)}
 .hg-edit-btn{border:none; background:#FBEFD9; color:#D08A35; border-radius:50%; width:30px; height:30px;
   font-size:14px; font-family:inherit; cursor:pointer; flex-shrink:0}
 .home-goals-list{width:100%}
-.hg-item{display:flex; align-items:center; gap:10px; font-size:14px; font-weight:700; padding:14px 15px;
+.hg-item{display:flex; align-items:center; gap:10px; font-size:13px; font-weight:700; padding:10px 13px;
   background:#fff; border-radius:14px; margin-bottom:9px; box-shadow:0 2px 8px rgba(180,150,100,.08)}
 .hg-item:last-child{margin-bottom:0}
 .hg-item .hg-tx{flex:1; min-width:0; color:var(--ink)}
 .hg-item .hg-cnt{font-weight:700; color:#E8A23D; font-size:13px}
+.hg-tx-input{flex:1; min-width:0; border:none; background:rgba(0,0,0,.03); border-radius:8px;
+  padding:6px 9px; font-family:inherit; font-size:14px; font-weight:700; color:var(--ink); outline:none}
+.hg-tx-input:focus{background:#fff; box-shadow:0 0 0 2px var(--gold-soft)}
+.hg-secret{border:none; background:none; cursor:pointer; font-size:15px; padding:0 2px; opacity:.45; flex-shrink:0; font-family:inherit}
+.hg-secret.on{opacity:1}
 .hg-item .hg-arrow{color:var(--ink3); font-size:15px; margin-left:2px}
 .hg-item.full{background:var(--green-soft)}
 .hg-item.full .hg-tx{color:#5F8E5F}
@@ -290,6 +307,8 @@ button.pcard{cursor:pointer}
 .pinfo{min-width:0; flex:1; line-height:1.2}
 .pinfo .pname{margin-bottom:1px}
 .pname{font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pcard.theirs-card #rPName,
+button.pcard #rPName{font-size:15px; font-weight:800; color:var(--gold2)}
 .pgoal{font-size:10px; color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .goal-chip{display:inline-block; font-size:9.5px; font-weight:700; padding:1.5px 7px; border-radius:99px;
   background:var(--gold-soft); color:var(--gold2); margin-left:6px; white-space:nowrap}
@@ -365,6 +384,12 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
   margin-bottom:5px; font-weight:700}
 .prog-item:last-child{margin-bottom:0}
 .prog-item .ptx{flex:1; min-width:0; word-break:break-all; font-weight:700; color:var(--ink)}
+.prog-item .ptx-input{flex:1; min-width:0; border:none; background:rgba(255,255,255,.6); border-radius:7px;
+  padding:4px 7px; font-family:inherit; font-size:11.5px; font-weight:700; color:var(--ink); outline:none}
+.prog-item .ptx-input:focus{background:#fff; box-shadow:0 0 0 2px var(--gold-soft)}
+.prog-item .psecret{border:none; background:none; cursor:pointer; font-size:13px; padding:0 1px;
+  opacity:.45; flex-shrink:0; font-family:inherit}
+.prog-item .psecret.on{opacity:1}
 .prog-item .pcnt{font-weight:700; color:var(--gold2); white-space:nowrap}
 .prog-item.full{background:var(--green-soft); border-color:#BBD6B5}
 .prog-item.full .ptx{color:#5F8E5F; text-decoration:none}
@@ -412,7 +437,8 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 .s-num{font-size:16px; font-weight:700}
 .s-label{font-size:10.5px; color:var(--ink2); margin-top:3px}
 .graph-card{margin:14px 18px 0; padding:18px 14px 10px}
-.line-card{background:#2B2A28; border-radius:18px; padding:16px 16px 8px; margin-bottom:16px; box-shadow:var(--sh)}
+.line-card{background:#2B2A28; border-radius:18px; padding:16px 16px 8px; margin:20px 0 16px; box-shadow:var(--sh)}
+.line-card-title{font-weight:700; font-size:14px; margin:20px 0 6px}
 .lc-head{display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px}
 .lc-title{font-size:12px; color:#B9B4AC; font-weight:700}
 .lc-big{font-size:26px; font-weight:800; color:#fff; margin-top:3px; letter-spacing:-.5px}
@@ -598,6 +624,12 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
   <!-- ===== ホーム ===== -->
   <section class="screen" id="scr-home">
     <div class="home-body">
+      <div class="startup-card" id="startupCard" style="display:none">
+        <button class="su-close" onclick="document.getElementById('startupCard').style.display='none'">×</button>
+        <div class="su-title">📣 おかえり！</div>
+        <div class="su-row" id="suProgRow"></div>
+        <div class="su-row" id="suStampRow"></div>
+      </div>
       <div class="home-top-row">
         <div class="home-avatar">🧸</div>
         <div class="home-id">
@@ -607,7 +639,7 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
         <div class="home-actions">
           <button class="icon-btn" onclick="go('scr-friends')">👥<span class="req-dot" id="navReqDotHome" style="display:none"></span></button>
           <button class="icon-btn" onclick="openGoal()">🎯</button>
-          <button class="icon-btn" onclick="toast('通知はまだありません')">🔔</button>
+          <button class="icon-btn" onclick="openNotif()">🔔<span class="req-badge" id="notifBadge" style="display:none">0</span></button>
         </div>
       </div>
       <div class="card home-main-card">
@@ -1061,7 +1093,7 @@ let state={
   dailyGoals:[], dailyDate:null,
   roomBg:'aaa',
   npcDay:null, npcs:[], npcStampLog:{},
-  signedIn:false, signedProvider:null, lastPostReactions:0,
+  signedIn:false, signedProvider:null, lastPostReactions:0, unreadReactions:0,
 };
 function save(){ localStorage.setItem('tonari_v2', JSON.stringify(state)); }
 function load(){ try{ const s=localStorage.getItem('tonari_v2'); if(s) state=Object.assign(state, JSON.parse(s)); }catch(e){} window.state=state; }
@@ -1233,11 +1265,14 @@ function renderDailyList(){
 }
 function toggleSecret(i){
   state.dailyGoals[i].secret=!state.dailyGoals[i].secret;
-  save(); renderDailyList();
+  save();
+  if(document.getElementById('dgList')) renderDailyList();
   if(state.dailyGoals[i].secret) toast('🤫 この目標は相手に「ヒミツ」と表示されるよ');
+  else toast('👁 この目標は相手に見えるよ');
   if(window.fbSaveDailyGoals) window.fbSaveDailyGoals();
   if(room && room.partner.isReal && window.fbApi) window.fbApi.pushMyGoals();
   renderMyProg();
+  if(document.getElementById('scr-home').classList.contains('active')) renderHome();
 }
 function addDailyGoal(){
   if(state.dailyGoals.length>=5){ toast('目標は5個までだよ'); return; }
@@ -1508,10 +1543,10 @@ function renderHome(){
   if(hl){
     hl.innerHTML=dg.length?dg.map((g,i)=>{
       const full=g.done>=g.target;
-      return `<div class="hg-item ${full?'full':''}" onclick="openDailyGoals(true)">
-        <span class="hg-tx">${g.secret?'🤫 ':''}${g.tx}</span>
-        <span class="hg-cnt">${g.done}/${g.target}</span>
-        <span class="hg-arrow">›</span></div>`;
+      return `<div class="hg-item ${full?'full':''}">
+        <button class="hg-secret ${g.secret?'on':''}" onclick="toggleSecret(${i})" title="ヒミツ切替">${g.secret?'🤫':'👁'}</button>
+        <input class="hg-tx-input" value="${(g.tx||'').replace(/"/g,'&quot;')}" onchange="editGoalText(${i},this.value)" maxlength="20" placeholder="目標…">
+        <span class="hg-cnt">${g.done}/${g.target}</span></div>`;
     }).join('') : '<div style="text-align:center;font-size:12.5px;color:var(--ink3);padding:10px" onclick="openDailyGoals(true)">＋ 今日の目標を立てよう</div>';
   }
   updateReqDots();
@@ -1773,6 +1808,25 @@ function updateReqDots(){
   const a=document.getElementById('navReqDotHome'); if(a) a.style.display=has?'block':'none';
   const rd=document.getElementById('reqDot');
   if(rd) rd.style.display=has?'block':'none';
+  // 通知バッジ（新しくついたリアクション・コメント数）
+  const nb=document.getElementById('notifBadge');
+  const cnt=state.unreadReactions||0;
+  if(nb){
+    if(cnt>0){ nb.textContent=cnt>99?'99+':cnt; nb.style.display='flex'; }
+    else nb.style.display='none';
+  }
+}
+function openNotif(){
+  const cnt=state.unreadReactions||0;
+  if(cnt>0){
+    const r=state.lastPostReactions||0;
+    toast(`💌 新しく ${cnt}個のリアクションがついたよ！`);
+  } else {
+    toast('🔔 新しい通知はありません');
+  }
+  // 既読にする
+  state.unreadReactions=0; save();
+  updateReqDots();
 }
 
 /* ============================================================ 作業部屋 ============================================================ */
@@ -1799,6 +1853,7 @@ function enterRoom(partner){
   pendingGifts=0; grantedThresholds=[];
   myGoalStamps={};
   lastPartnerComments={};
+  myMarksSeen=0;
   focusMode=false; partnerFocusing=false;
   document.body.classList.remove('focus-on'); document.body.classList.remove('muted');
   const fb=document.getElementById('focusBtn'); if(fb) fb.style.background='';
@@ -1882,26 +1937,43 @@ window.onMyGoalMarks=function(marks){
   myGoalStamps=marks||{};
   renderMyProg();
   const vals=Object.values(myGoalStamps);
-  // 自分の投稿に付いたリアクション数を記録（次回起動時に表示）
+  // 自分の投稿に付いたリアクション数
   const cnt=vals.filter(m=>m && (m.stamp||m.comment)).length;
-  if(cnt>0){ state.lastPostReactions=cnt; save(); }
+  if(cnt>0){ state.lastPostReactions=cnt; }
+  // 新しく増えたぶんを未読としてカウント（部屋セッション中の増分）
+  if(cnt>myMarksSeen){
+    state.unreadReactions=(state.unreadReactions||0)+(cnt-myMarksSeen);
+    updateReqDots();
+  }
+  myMarksSeen=cnt;
+  save();
   if(vals.length){
     const last=vals[vals.length-1];
     if(last){ showBubble('myProgBubble', last.comment || last.stamp || ''); }
   }
 };
+let myMarksSeen=0;
 function renderMyProg(){
   const el=document.getElementById('myProg');
   if(!el) return;
   el.innerHTML=state.dailyGoals.map((g,i)=>{
     const full=g.done>=g.target;
     return `<div class="prog-item ${full?'full':''}">
-      <span class="ptx">${g.secret?'🤫':'・'}${g.tx}</span>
+      <button class="psecret ${g.secret?'on':''}" onclick="toggleSecret(${i})" title="ヒミツ切替">${g.secret?'🤫':'👁'}</button>
+      <input class="ptx-input" value="${(g.tx||'').replace(/"/g,'&quot;')}" onchange="editGoalText(${i},this.value)" maxlength="20" placeholder="目標…">
       <span class="pcnt">${g.done}/${g.target}</span>
       <button class="pbtn" onclick="myProgChange(${i},-1)">−</button>
       <button class="pbtn" onclick="myProgChange(${i},1)">＋</button>
     </div>`;
   }).join('') || '<div style="font-size:10px;color:var(--ink3);text-align:center;padding:6px">目標がないよ</div>';
+}
+function editGoalText(i,v){
+  const tx=(v||'').trim().slice(0,20);
+  if(!tx){ renderMyProg(); return; }
+  state.dailyGoals[i].tx=tx; save();
+  if(room && room.partner.isReal && window.fbApi) window.fbApi.pushMyGoals();
+  if(window.fbSaveDailyGoals) window.fbSaveDailyGoals();
+  if(document.getElementById('scr-home').classList.contains('active')) renderHome();
 }
 function myProgChange(i,d){
   const g=state.dailyGoals[i];
@@ -1989,8 +2061,7 @@ function showBubble(id, text){
   if(!b) return;
   b.textContent=text;
   b.classList.add('show');
-  clearTimeout(b._t);
-  b._t=setTimeout(()=>b.classList.remove('show'), 6000);
+  // 自動で消えず、ずっと表示（新しい内容が来たら上書き）
 }
 function showPartnerBubble(text){ showBubble('theirProgBubble', text); }
 /* 相手プロフィール */
@@ -2449,7 +2520,10 @@ function renderRecords(){
           ${labels}
         </svg>
       </div>`;
-    body.innerHTML=`${lineChart}${donutHtml}`;
+    const barChart=`<div style="font-weight:700;font-size:14px;margin-bottom:12px">📊 直近14日の作業時間</div>
+      <div class="graph">${days.map(d=>`
+        <div class="gbar"><i style="height:${Math.max(2,d.min/max*100)}%"></i><span>${d.label}</span></div>`).join('')}</div>`;
+    body.innerHTML=`${barChart}${donutHtml}${lineChart}`;
     return;
   } else {
     const now=new Date();
@@ -2715,12 +2789,21 @@ if(!state.signedIn){
   if(needDailyGoals()){ setTimeout(()=>openDailyGoals(false), 400); }
 }
 function showReactionBanner(){
+  const p=state.profile;
+  const dg=state.dailyGoals||[];
+  const doneCnt=dg.filter(g=>g.done>=g.target).length;
+  const pct=Math.min(100, Math.round(state.todayMin/p.goalMin*100));
   const r=state.lastPostReactions||0;
-  if(r>0){
-    setTimeout(()=>{
-      toast(`🎉 前回の投稿に ${r}個のリアクションがついたよ！`);
-    }, 800);
+  const card=document.getElementById('startupCard');
+  const pr=document.getElementById('suProgRow');
+  const sr=document.getElementById('suStampRow');
+  if(!card) return;
+  if(pr) pr.innerHTML=`📊 今日 <b>${fmtMinPlain(state.todayMin)}</b>（目標の${pct}%）・目標 <b>${doneCnt}/${dg.length||0}</b>達成`;
+  if(sr){
+    if(r>0){ sr.innerHTML=`💌 前回の投稿に <b>${r}個</b>のリアクションがついたよ！`; sr.style.display='block'; }
+    else { sr.innerHTML='💌 だれかと作業すると応援がもらえるよ'; sr.style.display='block'; }
   }
+  card.style.display='block';
 }
 </script>
 
