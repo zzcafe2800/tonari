@@ -28,6 +28,9 @@ html,body{height:100%}
 body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--ink);
   display:flex; justify-content:center; user-select:none}
 #app{width:100%; max-width:480px; min-height:100vh; background:var(--bg); position:relative; overflow-x:hidden}
+/* スクロールバーを非表示（スクロールは可能） */
+*{scrollbar-width:none; -ms-overflow-style:none}
+*::-webkit-scrollbar{display:none; width:0; height:0}
 .screen{display:none; min-height:100vh; padding-bottom:92px; animation:fadein .25s ease}
 .screen.active{display:block}
 .screen.nonav{padding-bottom:20px}
@@ -112,8 +115,8 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .skip-link{text-align:center; font-size:13px; color:var(--ink3); cursor:pointer; padding:8px}
 
 /* ---------- ホーム ---------- */
-#scr-home{background:linear-gradient(180deg,#F3EADC 0%, #F6F1E8 45%)}
-.home-body{position:relative; z-index:1; padding:0 18px}
+#scr-home{background:linear-gradient(180deg,#F3EADC 0%, #F6F1E8 45%); height:100vh; min-height:0; overflow:hidden; padding-bottom:0}
+.home-body{position:relative; z-index:1; padding:0 18px; height:100%; overflow-y:auto; padding-bottom:100px}
 .home-top{display:flex; align-items:center; gap:12px; background:rgba(255,253,249,.92);
   border-radius:999px; padding:9px 14px 9px 9px; margin-top:16px; box-shadow:var(--sh)}
 .home-avatar{width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,#E9D6BC,#D9C2A2);
@@ -122,13 +125,46 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .home-lv{font-size:11px; color:var(--ink2)}
 .home-name{display:flex; align-items:center}
 .home-top-row{display:flex; align-items:center; gap:11px; margin-top:18px}
-.startup-card{position:relative; margin-top:16px; background:linear-gradient(135deg,#FFF3DD,#FCE9CC);
-  border-radius:16px; padding:14px 16px; box-shadow:var(--sh)}
-.su-close{position:absolute; top:8px; right:10px; border:none; background:none; font-size:17px;
-  color:var(--ink3); cursor:pointer; font-family:inherit; line-height:1}
-.su-title{font-size:13px; font-weight:800; color:#C98B3D; margin-bottom:8px}
-.su-row{font-size:12.5px; color:var(--ink); margin-top:5px; line-height:1.5}
-.su-row b{color:#C98B3D}
+/* 起動時おかえり画面 */
+#welcomeOverlay{position:fixed; inset:0; z-index:200; display:none;
+  background:linear-gradient(180deg,#FFF6E6 0%, #FDEBD2 45%, #FCE3C8 100%);
+  align-items:center; justify-content:center; animation:wlFade .4s ease}
+#welcomeOverlay.show{display:flex}
+@keyframes wlFade{from{opacity:0} to{opacity:1}}
+.wl-inner{width:100%; max-width:340px; padding:24px; text-align:center;
+  display:flex; flex-direction:column; align-items:center; animation:wlPop .5s cubic-bezier(.3,1.1,.4,1)}
+@keyframes wlPop{from{transform:translateY(18px); opacity:0} to{transform:none; opacity:1}}
+.wl-sky{position:relative; width:200px; height:90px; margin-bottom:6px}
+.wl-sun{position:absolute; top:6px; left:50%; transform:translateX(-50%); width:56px; height:56px;
+  border-radius:50%; background:radial-gradient(circle,#FFE08A,#F7C24E); box-shadow:0 0 40px rgba(247,194,78,.55)}
+.wl-cloud{position:absolute; height:16px; background:#fff; border-radius:99px; opacity:.92}
+.wl-cloud:before,.wl-cloud:after{content:''; position:absolute; background:#fff; border-radius:50%}
+.wl-c1{width:46px; top:30px; left:8px; animation:wlDrift 6s ease-in-out infinite}
+.wl-c1:before{width:20px; height:20px; top:-9px; left:8px}
+.wl-c1:after{width:15px; height:15px; top:-6px; left:24px}
+.wl-c2{width:38px; top:14px; right:6px; animation:wlDrift 7s ease-in-out infinite reverse}
+.wl-c2:before{width:16px; height:16px; top:-7px; left:7px}
+.wl-c2:after{width:12px; height:12px; top:-5px; left:19px}
+@keyframes wlDrift{0%,100%{transform:translateX(0)} 50%{transform:translateX(8px)}}
+.wl-bear{position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); font-size:46px;
+  animation:wlBob 2.4s ease-in-out infinite}
+@keyframes wlBob{0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-6px)}}
+.wl-greet{font-size:27px; font-weight:800; color:#5C4A33; letter-spacing:.5px}
+.wl-sub{font-size:13px; color:#A98A63; margin-top:4px; font-weight:700}
+.wl-ring-wrap{position:relative; width:150px; height:150px; margin:18px 0 4px}
+.wl-ring{width:150px; height:150px}
+.wl-ring-c{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center}
+.wl-streak{font-size:40px; font-weight:800; color:#E8983C; line-height:1}
+.wl-streak-lbl{font-size:12px; color:#A98A63; font-weight:700; margin-top:2px}
+.wl-stats{display:flex; gap:12px; margin-top:18px; width:100%}
+.wl-stat{flex:1; background:rgba(255,255,255,.7); border-radius:16px; padding:13px 8px; box-shadow:0 3px 10px rgba(180,150,100,.12)}
+.wl-stat-num{font-size:19px; font-weight:800; color:#5C4A33}
+.wl-stat-lbl{font-size:10.5px; color:#A98A63; font-weight:700; margin-top:3px}
+.wl-react-note{font-size:12px; color:#C98B3D; font-weight:700; margin-top:14px; min-height:16px}
+.wl-start{margin-top:20px; border:none; background:linear-gradient(135deg,#F5C158,#E89A3C); color:#fff;
+  font-weight:800; font-size:15px; font-family:inherit; padding:14px 44px; border-radius:99px;
+  cursor:pointer; box-shadow:0 6px 18px rgba(232,154,60,.4); transition:transform .1s}
+.wl-start:active{transform:scale(.95)}
 .home-id{min-width:0; flex:1}
 .goal-mini{margin-left:8px; background:var(--gold-soft); border:none; border-radius:99px;
   padding:3px 10px; font-size:11px; font-weight:700; color:var(--gold2); font-family:inherit; cursor:pointer}
@@ -376,10 +412,20 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 .prog-bubble.theirs-edit{background:#7A6A57}
 .bubble-input{width:100%; border:none; background:rgba(255,255,255,.95); border-radius:8px;
   padding:4px 8px; font-family:inherit; font-size:11px; font-weight:700; color:var(--ink); outline:none}
+.bubble-edit{display:flex; align-items:center; gap:5px}
+.bubble-edit .bubble-input{flex:1; min-width:0}
+.bubble-stamp-btn,.bubble-send-btn{flex-shrink:0; border:none; cursor:pointer; font-family:inherit;
+  width:24px; height:24px; border-radius:50%; font-size:13px; line-height:1;
+  display:flex; align-items:center; justify-content:center}
+.bubble-stamp-btn{background:var(--pink-soft)}
+.bubble-send-btn{background:var(--gold); color:#fff; font-size:11px}
 .prog-head{font-size:10.5px; font-weight:700; color:var(--ink2); display:flex;
   align-items:center; gap:5px; margin-bottom:5px}
 .prog-head .edit{margin-left:auto; border:none; background:none; cursor:pointer;
   font-size:12px; color:var(--gold2); font-family:inherit; padding:0 2px}
+.prog-head .prog-add{margin-left:auto; border:none; background:var(--gold-soft); color:var(--gold2);
+  cursor:pointer; font-size:14px; font-weight:700; font-family:inherit; width:20px; height:20px;
+  border-radius:50%; line-height:1; display:flex; align-items:center; justify-content:center; flex-shrink:0}
 .prog-item{display:flex; align-items:center; gap:4px; font-size:11.5px; padding:6px 8px;
   border-radius:9px; line-height:1.35; background:#FDF6E8; border:1.5px solid var(--gold-soft);
   margin-bottom:5px; font-weight:700}
@@ -514,6 +560,28 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 .modal.center-modal{border-radius:28px; margin:0 18px 30vh; align-self:center}
 .modal.top-modal{border-radius:24px; margin:200px 18px auto; align-self:flex-start; max-height:64vh}
 .sheet-title{font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; margin-bottom:6px}
+.pomo-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
+.pomo-loop{display:flex; align-items:center; gap:6px}
+.pomo-loop-lbl{font-size:12px; font-weight:700; color:var(--ink2)}
+.pomo-loop select{border:1.5px solid var(--gold-soft); background:var(--card); border-radius:10px;
+  padding:6px 10px; font-family:inherit; font-size:14px; font-weight:700; color:var(--ink); cursor:pointer}
+.pomo-display{text-align:center; padding:18px 0 14px; border-radius:20px; margin:6px 0 14px;
+  background:#FDEEF0; transition:background .4s}
+.pomo-display.break{background:#E4F1DC}
+.pomo-phase{font-size:14px; font-weight:800; color:#D67B82}
+.pomo-display.break .pomo-phase{color:#5F9E54}
+.pomo-time{font-size:52px; font-weight:800; margin:2px 0; color:#5C4A33; letter-spacing:1px}
+.pomo-display.break .pomo-time{color:#4E8345}
+.pomo-loopinfo{font-size:12px; font-weight:700; color:var(--ink3)}
+.pomo-settings{display:flex; flex-direction:column; gap:10px; margin-bottom:16px}
+.pomo-set-row{display:flex; align-items:center; gap:8px; background:var(--card2); border-radius:13px; padding:9px 12px}
+.pomo-set-lbl{font-size:13px; font-weight:700; color:var(--ink); flex:1}
+.pomo-step{width:30px; height:30px; border-radius:50%; border:none; background:var(--card); box-shadow:var(--sh);
+  font-size:16px; font-weight:700; color:var(--ink2); cursor:pointer; font-family:inherit; flex-shrink:0}
+.pomo-min-input{width:48px; text-align:center; border:none; background:var(--card); border-radius:9px;
+  padding:6px 4px; font-family:inherit; font-size:16px; font-weight:800; color:var(--ink); outline:none}
+.pomo-min-input:focus{box-shadow:0 0 0 2px var(--gold-soft)}
+.pomo-set-unit{font-size:12px; font-weight:700; color:var(--ink2); flex-shrink:0}
 .pm-head{display:flex; align-items:center; gap:14px}
 .pm-av{width:60px; height:60px; border-radius:50%; background:var(--card2); display:flex;
   align-items:center; justify-content:center; font-size:30px; border:2.5px solid var(--bd,#D9CBB5)}
@@ -636,12 +704,6 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
   <!-- ===== ホーム ===== -->
   <section class="screen" id="scr-home">
     <div class="home-body">
-      <div class="startup-card" id="startupCard" style="display:none">
-        <button class="su-close" onclick="document.getElementById('startupCard').style.display='none'">×</button>
-        <div class="su-title">📣 おかえり！</div>
-        <div class="su-row" id="suProgRow"></div>
-        <div class="su-row" id="suStampRow"></div>
-      </div>
       <div class="home-top-row">
         <div class="home-avatar">🧸</div>
         <div class="home-id">
@@ -775,7 +837,7 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 
     <div class="prog-card mine">
       <div class="prog-bubble" id="myProgBubble" style="display:none"></div>
-      <div class="prog-head">📝 あなたの目標</div>
+      <div class="prog-head">📝 あなたの目標<button class="prog-add" onclick="addGoalInRoom()" title="目標を追加">＋</button></div>
       <div class="prog-scroll"><div id="myProg"></div></div>
     </div>
     <div class="prog-card theirs">
@@ -1019,14 +1081,39 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 
   <!-- ポモドーロシート -->
   <div class="modal" id="pomoSheet" style="display:none">
-    <div class="sheet-title">🍅 ポモドーロ</div>
-    <div style="text-align:center;padding:8px 0">
-      <div style="font-size:13px;font-weight:700;color:#C8797E" id="pomoPhase">集中タイム</div>
-      <div style="font-size:46px;font-weight:700;margin:4px 0" id="pomoTime">25:00</div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="pomoReset()">リセット</button>
-        <button class="btn btn-pink" id="pomoBtn" onclick="pomoToggle()">スタート</button>
+    <div class="pomo-top">
+      <div class="sheet-title" style="margin:0">🍅 ポモドーロ</div>
+      <div class="pomo-loop">
+        <span class="pomo-loop-lbl">ループ</span>
+        <select id="pomoLoopSel" onchange="setPomoLoop(this.value)">
+          ${''}
+        </select>
       </div>
+    </div>
+    <div class="pomo-display" id="pomoDisplay">
+      <div class="pomo-phase" id="pomoPhase">集中タイム</div>
+      <div class="pomo-time" id="pomoTime">25:00</div>
+      <div class="pomo-loopinfo" id="pomoLoopInfo">1 / 4 セット</div>
+    </div>
+    <div class="pomo-settings" id="pomoSettings">
+      <div class="pomo-set-row">
+        <span class="pomo-set-lbl">🍅 作業</span>
+        <button class="pomo-step" onclick="adjPomoMin('work',-5)">−</button>
+        <input class="pomo-min-input" id="pomoWorkMin" type="number" min="1" max="120" value="25" onchange="onPomoMinInput()">
+        <button class="pomo-step" onclick="adjPomoMin('work',5)">＋</button>
+        <span class="pomo-set-unit">分</span>
+      </div>
+      <div class="pomo-set-row">
+        <span class="pomo-set-lbl">☕ 休憩</span>
+        <button class="pomo-step" onclick="adjPomoMin('break',-1)">−</button>
+        <input class="pomo-min-input" id="pomoBreakMin" type="number" min="1" max="60" value="5" onchange="onPomoMinInput()">
+        <button class="pomo-step" onclick="adjPomoMin('break',1)">＋</button>
+        <span class="pomo-set-unit">分</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="pomoReset()">リセット</button>
+      <button class="btn btn-pink" id="pomoBtn" onclick="pomoToggle()">スタート</button>
     </div>
   </div>
 
@@ -1038,6 +1125,37 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 </div>
 
 <div id="toast"></div>
+
+<!-- 起動時のおかえり画面 -->
+<div id="welcomeOverlay" onclick="closeWelcome()">
+  <div class="wl-inner" onclick="event.stopPropagation()">
+    <div class="wl-sky">
+      <div class="wl-sun"></div>
+      <div class="wl-cloud wl-c1"></div>
+      <div class="wl-cloud wl-c2"></div>
+      <div class="wl-bear" id="wlBear">🐻</div>
+    </div>
+    <div class="wl-greet" id="wlGreet">おかえり！</div>
+    <div class="wl-sub" id="wlSub">きょうもおつかれさま</div>
+    <div class="wl-ring-wrap">
+      <svg class="wl-ring" viewBox="0 0 120 120">
+        <defs><linearGradient id="wlgrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#F5C76B"/><stop offset="100%" stop-color="#E89A3C"/>
+        </linearGradient></defs>
+        <circle cx="60" cy="60" r="50" fill="none" stroke="#F1E7D6" stroke-width="10"/>
+        <circle id="wlRingFg" cx="60" cy="60" r="50" fill="none" stroke="url(#wlgrad)" stroke-width="10"
+          stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" transform="rotate(-90 60 60)"/>
+      </svg>
+      <div class="wl-ring-c"><div class="wl-streak" id="wlStreak">1</div><div class="wl-streak-lbl">日継続</div></div>
+    </div>
+    <div class="wl-stats">
+      <div class="wl-stat"><div class="wl-stat-num" id="wlTotal">0分</div><div class="wl-stat-lbl">これまで</div></div>
+      <div class="wl-stat"><div class="wl-stat-num" id="wlReact">0</div><div class="wl-stat-lbl">もらった応援💗</div></div>
+    </div>
+    <div class="wl-react-note" id="wlReactNote"></div>
+    <button class="wl-start" onclick="closeWelcome()">はじめる ✨</button>
+  </div>
+</div>
 
 <script>
 /* ============================================================ データ ============================================================ */
@@ -1856,6 +1974,7 @@ function openNotif(){
 let room=null, elapsedTimer=null, pomoTimer=null, partnerSimTimer=null;
 let myGoalStamps={}; // 相手が自分の目標に押してくれたスタンプ {goalIdx:{emoji:count}}
 let pomoSec=25*60, pomoRunning=false, pomoPhase='work', pomoActive=false;
+let pomoWorkMin=25, pomoBreakMin=5, pomoLoop=4, pomoSet=1;
 let pendingGifts=0, grantedThresholds=[];
 const THRESHOLDS=(()=>{const a=[15,25,30];let c=30;for(let i=0;i<30;i++){c+=5;a.push(c)}return a;})();
 
@@ -1876,14 +1995,14 @@ function enterRoom(partner){
   pendingGifts=0; grantedThresholds=[];
   myGoalStamps={};
   lastPartnerComments={};
-  myMarksSeen=0;
   // 吹き出しのコメントはセッションごとにクリア
   const tb=document.getElementById('theirProgBubble'); if(tb){ tb.dataset.comment=''; setBubbleText('theirProgBubble',''); }
   const mb=document.getElementById('myProgBubble'); if(mb){ setBubbleText('myProgBubble',''); }
   focusMode=false; partnerFocusing=false;
   document.body.classList.remove('focus-on'); document.body.classList.remove('muted');
   const fb=document.getElementById('focusBtn'); if(fb) fb.style.background='';
-  pomoSec=25*60; pomoRunning=false; pomoPhase='work'; pomoActive=false;
+  pomoSec=pomoWorkMin*60; pomoRunning=false; pomoPhase='work'; pomoActive=false; pomoSet=1;
+  initPomoSheet();
   applyRoomBg();
   setText('rMyName',state.profile.name);
   setText('rMyGoal','📖 '+profileCatLabel());
@@ -1962,46 +2081,45 @@ function updateGiftFloat(){
 window.onMyGoalMarks=function(marks){
   myGoalStamps=marks||{};
   renderMyProg();
-  // 受け取ったスタンプの総数＋コメント数
-  let totalStamps=0, totalComments=0, lastShow='';
+  // 作業中のスタンプ・コメントは「その場の演出」だけ（部屋を閉じると消える）
+  let lastShow='';
   Object.values(myGoalStamps).forEach(m=>{
     if(!m) return;
-    if(m.stamps){ Object.entries(m.stamps).forEach(([e,n])=>{ totalStamps+=n; lastShow=e; }); }
-    if(m.comment){ totalComments++; lastShow='💬'+m.comment; }
+    if(m.stamps){ Object.keys(m.stamps).forEach(e=>{ lastShow=e; }); }
+    if(m.comment){ lastShow='💬'+m.comment; }
   });
-  const total=totalStamps+totalComments;
-  if(total>0){ state.lastPostReactions=total; }
-  // 新しく増えたぶんを未読としてカウント
-  if(total>myMarksSeen){
-    state.unreadReactions=(state.unreadReactions||0)+(total-myMarksSeen);
-    updateReqDots();
-  }
-  myMarksSeen=total;
-  recordMyPostReactions(marks);
-  save();
   if(lastShow){ showBubble('myProgBubble', lastShow); }
 };
-// 受け取ったスタンプ・コメントを「今日の自分の投稿」に保存（最新の集計で上書き）
-function recordMyPostReactions(marks){
-  const today=todayStr();
+// ギャラリーでみんなが押した「投稿へのスタンプ」を集計（こちらが永続）
+window.onPostReactions=function(byDate){
   if(!state.myPosts) state.myPosts={};
-  if(!state.myPosts[today]){
-    state.myPosts[today]={ date:today, goals:[], stamps:{}, comments:[] };
-  }
-  const post=state.myPosts[today];
-  post.goals=(state.dailyGoals||[]).map(g=>({tx:g.tx, target:g.target, done:g.done, secret:g.secret}));
-  // marksは累積済みの値なので、そのまま集計し直して上書き（二重カウントしない）
-  const stamps={}; const comments=[];
-  Object.values(marks||{}).forEach(m=>{
-    if(!m) return;
-    if(m.stamps){ Object.entries(m.stamps).forEach(([e,n])=>{ stamps[e]=(stamps[e]||0)+n; }); }
-    if(m.comment){ comments.push(m.comment); }
+  let totalAll=0, newSinceSeen=0;
+  Object.entries(byDate||{}).forEach(([day, stamps])=>{
+    const dayKey=new Date(day).toDateString();
+    // todayStr形式に合わせる（dayはtoDateString形式で保存している）
+    if(!state.myPosts[dayKey]){
+      state.myPosts[dayKey]={ date:dayKey, goals:[], stamps:{}, comments:[] };
+    }
+    const post=state.myPosts[dayKey];
+    // その日の目標スナップショット（今日のぶんだけ最新化）
+    if(dayKey===new Date().toDateString()){
+      post.goals=(state.dailyGoals||[]).map(g=>({tx:g.tx, target:g.target, done:g.done, secret:g.secret}));
+    }
+    post.stamps={}; // Firebaseの集計で上書き
+    Object.entries(stamps||{}).forEach(([e,n])=>{ if(typeof n==='number'){ post.stamps[e]=n; totalAll+=n; } });
   });
-  // 既存の他セッション分とマージ（最大値を採用：同日に複数回作業した場合の累積）
-  Object.entries(stamps).forEach(([e,n])=>{ post.stamps[e]=Math.max(post.stamps[e]||0, n); });
-  comments.forEach(c=>{ if(!post.comments.includes(c)) post.comments.push(c); });
-}
-let myMarksSeen=0;
+  // 未読バッジ：前回見た合計より増えたぶん
+  if(totalAll>postReactSeen){
+    newSinceSeen=totalAll-postReactSeen;
+    state.unreadReactions=(state.unreadReactions||0)+newSinceSeen;
+    state.lastPostReactions=totalAll;
+  }
+  postReactSeen=totalAll;
+  save();
+  updateReqDots();
+  if(document.getElementById('scr-mypage').classList.contains('active')) renderMyPage();
+};
+let postReactSeen=0;
 function renderMyProg(){
   const el=document.getElementById('myProg');
   if(!el) return;
@@ -2023,6 +2141,21 @@ function editGoalText(i,v){
   if(room && room.partner.isReal && window.fbApi) window.fbApi.pushMyGoals();
   if(window.fbSaveDailyGoals) window.fbSaveDailyGoals();
   if(document.getElementById('scr-home').classList.contains('active')) renderHome();
+}
+function addGoalInRoom(){
+  if((state.dailyGoals||[]).length>=5){ toast('目標は5個までだよ'); return; }
+  state.dailyGoals.push({tx:'', target:1, done:0, secret:false});
+  state.dailyDate=todayStr();
+  save();
+  renderMyProg();
+  if(room && room.partner.isReal && window.fbApi) window.fbApi.pushMyGoals();
+  if(window.fbSaveDailyGoals) window.fbSaveDailyGoals();
+  // 追加した目標の入力欄にフォーカス
+  setTimeout(()=>{
+    const inputs=document.querySelectorAll('#myProg .ptx-input');
+    const last=inputs[inputs.length-1];
+    if(last) last.focus();
+  },50);
 }
 function myProgChange(i,d){
   const g=state.dailyGoals[i];
@@ -2092,17 +2225,32 @@ function openCommentInput(){
   if(b.querySelector('input')) return; // 既に入力中
   const cur = (b.dataset.comment||'');
   b.classList.remove('empty');
-  b.innerHTML=`<input class="bubble-input" id="bubbleInput" maxlength="10" placeholder="コメント…" value="${cur.replace(/"/g,'&quot;')}">`;
+  b.innerHTML=`<div class="bubble-edit">
+      <button class="bubble-stamp-btn" onclick="event.stopPropagation(); openStampFromBubble()" title="スタンプ">😊</button>
+      <input class="bubble-input" id="bubbleInput" maxlength="10" placeholder="コメント…" value="${cur.replace(/"/g,'&quot;')}">
+      <button class="bubble-send-btn" onclick="event.stopPropagation(); submitBubbleComment()" title="送信">➤</button>
+    </div>`;
   const inp=document.getElementById('bubbleInput');
   inp.focus();
   inp.onkeydown=(e)=>{ if(e.key==='Enter'){ submitBubbleComment(); } };
-  inp.onblur=()=>{ submitBubbleComment(); };
+}
+// 吹き出しからスタンプを選ぶ（コメントの代わりに）
+function openStampFromBubble(){
+  if(isMuted()){ toast('集中モード中は送れないよ🎧'); return; }
+  stampTargetIdx=0; // 相手の代表目標へ
+  document.getElementById('stampPickGrid').innerHTML=STAMPS.map((s,si)=>`
+    <button class="stamp-btn" onclick="applyItemStamp(${si})" style="background:var(--card2);border:none;border-radius:14px;padding:12px 4px;cursor:pointer;font-family:inherit">
+      <div style="font-size:25px">${s.e}</div><div style="font-size:10px;color:var(--ink2);font-weight:700;margin-top:3px">${s.l}</div>
+    </button>`).join('');
+  const tgt=document.getElementById('stampPickTarget');
+  if(tgt) tgt.textContent='どのスタンプで応援する？';
+  showModal('stampPick');
 }
 function submitBubbleComment(){
   const inp=document.getElementById('bubbleInput');
   if(!inp || !room) return;
   const tx=(inp.value||'').trim().slice(0,10);
-  const idx=0; // 相手の代表目標へ（複数なら最初）
+  const idx=0;
   if(tx){
     if(room.partner.isReal && window.fbApi){
       window.fbApi.setPartnerMark(room.partner.uid, idx, {comment:tx});
@@ -2170,6 +2318,15 @@ function sendFriendReq(){
   }
 }
 /* ポモドーロ＋リング */
+function initPomoSheet(){
+  const sel=document.getElementById('pomoLoopSel');
+  if(sel && !sel.options.length){
+    sel.innerHTML=Array.from({length:10},(_,i)=>`<option value="${i+1}" ${i+1===pomoLoop?'selected':''}>${i+1}</option>`).join('');
+  }
+  const wi=document.getElementById('pomoWorkMin'); if(wi) wi.value=pomoWorkMin;
+  const bi=document.getElementById('pomoBreakMin'); if(bi) bi.value=pomoBreakMin;
+  updatePomoUI();
+}
 function pomoToggle(){
   pomoRunning=!pomoRunning;
   if(pomoRunning) pomoActive=true;
@@ -2179,33 +2336,85 @@ function pomoToggle(){
     pomoTimer=setInterval(()=>{
       pomoSec--;
       if(pomoSec<=0){
-        if(pomoPhase==='work'){ pomoPhase='break'; pomoSec=5*60; toast('☕ おつかれさま！5分休憩しよう'); playChime(); }
-        else { pomoPhase='work'; pomoSec=25*60; toast('🍅 休憩おわり！集中タイム'); playChime(); }
+        if(pomoPhase==='work'){
+          pomoPhase='break'; pomoSec=pomoBreakMin*60;
+          toast(`☕ おつかれさま！${pomoBreakMin}分休憩しよう`); playChime();
+        } else {
+          // 休憩おわり→次のセットへ
+          if(pomoSet>=pomoLoop){
+            // 全セット完了
+            pomoRunning=false; pomoActive=false; clearInterval(pomoTimer);
+            pomoPhase='work'; pomoSet=1; pomoSec=pomoWorkMin*60;
+            toast(`🎉 ${pomoLoop}セット完了！よくがんばったね`); playChime();
+            updatePomoUI(); updatePomoRing();
+            return;
+          }
+          pomoSet++;
+          pomoPhase='work'; pomoSec=pomoWorkMin*60;
+          toast(`🍅 休憩おわり！集中タイム（${pomoSet}/${pomoLoop}）`); playChime();
+        }
         updatePomoUI(true);
       }
       renderPomoTime(); updatePomoRing();
     },1000);
   } else clearInterval(pomoTimer);
-  updatePomoRing();
+  updatePomoUI(true); updatePomoRing();
 }
 function pomoReset(){
   pomoRunning=false; pomoActive=false; clearInterval(pomoTimer);
-  pomoPhase='work'; pomoSec=25*60; updatePomoUI(); updatePomoRing();
+  pomoPhase='work'; pomoSet=1; pomoSec=pomoWorkMin*60;
+  updatePomoUI(); updatePomoRing();
+}
+function adjPomoMin(which, delta){
+  if(which==='work'){
+    pomoWorkMin=Math.max(1, Math.min(120, pomoWorkMin+delta));
+    document.getElementById('pomoWorkMin').value=pomoWorkMin;
+  } else {
+    pomoBreakMin=Math.max(1, Math.min(60, pomoBreakMin+delta));
+    document.getElementById('pomoBreakMin').value=pomoBreakMin;
+  }
+  applyPomoMins();
+}
+function onPomoMinInput(){
+  const w=parseInt(document.getElementById('pomoWorkMin').value,10);
+  const b=parseInt(document.getElementById('pomoBreakMin').value,10);
+  if(!isNaN(w)) pomoWorkMin=Math.max(1, Math.min(120, w));
+  if(!isNaN(b)) pomoBreakMin=Math.max(1, Math.min(60, b));
+  document.getElementById('pomoWorkMin').value=pomoWorkMin;
+  document.getElementById('pomoBreakMin').value=pomoBreakMin;
+  applyPomoMins();
+}
+function applyPomoMins(){
+  // 動作中でなければ現在フェーズの残り時間も更新
+  if(!pomoRunning){
+    pomoSec=(pomoPhase==='work'?pomoWorkMin:pomoBreakMin)*60;
+  }
+  renderPomoTime(); updatePomoRing();
+}
+function setPomoLoop(v){
+  pomoLoop=Math.max(1, Math.min(10, parseInt(v,10)||4));
+  if(pomoSet>pomoLoop) pomoSet=pomoLoop;
+  updatePomoUI(true);
 }
 function renderPomoTime(){
   const m=Math.floor(pomoSec/60), s=pomoSec%60;
-  document.getElementById('pomoTime').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const el=document.getElementById('pomoTime');
+  if(el) el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 function updatePomoUI(keepBtn){
   renderPomoTime();
   const ph=document.getElementById('pomoPhase');
-  if(pomoPhase==='work'){ ph.textContent='🍅 集中タイム'; ph.style.color='#C8797E'; }
-  else { ph.textContent='☕ 休憩タイム'; ph.style.color='#6E9A6E'; }
-  if(!keepBtn) document.getElementById('pomoBtn').textContent=pomoRunning?'一時停止':'スタート';
+  const disp=document.getElementById('pomoDisplay');
+  const info=document.getElementById('pomoLoopInfo');
+  if(pomoPhase==='work'){ if(ph) ph.textContent='🍅 集中タイム'; if(disp) disp.classList.remove('break'); }
+  else { if(ph) ph.textContent='☕ 休憩タイム'; if(disp) disp.classList.add('break'); }
+  if(info) info.textContent=`${pomoSet} / ${pomoLoop} セット`;
+  if(!keepBtn){ const b=document.getElementById('pomoBtn'); if(b) b.textContent=pomoRunning?'一時停止':'スタート'; }
 }
 function updatePomoRing(){
   const svg=document.getElementById('pomoSvg');
   const rect=document.getElementById('pomoRect');
+  if(!svg||!rect){ return; }
   if(!pomoActive){ svg.classList.remove('show'); return; }
   svg.classList.add('show');
   const w=svg.clientWidth, h=svg.clientHeight;
@@ -2214,7 +2423,7 @@ function updatePomoRing(){
   rect.setAttribute('width',w-sw); rect.setAttribute('height',h-sw);
   rect.setAttribute('rx',rx);
   const P=2*((w-sw)+(h-sw)) - 8*rx + 2*Math.PI*rx;
-  const total=pomoPhase==='work'?25*60:5*60;
+  const total=(pomoPhase==='work'?pomoWorkMin:pomoBreakMin)*60;
   const used=1-pomoSec/total;
   rect.setAttribute('stroke', pomoPhase==='work'?'#EDA9AE':'#9CBF9C');
   rect.setAttribute('stroke-dasharray', P);
@@ -2476,6 +2685,10 @@ function doGalStamp(btn){
   if(g){ if(!g.stamps) g.stamps={}; g.stamps[galStamp]=(g.stamps[galStamp]||0)+1; logStamp(u.name, g.tx, galStamp); }
   if(!u._galStamps) u._galStamps={};
   u._galStamps[galStamp]=(u._galStamps[galStamp]||0)+1;
+  // 投稿主にスタンプを届ける（押した分だけ集計）
+  if(u.isReal && u.uid && window.fbApi && window.fbApi.sendPostReaction){
+    window.fbApi.sendPostReaction(u.uid, galStamp);
+  }
   galCombo++;
   playPop(galCombo);
   const b=document.createElement('div');
@@ -2911,20 +3124,35 @@ if(!state.signedIn){
 }
 function showReactionBanner(){
   const p=state.profile;
+  const ov=document.getElementById('welcomeOverlay');
+  if(!ov) return;
+  // 時間帯であいさつ
+  const h=new Date().getHours();
+  const greet = h<5?'こんばんは！' : h<11?'おはよう！' : h<17?'おかえり！' : h<22?'おつかれさま！' : 'こんばんは！';
+  setText('wlGreet', greet);
   const dg=state.dailyGoals||[];
   const doneCnt=dg.filter(g=>g.done>=g.target).length;
-  const pct=Math.min(100, Math.round(state.todayMin/p.goalMin*100));
+  setText('wlSub', dg.length?`今日の目標は ${doneCnt}/${dg.length} 達成`:'今日も少しずついこう🌱');
+  // 継続日数リング（7日で一周の演出）
+  setText('wlStreak', state.streak);
+  const ring=document.getElementById('wlRingFg');
+  if(ring){ const frac=Math.min(1,(state.streak%7||7)/7); ring.style.strokeDashoffset=314*(1-frac); }
+  setText('wlTotal', fmtMinPlain(state.totalMin));
   const r=state.lastPostReactions||0;
-  const card=document.getElementById('startupCard');
-  const pr=document.getElementById('suProgRow');
-  const sr=document.getElementById('suStampRow');
-  if(!card) return;
-  if(pr) pr.innerHTML=`📊 今日 <b>${fmtMinPlain(state.todayMin)}</b>（目標の${pct}%）・目標 <b>${doneCnt}/${dg.length||0}</b>達成`;
-  if(sr){
-    if(r>0){ sr.innerHTML=`💌 前回の投稿に <b>${r}個</b>のリアクションがついたよ！`; sr.style.display='block'; }
-    else { sr.innerHTML='💌 だれかと作業すると応援がもらえるよ'; sr.style.display='block'; }
+  setText('wlReact', r);
+  const note=document.getElementById('wlReactNote');
+  if(note){
+    if(r>0) note.textContent=`💌 前回の投稿に ${r}個の応援がついたよ！`;
+    else note.textContent='だれかと作業すると応援がもらえるよ';
   }
-  card.style.display='block';
+  // 熊の表情を進捗で変える
+  const bear=document.getElementById('wlBear');
+  if(bear){ bear.textContent = state.streak>=7?'🐻‍❄️' : doneCnt>0?'🐻':'🐻'; }
+  ov.classList.add('show');
+}
+function closeWelcome(){
+  const ov=document.getElementById('welcomeOverlay');
+  if(ov) ov.classList.remove('show');
 }
 </script>
 
@@ -3056,6 +3284,13 @@ try{
       set(ref(rtdb,'friends/'+uid+'/'+fromUid), {name:(fromInfo&&fromInfo.name)||'フレンド', emoji:(fromInfo&&fromInfo.emoji)||'🙂', t:Date.now()}).catch(()=>{});
       set(ref(rtdb,'friends/'+fromUid+'/'+uid), {name:state.profile.name, emoji:state.profile.emoji||'🙂', t:Date.now()}).catch(()=>{});
     }
+  }
+  // ギャラリーで投稿主にスタンプを送る（押した分だけ加算）
+  function sendPostReaction(ownerUid, emoji){
+    if(!ownerUid || ownerUid===uid) return;
+    const day=new Date().toDateString();
+    const r=ref(rtdb,'postReactions/'+ownerUid+'/'+day+'/'+emoji);
+    runTransaction(r, cur=>(cur||0)+1).catch(()=>{});
   }
   function joinRoomSync(roomId, partnerUid){
     roomRefPath='rooms/'+roomId;
@@ -3226,7 +3461,7 @@ try{
       window.fbApi = { saveProfile, getOnline, setOffline,
         sendInvite, respondInvite, joinRoomSync, sendRoomStamp, leaveRoomSync, sendMapStamp,
         pushMyGoals, setPartnerMark, saveDailyGoals, sendProgressPing,
-        sendFriendRequest, respondFriendReq };
+        sendFriendRequest, respondFriendReq, sendPostReaction };
       saveProfile();
       writeLive();
       clearInterval(presenceTimer);
@@ -3240,6 +3475,10 @@ try{
       onValue(ref(rtdb,'friends/'+uid), snap=>{
         const all=snap.val()||{};
         window.onFriendsList(Object.entries(all).map(([fuid,v])=>({uid:fuid, ...v})));
+      });
+      // 自分の投稿についたスタンプ（ギャラリーでみんなが押したぶん）
+      onValue(ref(rtdb,'postReactions/'+uid), snap=>{
+        window.onPostReactions(snap.val()||{});
       });
       // 招待の受信（どの画面でも届く）
       onValue(ref(rtdb,'invites/'+uid), snap=>{
