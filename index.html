@@ -131,11 +131,9 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .streak-badge{margin-left:auto; background:#FBEFD9; border-radius:999px; padding:6px 12px;
   font-size:12px; font-weight:700; color:#C98B3D; white-space:nowrap}
 .today-card{margin-top:12px; padding:14px 16px; width:62%; min-width:210px; margin-right:auto}
-.home-goals-card{padding:14px 16px}
-.hg-head{font-size:13px; font-weight:700; color:var(--ink); display:flex; align-items:center; margin-bottom:8px}
-.hg-edit{margin-left:auto; border:none; background:none; color:var(--gold2); font-weight:700; font-size:12px; font-family:inherit; cursor:pointer}
-.hg-item{display:flex; align-items:center; gap:8px; font-size:13.5px; padding:7px 10px;
-  background:#FDF6E8; border-radius:10px; margin-bottom:6px}
+.home-goals-list{width:62%; min-width:210px; margin-top:8px}
+.hg-item{display:flex; align-items:center; gap:8px; font-size:13px; padding:8px 12px;
+  background:var(--card); border-radius:12px; box-shadow:var(--sh); margin-bottom:6px}
 .hg-item:last-child{margin-bottom:0}
 .hg-item .hg-tx{flex:1; min-width:0}
 .hg-item .hg-cnt{font-weight:700; color:var(--gold2); font-size:12.5px}
@@ -438,6 +436,7 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
   padding:24px 22px 30px; animation:slideup .3s cubic-bezier(.3,1.1,.4,1); max-height:82vh; overflow-y:auto}
 @keyframes slideup{from{transform:translateY(60px); opacity:0} to{transform:none; opacity:1}}
 .modal.center-modal{border-radius:28px; margin:0 18px 30vh; align-self:center}
+.modal.top-modal{border-radius:24px; margin:200px 18px auto; align-self:flex-start; max-height:64vh}
 .sheet-title{font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; margin-bottom:6px}
 .pm-head{display:flex; align-items:center; gap:14px}
 .pm-av{width:60px; height:60px; border-radius:50%; background:var(--card2); display:flex;
@@ -895,7 +894,7 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
   </div>
 
   <!-- スタンプ選択（相手の完了項目用） -->
-  <div class="modal center-modal" id="stampPick" style="display:none">
+  <div class="modal top-modal" id="stampPick" style="display:none">
     <div class="modal-title">スタンプかコメント</div>
     <div class="modal-desc" id="stampPickTarget" style="margin-top:4px">スタンプ1つ、またはコメント（10文字まで）</div>
     <div class="stamp-grid" id="stampPickGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px"></div>
@@ -1428,18 +1427,15 @@ function renderHome(){
   const dg=state.dailyGoals||[];
   const doneCnt=dg.filter(g=>g.done>=g.target).length;
   setText('hDaily', dg.length?`🌱 今日の目標 ${doneCnt}/${dg.length} 達成`:'🌱 今日の目標を立てよう');
-  // ホームに目標内容を表示
-  const hc=document.getElementById('homeGoalsCard'), hl=document.getElementById('homeGoalsList');
-  if(hc && hl){
-    if(dg.length){
-      hc.style.display='block';
-      hl.innerHTML=dg.map(g=>{
-        const full=g.done>=g.target;
-        return `<div class="hg-item ${full?'full':''}">
-          <span class="hg-tx">${g.secret?'🤫':'・'}${g.tx}</span>
-          <span class="hg-cnt">${g.done}/${g.target}</span></div>`;
-      }).join('');
-    } else { hc.style.display='none'; }
+  // ホームに目標内容を表示（達成カードの下に）
+  const hl=document.getElementById('homeGoalsList');
+  if(hl){
+    hl.innerHTML=dg.map(g=>{
+      const full=g.done>=g.target;
+      return `<div class="hg-item ${full?'full':''}">
+        <span class="hg-tx">${g.secret?'🤫':'・'}${g.tx}</span>
+        <span class="hg-cnt">${g.done}/${g.target}</span></div>`;
+    }).join('');
   }
   updateReqDots();
 }
@@ -1712,6 +1708,7 @@ function enterRoom(partner){
   room={partner, start:Date.now(), todos:[]};
   pendingGifts=0; grantedThresholds=[];
   myGoalStamps={};
+  lastPartnerComments={};
   focusMode=false; partnerFocusing=false;
   document.body.classList.remove('focus-on'); document.body.classList.remove('muted');
   const fb=document.getElementById('focusBtn'); if(fb) fb.style.background='';
@@ -1806,8 +1803,7 @@ function renderMyProg(){
   el.innerHTML=state.dailyGoals.map((g,i)=>{
     const full=g.done>=g.target;
     const mk=myGoalStamps[i]||{};
-    const markStr = mk.comment ? `<span class="pstamps"><span class="ps1">💬${mk.comment}</span></span>`
-                  : mk.stamp ? `<span class="pstamps"><span class="ps1">${mk.stamp}</span></span>` : '';
+    const markStr = mk.stamp ? `<span class="pstamps"><span class="ps1">${mk.stamp}</span></span>` : '';
     return `<div class="prog-item ${full?'full':''}">
       <span class="ptx">${g.secret?'🤫':'・'}${g.tx}</span>
       ${markStr}
@@ -1834,8 +1830,7 @@ function renderTheirProg(){
   const goals=room.partner.goals||[];
   el.innerHTML=goals.map((g,i)=>{
     const full=g.done>=g.target;
-    const markStr = g.comment ? `<span class="pstamps"><span class="ps1">💬${g.comment}</span></span>`
-      : Object.keys(g.stamps||{}).length ? `<span class="pstamps">${Object.entries(g.stamps).map(([e,n])=>`<span class="ps1">${e}${n>1?'×'+n:''}</span>`).join('')}</span>` : '';
+    const markStr = Object.keys(g.stamps||{}).length ? `<span class="pstamps">${Object.entries(g.stamps).map(([e,n])=>`<span class="ps1">${e}${n>1?'×'+n:''}</span>`).join('')}</span>` : '';
     const isSecret=g.secret;
     return `<div class="prog-item ${full?'full':''}">
       <span class="ptx">・${isSecret?'<i>ヒミツ</i>':g.tx}</span>
@@ -2457,9 +2452,18 @@ window.onInviteAnswered=function(ok, target, roomId){
 };
 window.onPartnerStamp=function(v){ floatStamp({e:v.e,l:v.l||''},0.72); playPop(4); };
 window.onPartnerGone=function(){ if(room && room.partner.isReal){ showModal('dcModal'); } };
+let lastPartnerComments={};
 window.onPartnerGoals=function(goals){
   if(!room || !room.partner.isReal) return;
-  room.partner.goals = Array.isArray(goals) ? goals.map(g=>({tx:g.tx, target:g.target, done:g.done||0, stamps:g.stamps||{}})) : [];
+  const arr = Array.isArray(goals) ? goals.map(g=>({tx:g.tx, target:g.target, done:g.done||0, stamps:g.stamps||{}, comment:g.comment||'', secret:!!g.secret})) : [];
+  room.partner.goals = arr;
+  // 新しいコメントが来たら吹き出し表示
+  arr.forEach((g,i)=>{
+    if(g.comment && g.comment!==lastPartnerComments[i]){
+      showBubble('theirProgBubble', g.comment);
+    }
+    lastPartnerComments[i]=g.comment||'';
+  });
   renderTheirProg();
 };
 window.onMapStamp=function(v){ /* マップ廃止 */ };
