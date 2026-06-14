@@ -122,28 +122,49 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
   padding:3px 10px; font-size:11px; font-weight:700; color:var(--gold2); font-family:inherit; cursor:pointer}
 .home-actions{display:flex; flex-direction:row; gap:8px; align-items:center; margin-left:auto}
 .home-actions .icon-btn{width:42px; height:42px; font-size:17px; position:relative}
-.daily-pill{display:flex; align-items:center; justify-content:space-between; gap:8px;
-  width:100%; margin-top:0; background:none; border:none; box-shadow:none; padding:0;
-  font-family:inherit; font-size:13px; font-weight:700; color:var(--ink); cursor:pointer}
-.home-main-card{margin-top:12px; padding:16px 18px; width:72%; min-width:230px; margin-right:auto}
-.hmc-divider{height:1px; background:var(--line,#EADFCC); margin:14px 0 12px}
-.home-goals-list{width:100%; margin-top:10px}
-.home-top-row{display:flex; align-items:center; gap:11px; margin-top:18px}
-.home-id{min-width:0}
-.streak-badge{margin-left:auto; background:#FBEFD9; border-radius:999px; padding:6px 12px;
-  font-size:12px; font-weight:700; color:#C98B3D; white-space:nowrap}
-.home-goals-list{width:62%; min-width:210px; margin-top:8px}
-.hg-item{display:flex; align-items:center; gap:8px; font-size:13px; padding:8px 11px;
-  background:#FDF6E8; border-radius:10px; margin-bottom:6px}
+.home-main-card{margin-top:14px; padding:0; width:100%; overflow:hidden;
+  background:linear-gradient(180deg,#FFFDF8 0%, #FFF9EF 55%, #FCFBF6 56%, #FCFBF6 100%)}
+.hmc-header{display:flex; align-items:center; padding:16px 18px 0}
+.today-label{font-size:14px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:7px}
+.streak-inline{margin-left:8px; background:#FBEFD9; border-radius:999px; padding:3px 10px;
+  font-size:11px; font-weight:700; color:#D08A35; white-space:nowrap}
+.hmc-top{display:flex; align-items:center; gap:6px; padding:6px 18px 8px}
+.ring-wrap{position:relative; width:148px; height:148px; flex-shrink:0}
+.ring-svg{width:148px; height:148px; transform:rotate(-90deg)}
+.ring-bg{fill:none; stroke:#F1E7D6; stroke-width:9}
+.ring-fg{fill:none; stroke:url(#ringgrad); stroke-width:9; stroke-linecap:round;
+  stroke-dasharray:326.7; stroke-dashoffset:326.7; transition:stroke-dashoffset .7s ease}
+.ring-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center}
+.ring-star{font-size:20px; margin-bottom:-2px}
+.ring-time{font-size:21px; font-weight:800; color:var(--ink); letter-spacing:-.5px}
+.ring-time small{font-size:13px; font-weight:700}
+.ring-pct{margin-top:4px; background:#fff; border-radius:999px; padding:2px 13px;
+  font-size:13px; font-weight:800; color:#E8A23D; box-shadow:0 2px 6px rgba(200,160,90,.18)}
+.hmc-side{flex:1; min-width:0; position:relative; padding-left:4px}
+.hmc-goal-lbl{font-size:12.5px; color:var(--ink2); font-weight:700}
+.hmc-remain{font-size:21px; font-weight:800; color:#E8A23D; margin-top:6px; line-height:1.1}
+.hmc-cheer{font-size:11.5px; color:var(--ink2); margin-top:5px}
+.hmc-bear{font-size:40px; text-align:right; margin-top:6px; line-height:1}
+.hmc-cloud{height:30px; background:#FCFBF6; border-radius:50% 50% 0 0 / 100% 100% 0 0;
+  margin-top:-14px; position:relative; box-shadow:0 -2px 0 #FFF9EF}
+.hmc-sprout{position:absolute; top:-12px; left:50%; transform:translateX(-50%); font-size:22px}
+.hmc-goals{padding:4px 18px 16px; background:#FCFBF6}
+.hg-section-head{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700; color:var(--ink); margin-bottom:10px}
+.hg-count{margin-left:auto; background:#EFE7D8; border-radius:999px; padding:3px 11px; font-size:11px; font-weight:700; color:var(--ink2)}
+.hg-edit-btn{border:none; background:#FBEFD9; color:#D08A35; border-radius:50%; width:30px; height:30px;
+  font-size:14px; font-family:inherit; cursor:pointer; flex-shrink:0}
+.home-goals-list{width:100%}
+.hg-item{display:flex; align-items:center; gap:10px; font-size:14px; font-weight:700; padding:14px 15px;
+  background:#fff; border-radius:14px; margin-bottom:9px; box-shadow:0 2px 8px rgba(180,150,100,.08)}
 .hg-item:last-child{margin-bottom:0}
-.hg-item .hg-tx{flex:1; min-width:0}
-.hg-item .hg-cnt{font-weight:700; color:var(--gold2); font-size:12.5px}
+.hg-item .hg-tx{flex:1; min-width:0; color:var(--ink)}
+.hg-item .hg-cnt{font-weight:700; color:#E8A23D; font-size:13px}
+.hg-item .hg-arrow{color:var(--ink3); font-size:15px; margin-left:2px}
 .hg-item.full{background:var(--green-soft)}
 .hg-item.full .hg-tx{color:#5F8E5F}
+.hg-item.full .hg-cnt{color:#5F8E5F}
 .hg-item.full .hg-tx:after{content:' ✓'}
-.today-label{font-size:12.5px; color:var(--ink2); display:flex; align-items:center; gap:6px}
-.today-time{font-size:28px; font-weight:700; margin:6px 0 10px}
-.today-time small{font-size:15px}
+.hmc-tagline{text-align:center; font-size:11px; color:var(--ink3); margin-top:14px}
 .bar{height:8px; background:var(--bg2); border-radius:99px; overflow:hidden}
 .bar > i{display:block; height:100%; background:linear-gradient(90deg,#E0B98A,#C9A87C); border-radius:99px; transition:width .4s}
 .today-goal{font-size:12px; color:var(--ink2); margin-top:8px; display:flex; justify-content:space-between; align-items:center}
@@ -391,6 +412,18 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 .s-num{font-size:16px; font-weight:700}
 .s-label{font-size:10.5px; color:var(--ink2); margin-top:3px}
 .graph-card{margin:14px 18px 0; padding:18px 14px 10px}
+.line-card{background:#2B2A28; border-radius:18px; padding:16px 16px 8px; margin-bottom:16px; box-shadow:var(--sh)}
+.lc-head{display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px}
+.lc-title{font-size:12px; color:#B9B4AC; font-weight:700}
+.lc-big{font-size:26px; font-weight:800; color:#fff; margin-top:3px; letter-spacing:-.5px}
+.lc-unit{font-size:13px; color:#9C988F; font-weight:700}
+.lc-trend{text-align:right}
+.lc-trend.up{color:#C9E265}
+.lc-trend.down{color:#E59A9A}
+.lc-trend{font-size:14px; font-weight:800}
+.lc-trend-sub{font-size:10px; color:#8C887F; font-weight:600; margin-top:2px}
+.lc-svg{width:100%; height:auto; display:block}
+.lc-x{fill:#8C887F; font-size:9px; text-anchor:middle; font-weight:700}
 .graph{display:flex; align-items:flex-end; gap:5px; height:150px; padding:0 4px}
 .gbar{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end}
 .gbar i{width:100%; max-width:18px; background:linear-gradient(180deg,#E0B98A,#C9A87C);
@@ -503,6 +536,8 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 .gal-goal.full{background:var(--green-soft); border-color:#BBD6B5}
 .gal-goal.full .gg-tx{color:#5F8E5F}
 .gal-goal.full .gg-tx:after{content:' ✓'}
+.gal-goal.sel{outline:2.5px solid var(--gold2); outline-offset:1px}
+.gal-pick-note{font-size:10.5px; color:var(--ink3); font-weight:400; margin-left:6px}
 .gal-goal .gg-cnt{font-weight:700; color:var(--gold2); font-size:14px}
 .gal-stamps-got{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; min-height:24px; align-items:center}
 .gal-stamps-got .gc1{background:var(--pink-soft); color:var(--red-ink); border-radius:99px;
@@ -575,15 +610,42 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
           <button class="icon-btn" onclick="toast('通知はまだありません')">🔔</button>
         </div>
       </div>
-      <div class="streak-badge" id="hStreak" style="display:inline-block;margin-top:12px">🔥 1日継続中</div>
       <div class="card home-main-card">
-        <div class="today-label">⏱ 今日の記録</div>
-        <div class="today-time" id="hToday">0<small>分</small></div>
-        <div class="bar"><i id="hBar" style="width:0%"></i></div>
-        <div class="today-goal"><span id="hGoal">目標：2時間</span></div>
-        <div class="hmc-divider"></div>
-        <button class="daily-pill" onclick="openDailyGoals(true)"><span id="hDaily">🌱 今日の目標を立てよう</span><span style="color:var(--gold2)">✎</span></button>
-        <div id="homeGoalsList" class="home-goals-list"></div>
+        <div class="hmc-header">
+          <div class="today-label">⏱ 今日の記録<span class="streak-inline" id="hStreak">🔥 1日継続中</span></div>
+        </div>
+        <div class="hmc-top">
+          <div class="ring-wrap">
+            <svg class="ring-svg" viewBox="0 0 120 120">
+              <defs><linearGradient id="ringgrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#F5C76B"/><stop offset="100%" stop-color="#E89A3C"/>
+              </linearGradient></defs>
+              <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+              <circle class="ring-fg" id="hRing" cx="60" cy="60" r="52"></circle>
+            </svg>
+            <div class="ring-center">
+              <div class="ring-star">⭐</div>
+              <div class="ring-time" id="hToday">0<small>分</small></div>
+              <div class="ring-pct" id="hPct">0%</div>
+            </div>
+          </div>
+          <div class="hmc-side">
+            <div class="hmc-goal-lbl" id="hGoal">目標 2時間</div>
+            <div class="hmc-remain" id="hRemain">あと—分！</div>
+            <div class="hmc-cheer" id="hCheer">きょうもがんばろう🐻</div>
+            <div class="hmc-bear">🐻</div>
+          </div>
+        </div>
+        <div class="hmc-cloud"><div class="hmc-sprout">🌱</div></div>
+        <div class="hmc-goals">
+          <div class="hg-section-head">
+            <span>🌱 今日の目標</span>
+            <span class="hg-count" id="hDailyCount">0/0 達成</span>
+            <button class="hg-edit-btn" onclick="openDailyGoals(true)" title="目標を編集">✎</button>
+          </div>
+          <div id="homeGoalsList" class="home-goals-list"></div>
+          <div class="hmc-tagline">小さな積み重ねが、大きな未来をつくる ✨</div>
+        </div>
       </div>
     </div>
     <div class="home-bottom"></div>
@@ -999,7 +1061,7 @@ let state={
   dailyGoals:[], dailyDate:null,
   roomBg:'aaa',
   npcDay:null, npcs:[], npcStampLog:{},
-  signedIn:false, signedProvider:null,
+  signedIn:false, signedProvider:null, lastPostReactions:0,
 };
 function save(){ localStorage.setItem('tonari_v2', JSON.stringify(state)); }
 function load(){ try{ const s=localStorage.getItem('tonari_v2'); if(s) state=Object.assign(state, JSON.parse(s)); }catch(e){} window.state=state; }
@@ -1427,21 +1489,30 @@ function renderHome(){
   setText('hStreak',`🔥 ${state.streak}日継続中`);
   setHTML('hToday',fmtMin(state.todayMin));
   const pct=Math.min(100, Math.round(state.todayMin/p.goalMin*100));
-  setWidth('hBar',pct+'%');
-  setText('hGoal',`目標：${goalLabel()}（${pct}%）`);
-  // 今日の目標の達成ぐあい
+  setText('hPct',pct+'%');
+  setText('hGoal',`目標 ${goalLabel()}`);
+  // リング
+  const ring=document.getElementById('hRing');
+  if(ring){ const C=2*Math.PI*52; ring.style.strokeDashoffset = C*(1-Math.min(1,pct/100)); }
+  // 残り
+  const remain=Math.max(0, p.goalMin-state.todayMin);
+  const rEl=document.getElementById('hRemain'), cEl=document.getElementById('hCheer');
+  if(remain<=0){ if(rEl) rEl.textContent='達成！🎉'; if(cEl) cEl.textContent='きょうもおつかれさま🐻'; }
+  else if(remain<=10){ if(rEl) rEl.textContent=`あと${remain}分！`; if(cEl) cEl.textContent='ゴールはすぐそこ！🐻'; }
+  else { if(rEl) rEl.textContent=`あと${remain}分`; if(cEl) cEl.textContent='きょうもがんばろう🐻'; }
+  // 今日の目標
   const dg=state.dailyGoals||[];
   const doneCnt=dg.filter(g=>g.done>=g.target).length;
-  setText('hDaily', dg.length?`🌱 今日の目標 ${doneCnt}/${dg.length} 達成`:'🌱 今日の目標を立てよう');
-  // ホームに目標内容を表示（達成カードの下に）
+  setText('hDailyCount', dg.length?`${doneCnt}/${dg.length} 達成`:'目標なし');
   const hl=document.getElementById('homeGoalsList');
   if(hl){
-    hl.innerHTML=dg.map(g=>{
+    hl.innerHTML=dg.length?dg.map((g,i)=>{
       const full=g.done>=g.target;
-      return `<div class="hg-item ${full?'full':''}">
-        <span class="hg-tx">${g.secret?'🤫':'・'}${g.tx}</span>
-        <span class="hg-cnt">${g.done}/${g.target}</span></div>`;
-    }).join('');
+      return `<div class="hg-item ${full?'full':''}" onclick="openDailyGoals(true)">
+        <span class="hg-tx">${g.secret?'🤫 ':''}${g.tx}</span>
+        <span class="hg-cnt">${g.done}/${g.target}</span>
+        <span class="hg-arrow">›</span></div>`;
+    }).join('') : '<div style="text-align:center;font-size:12.5px;color:var(--ink3);padding:10px" onclick="openDailyGoals(true)">＋ 今日の目標を立てよう</div>';
   }
   updateReqDots();
 }
@@ -1811,6 +1882,9 @@ window.onMyGoalMarks=function(marks){
   myGoalStamps=marks||{};
   renderMyProg();
   const vals=Object.values(myGoalStamps);
+  // 自分の投稿に付いたリアクション数を記録（次回起動時に表示）
+  const cnt=vals.filter(m=>m && (m.stamp||m.comment)).length;
+  if(cnt>0){ state.lastPostReactions=cnt; save(); }
   if(vals.length){
     const last=vals[vals.length-1];
     if(last){ showBubble('myProgBubble', last.comment || last.stamp || ''); }
@@ -2178,14 +2252,14 @@ function simulateDC(){
 function dcLeave(){ leaveFlow(); }
 
 /* ============================================================ 終了後ギャラリー ============================================================ */
-let galList=[], galIdx=0, galCombo=0, galComboT=null, galStamp='💗', galLeftPartner=null;
+let galList=[], galIdx=0, galCombo=0, galComboT=null, galStamp='💗', galLeftPartner=null, galGoalIdx=0;
 function openGallery(){
   // 本物のプレイヤーの投稿のみ（NPCは意味がないので除外）。最大2件
   const list=[];
   if(galLeftPartner && galLeftPartner.isReal) list.push(galLeftPartner);
   (mapUsers||[]).filter(u=>u.isReal && (!galLeftPartner || u.id!==galLeftPartner.id)).forEach(u=>list.push(u));
   galList=list.slice(0,2);
-  galIdx=0; galStamp='💗';
+  galIdx=0; galStamp='💗'; galGoalIdx=0;
   if(!galList.length){ finishGallery(); return; }
   renderGallery();
   showModal('galleryModal');
@@ -2196,6 +2270,8 @@ function renderGallery(){
   const goals=(u.goals||[]).slice(0,5);
   const sub=u.detail||(CATS[u.cat]?CATS[u.cat].name:'作業');
   if(!u._galStamps) u._galStamps={};
+  if(galGoalIdx>=goals.length) galGoalIdx=0;
+  const multi=goals.length>1;
   const countsRow=Object.entries(u._galStamps).map(([e,n])=>`<span class="gc1">${e} ${n}</span>`).join('') || '<span style="color:var(--ink3);font-size:11px">スタンプを押して応援しよう！</span>';
   document.getElementById('galBody').innerHTML=`
     <div class="gal-card">
@@ -2204,9 +2280,9 @@ function renderGallery(){
         <div><div class="gal-name">${u.name}</div>
         <div class="gal-sub">${sub}${state.friends.some(f=>f.name===u.name)?'・フレンド':''}</div></div>
       </div>
-      <div class="gal-goals-title">📝 今日がんばってること</div>
+      <div class="gal-goals-title">📝 今日がんばってること${multi?'<span class="gal-pick-note">（押して選ぶ）</span>':''}</div>
       <div class="gal-goals">
-        ${goals.length?goals.map(g=>`<div class="gal-goal ${g.done>=g.target?'full':''}">
+        ${goals.length?goals.map((g,i)=>`<div class="gal-goal ${g.done>=g.target?'full':''} ${multi&&i===galGoalIdx?'sel':''}" ${multi?`onclick="galSelectGoal(${i})"`:''}>
           <span class="gg-tx">${g.secret?'🤫 ヒミツ':g.tx}</span>
           <span class="gg-cnt">${g.done}/${g.target}</span></div>`).join(''):'<div style="font-size:12px;color:var(--ink3);padding:6px">今日の目標は未設定だったみたい</div>'}
       </div>
@@ -2218,6 +2294,7 @@ function renderGallery(){
     </div>`;
   bindGalStampButtons();
 }
+function galSelectGoal(i){ galGoalIdx=i; renderGallery(); }
 function bindGalStampButtons(){
   document.querySelectorAll('.gal-pick').forEach(btn=>{
     const e=btn.dataset.e;
@@ -2246,7 +2323,7 @@ function galStampUp(){
 }
 function doGalStamp(btn){
   const u=galList[galIdx];
-  const g=(u.goals||[])[0];
+  const g=(u.goals||[])[galGoalIdx] || (u.goals||[])[0];
   if(g){ if(!g.stamps) g.stamps={}; g.stamps[galStamp]=(g.stamps[galStamp]||0)+1; logStamp(u.name, g.tx, galStamp); }
   if(!u._galStamps) u._galStamps={};
   u._galStamps[galStamp]=(u._galStamps[galStamp]||0)+1;
@@ -2267,7 +2344,7 @@ function doGalStamp(btn){
 function galPick(e){ galStamp=e; }
 function galTap(ev){ /* 旧大ボタン廃止 */ }
 function nextGallery(){
-  if(galIdx<galList.length-1){ galIdx++; galCombo=0; renderGallery(); }
+  if(galIdx<galList.length-1){ galIdx++; galCombo=0; galGoalIdx=0; renderGallery(); }
   else finishGallery();
 }
 function finishOrGallery(){
@@ -2333,10 +2410,47 @@ function renderRecords(){
       </div>` : `
       <div style="font-weight:700;font-size:14px;margin:20px 0 6px">カテゴリ別</div>
       <div style="font-size:12px;color:var(--ink3);padding:6px 0">作業するとここに内訳が出るよ🌱</div>`;
-    body.innerHTML=`<div style="font-weight:700;font-size:14px;margin-bottom:12px">📊 直近14日の作業時間</div>
-      <div class="graph">${days.map(d=>`
-        <div class="gbar"><i style="height:${Math.max(2,d.min/max*100)}%"></i><span>${d.label}</span></div>`).join('')}</div>
-      ${donutHtml}`;
+    // 折れ線グラフ（参考画像の作業時間バージョン）
+    const maxH = Math.max(60, max);
+    const W=300, H=120, PL=8, PR=8, PT=14, PB=22;
+    const n=days.length;
+    const xOf=(i)=> PL + (W-PL-PR)*(n<=1?0:i/(n-1));
+    const yOf=(v)=> PT + (H-PT-PB)*(1 - v/maxH);
+    const pts=days.map((d,i)=>[xOf(i), yOf(d.min)]);
+    const linePath=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+    const areaPath=`${linePath} L ${xOf(n-1).toFixed(1)} ${H-PB} L ${PL} ${H-PB} Z`;
+    // 7日ごとのラベルだけ表示（混雑回避）
+    const labels=days.map((d,i)=>{
+      if(i===0 || i===n-1 || i===Math.floor(n/2)) return `<text x="${xOf(i)}" y="${H-6}" class="lg-x">${d.label}</text>`;
+      return '';
+    }).join('');
+    const total7=days.slice(-7).reduce((a,d)=>a+d.min,0);
+    const prev7=days.slice(0,7).reduce((a,d)=>a+d.min,0);
+    const diff=total7-prev7;
+    const trendTxt = diff===0?'±0' : (diff>0?'▲ ':'▼ ')+fmtMinPlain(Math.abs(diff));
+    const trendCls = diff>=0?'up':'down';
+    const lineChart=`
+      <div class="line-card">
+        <div class="lc-head">
+          <div><div class="lc-title">作業時間のながれ</div>
+          <div class="lc-big">${fmtMinPlain(total7)}<span class="lc-unit"> 今週</span></div></div>
+          <div class="lc-trend ${trendCls}">${trendTxt}<div class="lc-trend-sub">先週とくらべて</div></div>
+        </div>
+        <svg viewBox="0 0 ${W} ${H}" class="lc-svg">
+          <defs>
+            <linearGradient id="lcarea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#C9E265" stop-opacity=".35"/>
+              <stop offset="100%" stop-color="#C9E265" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="${areaPath}" fill="url(#lcarea)"/>
+          <path d="${linePath}" fill="none" stroke="#BCD64E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          ${pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${i===n-1?4:3}" fill="${i===n-1?'#BCD64E':'#fff'}" stroke="#BCD64E" stroke-width="2"/>`).join('')}
+          ${labels}
+        </svg>
+      </div>`;
+    body.innerHTML=`${lineChart}${donutHtml}`;
+    return;
   } else {
     const now=new Date();
     const y=now.getFullYear(), m=now.getMonth();
@@ -2597,7 +2711,16 @@ if(!state.signedIn){
   document.getElementById('bnav').classList.remove('show');
 } else {
   go('scr-home');
+  showReactionBanner();
   if(needDailyGoals()){ setTimeout(()=>openDailyGoals(false), 400); }
+}
+function showReactionBanner(){
+  const r=state.lastPostReactions||0;
+  if(r>0){
+    setTimeout(()=>{
+      toast(`🎉 前回の投稿に ${r}個のリアクションがついたよ！`);
+    }, 800);
+  }
 }
 </script>
 
