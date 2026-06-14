@@ -360,21 +360,22 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 /* 進捗カード（下バー上の左右） */
 .prog-card{position:fixed; bottom:110px; width:46%; max-width:215px;
   background:rgba(255,253,249,.93); border-radius:15px; box-shadow:var(--sh);
-  padding:9px 10px; z-index:39}
+  padding:9px 10px; z-index:39; transition:bottom .5s}
+/* UI非表示で下バーが消えたら、進捗カード＋吹き出し全体を下げる */
+#scr-room.hide-ui .prog-card{bottom:24px}
 .prog-card .prog-scroll{max-height:150px; overflow-y:auto}
 .prog-card.mine{left:max(8px, calc(50% - 232px))}
 .prog-card.theirs{right:max(8px, calc(50% - 232px))}
 .prog-bubble{position:absolute; left:10px; right:10px; bottom:100%; margin-bottom:8px;
-  background:#5C5247; color:#fff; font-size:11px; font-weight:700; padding:6px 11px;
-  border-radius:12px; line-height:1.4; opacity:0; transform:translateY(6px); transition:all .25s;
-  pointer-events:none; z-index:41}
+  background:#5C5247; color:#fff; font-size:11px; font-weight:700; padding:7px 11px;
+  border-radius:12px; line-height:1.4; cursor:pointer; transition:opacity .25s; z-index:41;
+  min-height:14px}
 .prog-bubble:after{content:''; position:absolute; bottom:-5px; left:24px;
   border:6px solid transparent; border-top-color:#5C5247; border-bottom:0}
-.prog-bubble.show{opacity:1; transform:none}
-/* UI非表示時：吹き出しは進捗カードの下へ */
-.room-ui.hide-ui ~ .prog-card .prog-bubble.show,
-#scr-room.hide-ui .prog-card .prog-bubble.show{bottom:auto; top:100%; margin-top:8px; margin-bottom:0}
-#scr-room.hide-ui .prog-bubble:after{bottom:auto; top:-5px; border-top-color:transparent; border-bottom:6px solid #5C5247}
+.prog-bubble.empty{background:rgba(92,82,71,.55); font-weight:600}
+.prog-bubble.theirs-edit{background:#7A6A57}
+.bubble-input{width:100%; border:none; background:rgba(255,255,255,.95); border-radius:8px;
+  padding:4px 8px; font-family:inherit; font-size:11px; font-weight:700; color:var(--ink); outline:none}
 .prog-head{font-size:10.5px; font-weight:700; color:var(--ink2); display:flex;
   align-items:center; gap:5px; margin-bottom:5px}
 .prog-head .edit{margin-left:auto; border:none; background:none; cursor:pointer;
@@ -486,6 +487,17 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 
 /* ---------- スタブ等 ---------- */
 .stub-wrap{padding:0 18px}
+.mp-post{background:#FDF6E8; border-radius:13px; padding:12px 13px; margin-bottom:10px}
+.mp-post:last-child{margin-bottom:0}
+.mp-date{font-size:13px; font-weight:800; color:var(--ink); display:flex; align-items:center; margin-bottom:8px}
+.mp-react{margin-left:auto; background:var(--pink-soft); color:var(--red-ink); border-radius:99px; padding:2px 10px; font-size:11px; font-weight:700}
+.mp-goal{font-size:12.5px; font-weight:700; color:var(--ink); padding:3px 0}
+.mp-goal.full{color:#5F8E5F}
+.mp-goal .mp-gc{color:var(--gold2); font-size:11px}
+.mp-stamps{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
+.mp-st{background:#fff; border-radius:99px; padding:3px 10px; font-size:12px; font-weight:700; box-shadow:var(--sh)}
+.mp-comments{display:flex; flex-wrap:wrap; gap:5px; margin-top:7px}
+.mp-cm{background:#EFE7D8; border-radius:8px; padding:2px 8px; font-size:11px; font-weight:700; color:var(--ink2)}
 .stub-card{padding:30px 20px; text-align:center; margin-top:14px}
 .stub-emoji{font-size:42px}
 .stub-title{font-size:16px; font-weight:700; margin-top:10px}
@@ -762,12 +774,12 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
     </div>
 
     <div class="prog-card mine">
-      <div class="prog-bubble" id="myProgBubble"></div>
+      <div class="prog-bubble empty" id="myProgBubble">まだ応援がないよ</div>
       <div class="prog-head">📝 あなたの目標</div>
       <div class="prog-scroll"><div id="myProg"></div></div>
     </div>
     <div class="prog-card theirs">
-      <div class="prog-bubble" id="theirProgBubble"></div>
+      <div class="prog-bubble theirs-edit empty" id="theirProgBubble" onclick="openCommentInput()">タップして相手にコメント💬</div>
       <div class="prog-head">💬 <span id="theirProgName">相手</span>の目標</div>
       <div class="prog-scroll"><div id="theirProg"></div></div>
     </div>
@@ -817,6 +829,10 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
         <div class="s-card"><div class="s-num" id="mpTotal">0分</div><div class="s-label">総作業時間</div></div>
         <div class="s-card"><div class="s-num" id="mpStreak">1日</div><div class="s-label">継続日数</div></div>
         <div class="s-card"><div class="s-num" id="mpCoins">0</div><div class="s-label">コイン</div></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div style="font-weight:700;font-size:14px;margin-bottom:10px">📮 わたしの投稿ともらった応援</div>
+        <div id="mpPosts"><div style="font-size:12px;color:var(--ink3)">まだ投稿がありません</div></div>
       </div>
       <div class="card" style="margin-top:14px">
         <div style="font-weight:700;font-size:14px">🎒 もっているアイテム</div>
@@ -995,14 +1011,10 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 
   <!-- スタンプ選択（相手の完了項目用） -->
   <div class="modal top-modal" id="stampPick" style="display:none">
-    <div class="modal-title">スタンプかコメント</div>
-    <div class="modal-desc" id="stampPickTarget" style="margin-top:4px">スタンプ1つ、またはコメント（10文字まで）</div>
+    <div class="modal-title">スタンプを送る</div>
+    <div class="modal-desc" id="stampPickTarget" style="margin-top:4px">どのスタンプで応援する？</div>
     <div class="stamp-grid" id="stampPickGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px"></div>
-    <div class="dg-input-row" style="margin-top:14px">
-      <input class="dg-input" id="commentInput" placeholder="コメント…" maxlength="10">
-      <button class="dg-add" onclick="sendComment()">送る</button>
-    </div>
-    <div style="text-align:center;margin-top:12px"><button class="btn btn-ghost" onclick="closeModal()" style="padding:11px 28px">閉じる</button></div>
+    <div style="text-align:center;margin-top:14px"><button class="btn btn-ghost" onclick="closeModal()" style="padding:11px 28px">閉じる</button></div>
   </div>
 
   <!-- ポモドーロシート -->
@@ -1093,7 +1105,7 @@ let state={
   dailyGoals:[], dailyDate:null,
   roomBg:'aaa',
   npcDay:null, npcs:[], npcStampLog:{},
-  signedIn:false, signedProvider:null, lastPostReactions:0, unreadReactions:0,
+  signedIn:false, signedProvider:null, lastPostReactions:0, unreadReactions:0, myPosts:{},
 };
 function save(){ localStorage.setItem('tonari_v2', JSON.stringify(state)); }
 function load(){ try{ const s=localStorage.getItem('tonari_v2'); if(s) state=Object.assign(state, JSON.parse(s)); }catch(e){} window.state=state; }
@@ -1854,6 +1866,9 @@ function enterRoom(partner){
   myGoalStamps={};
   lastPartnerComments={};
   myMarksSeen=0;
+  // 吹き出しのコメントはセッションごとにクリア
+  const tb=document.getElementById('theirProgBubble'); if(tb){ tb.dataset.comment=''; setBubbleText('theirProgBubble',''); }
+  const mb=document.getElementById('myProgBubble'); if(mb){ setBubbleText('myProgBubble',''); }
   focusMode=false; partnerFocusing=false;
   document.body.classList.remove('focus-on'); document.body.classList.remove('muted');
   const fb=document.getElementById('focusBtn'); if(fb) fb.style.background='';
@@ -1946,12 +1961,35 @@ window.onMyGoalMarks=function(marks){
     updateReqDots();
   }
   myMarksSeen=cnt;
+  // 今日の自分の投稿レコードにスタンプ/コメントを集計保存
+  recordMyPostReactions(marks);
   save();
   if(vals.length){
     const last=vals[vals.length-1];
-    if(last){ showBubble('myProgBubble', last.comment || last.stamp || ''); }
+    if(last){ showBubble('myProgBubble', last.comment ? '💬'+last.comment : last.stamp || ''); }
   }
 };
+// 受け取ったスタンプ・コメントを「今日の自分の投稿」に集計
+function recordMyPostReactions(marks){
+  const today=todayStr();
+  if(!state.myPosts) state.myPosts={};
+  if(!state.myPosts[today]){
+    state.myPosts[today]={ date:today, goals:(state.dailyGoals||[]).map(g=>({tx:g.tx, target:g.target, done:g.done, secret:g.secret})), stamps:{}, comments:[] };
+  }
+  const post=state.myPosts[today];
+  // goalsは最新で更新
+  post.goals=(state.dailyGoals||[]).map(g=>({tx:g.tx, target:g.target, done:g.done, secret:g.secret}));
+  // このセッションのマークを反映（重複加算を防ぐためセッション内のスナップショットを保持）
+  if(!post._seen) post._seen={};
+  Object.entries(marks||{}).forEach(([idx,m])=>{
+    if(!m) return;
+    const key=idx+':'+(m.stamp||'')+':'+(m.comment||'');
+    if(post._seen[key]) return;
+    post._seen[key]=true;
+    if(m.stamp){ post.stamps[m.stamp]=(post.stamps[m.stamp]||0)+1; }
+    if(m.comment){ post.comments.push(m.comment); }
+  });
+}
 let myMarksSeen=0;
 function renderMyProg(){
   const el=document.getElementById('myProg');
@@ -2002,21 +2040,20 @@ function renderTheirProg(){
     return `<div class="prog-item ${full?'full':''}">
       <span class="ptx">・${isSecret?'<i>ヒミツ</i>':g.tx}</span>
       <span class="pcnt">${g.done}/${g.target}</span>
-      <button class="pbtn heart" onclick="pickStampFor(${i})">💬</button>
+      <button class="pbtn heart" onclick="pickStampFor(${i})">😊</button>
     </div>`;
   }).join('') || '<div style="font-size:10px;color:var(--ink3);text-align:center;padding:6px">目標がないみたい</div>';
 }
 let stampTargetIdx=null;
 function pickStampFor(i){
-  if(isMuted()){ toast('集中モード中はコメントを送れないよ🎧'); return; }
+  if(isMuted()){ toast('集中モード中はスタンプを送れないよ🎧'); return; }
   stampTargetIdx=i;
   document.getElementById('stampPickGrid').innerHTML=STAMPS.map((s,si)=>`
     <button class="stamp-btn" onclick="applyItemStamp(${si})" style="background:var(--card2);border:none;border-radius:14px;padding:12px 4px;cursor:pointer;font-family:inherit">
       <div style="font-size:25px">${s.e}</div><div style="font-size:10px;color:var(--ink2);font-weight:700;margin-top:3px">${s.l}</div>
     </button>`).join('');
   const tgt=document.getElementById('stampPickTarget');
-  if(tgt && room && room.partner.goals[i]){ const g=room.partner.goals[i]; tgt.textContent=`「${g.secret?'ヒミツ':g.tx}」に送る`; }
-  const ci=document.getElementById('commentInput'); if(ci) ci.value='';
+  if(tgt && room && room.partner.goals[i]){ const g=room.partner.goals[i]; tgt.textContent=`「${g.secret?'ヒミツ':g.tx}」にスタンプ`; }
   showModal('stampPick');
 }
 function applyItemStamp(si){
@@ -2033,36 +2070,56 @@ function applyItemStamp(si){
   }
   logStamp(room.partner.name, g.tx, STAMPS[si].e);
   playPop(3);
-  showBubble('theirProgBubble', STAMPS[si].e);
   closeModal(); renderTheirProg();
+  toast(`${STAMPS[si].e} を送ったよ！`);
 }
-function sendComment(){
-  if(stampTargetIdx===null || !room) return;
-  if(isMuted()){ toast('集中モード中は送れないよ🎧'); return; }
-  const idx=stampTargetIdx;
-  const tx=(document.getElementById('commentInput').value||'').trim().slice(0,10);
-  if(!tx){ toast('コメントを入れてね（10文字まで）'); return; }
-  const g=room.partner.goals[idx];
-  if(room.partner.isReal && window.fbApi){
-    window.fbApi.setPartnerMark(room.partner.uid, idx, {comment:tx});
+/* 相手の進捗の吹き出しをタップ→そのまま入力 */
+function openCommentInput(){
+  if(isMuted()){ toast('集中モード中はコメントを送れないよ🎧'); return; }
+  if(!room || !room.partner.isReal){ toast('ユメにはコメントできないよ🐈‍⬛'); return; }
+  const b=document.getElementById('theirProgBubble');
+  if(!b) return;
+  if(b.querySelector('input')) return; // 既に入力中
+  const cur = (b.dataset.comment||'');
+  b.classList.remove('empty');
+  b.innerHTML=`<input class="bubble-input" id="bubbleInput" maxlength="10" placeholder="コメント…" value="${cur.replace(/"/g,'&quot;')}">`;
+  const inp=document.getElementById('bubbleInput');
+  inp.focus();
+  inp.onkeydown=(e)=>{ if(e.key==='Enter'){ submitBubbleComment(); } };
+  inp.onblur=()=>{ submitBubbleComment(); };
+}
+function submitBubbleComment(){
+  const inp=document.getElementById('bubbleInput');
+  if(!inp || !room) return;
+  const tx=(inp.value||'').trim().slice(0,10);
+  const idx=0; // 相手の代表目標へ（複数なら最初）
+  if(tx){
+    if(room.partner.isReal && window.fbApi){
+      window.fbApi.setPartnerMark(room.partner.uid, idx, {comment:tx});
+    }
+    setBubbleText('theirProgBubble', tx);
+    document.getElementById('theirProgBubble').dataset.comment=tx;
+    playPop(2);
+    toast('コメントを送ったよ💬');
   } else {
-    g.comment=tx; g.stamps={};
+    setBubbleText('theirProgBubble', '');
   }
-  playPop(2);
-  showBubble('theirProgBubble', tx);
-  document.getElementById('commentInput').value='';
-  renderTheirProg();
-  toast('コメントを送ったよ💬');
-  // モーダルは閉じない（連続でコメントしやすく）
 }
-/* 進捗カードの吹き出し（通常は上、UI非表示時は下） */
-function showBubble(id, text){
+function sendComment(){ /* 旧モーダル方式は廃止 */ }
+/* 吹き出しのテキスト設定（空でも表示） */
+function setBubbleText(id, text){
   const b=document.getElementById(id);
   if(!b) return;
-  b.textContent=text;
-  b.classList.add('show');
-  // 自動で消えず、ずっと表示（新しい内容が来たら上書き）
+  if(b.querySelector('input')) return; // 入力中は触らない
+  if(text){
+    b.textContent=text;
+    b.classList.remove('empty');
+  } else {
+    b.textContent = (id==='theirProgBubble') ? 'タップして相手にコメント💬' : 'まだ応援がないよ';
+    b.classList.add('empty');
+  }
 }
+function showBubble(id, text){ setBubbleText(id, text); if(id==='theirProgBubble'){ const b=document.getElementById(id); if(b) b.dataset.comment=text||''; } }
 function showPartnerBubble(text){ showBubble('theirProgBubble', text); }
 /* 相手プロフィール */
 function showPartnerProfile(){
@@ -2572,6 +2629,8 @@ function renderMyPage(){
   setText('mpCoins',state.coins);
   const el=document.getElementById('mpItems');
   if(el && state.items.length) el.innerHTML=state.items.map(n=>`<span class="tag gold">${n}</span>`).join('');
+  // わたしの投稿（日付別）
+  renderMyPosts();
   // アカウント
   const isGoogle=state.signedProvider==='google';
   setText('mpAccount', isGoogle?'🅖 Googleでログイン中（記録は安全に保存）':'👤 ゲストでログイン中（端末を変えると消えちゃう）');
@@ -2584,6 +2643,32 @@ function renderMyPage(){
     }
   }
 }
+function renderMyPosts(){
+  const el=document.getElementById('mpPosts');
+  if(!el) return;
+  const posts=state.myPosts||{};
+  const dates=Object.keys(posts).sort((a,b)=>new Date(b)-new Date(a));
+  if(!dates.length){ el.innerHTML='<div style="font-size:12px;color:var(--ink3)">まだ投稿がありません。だれかと作業して応援をもらおう🌱</div>'; return; }
+  el.innerHTML=dates.map(d=>{
+    const p=posts[d];
+    const dd=new Date(d);
+    const dateLabel=`${dd.getMonth()+1}月${dd.getDate()}日`;
+    const goalsHtml=(p.goals||[]).map(g=>{
+      const full=g.done>=g.target;
+      return `<div class="mp-goal ${full?'full':''}">${g.secret?'🤫':'・'}${g.tx} <span class="mp-gc">${g.done}/${g.target}</span></div>`;
+    }).join('') || '<div style="font-size:11px;color:var(--ink3)">目標なし</div>';
+    const stampsHtml=Object.entries(p.stamps||{}).map(([e,n])=>`<span class="mp-st">${e} ${n}</span>`).join('');
+    const totalStamps=Object.values(p.stamps||{}).reduce((a,b)=>a+b,0);
+    const commentsHtml=(p.comments||[]).length?`<div class="mp-comments">${(p.comments||[]).map(c=>`<span class="mp-cm">💬${c}</span>`).join('')}</div>`:'';
+    return `<div class="mp-post">
+      <div class="mp-date">${dateLabel}<span class="mp-react">💗 ${totalStamps}</span></div>
+      <div class="mp-goals">${goalsHtml}</div>
+      ${stampsHtml?`<div class="mp-stamps">${stampsHtml}</div>`:'<div style="font-size:11px;color:var(--ink3);margin-top:6px">まだ応援なし</div>'}
+      ${commentsHtml}
+    </div>`;
+  }).join('');
+}
+
 function doLogout(){
   document.getElementById('cfTitle').textContent='ログアウトしますか？';
   document.getElementById('cfDesc').textContent='またGoogleでログインすれば記録は戻ります';
