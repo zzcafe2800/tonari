@@ -123,17 +123,18 @@ body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--i
 .home-actions{display:flex; flex-direction:row; gap:8px; align-items:center; margin-left:auto}
 .home-actions .icon-btn{width:42px; height:42px; font-size:17px; position:relative}
 .daily-pill{display:flex; align-items:center; justify-content:space-between; gap:8px;
-  width:62%; min-width:210px; margin-top:10px; background:var(--card); border:none;
-  border-radius:14px; box-shadow:var(--sh); padding:11px 14px; font-family:inherit;
-  font-size:12.5px; font-weight:700; color:var(--ink2); cursor:pointer}
+  width:100%; margin-top:0; background:none; border:none; box-shadow:none; padding:0;
+  font-family:inherit; font-size:13px; font-weight:700; color:var(--ink); cursor:pointer}
+.home-main-card{margin-top:12px; padding:16px 18px; width:72%; min-width:230px; margin-right:auto}
+.hmc-divider{height:1px; background:var(--line,#EADFCC); margin:14px 0 12px}
+.home-goals-list{width:100%; margin-top:10px}
 .home-top-row{display:flex; align-items:center; gap:11px; margin-top:18px}
 .home-id{min-width:0}
 .streak-badge{margin-left:auto; background:#FBEFD9; border-radius:999px; padding:6px 12px;
   font-size:12px; font-weight:700; color:#C98B3D; white-space:nowrap}
-.today-card{margin-top:12px; padding:14px 16px; width:62%; min-width:210px; margin-right:auto}
 .home-goals-list{width:62%; min-width:210px; margin-top:8px}
-.hg-item{display:flex; align-items:center; gap:8px; font-size:13px; padding:8px 12px;
-  background:var(--card); border-radius:12px; box-shadow:var(--sh); margin-bottom:6px}
+.hg-item{display:flex; align-items:center; gap:8px; font-size:13px; padding:8px 11px;
+  background:#FDF6E8; border-radius:10px; margin-bottom:6px}
 .hg-item:last-child{margin-bottom:0}
 .hg-item .hg-tx{flex:1; min-width:0}
 .hg-item .hg-cnt{font-weight:700; color:var(--gold2); font-size:12.5px}
@@ -338,11 +339,15 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
   align-items:center; gap:5px; margin-bottom:5px}
 .prog-head .edit{margin-left:auto; border:none; background:none; cursor:pointer;
   font-size:12px; color:var(--gold2); font-family:inherit; padding:0 2px}
-.prog-item{display:flex; align-items:center; gap:4px; font-size:10.5px; padding:3.5px 2px;
-  border-radius:8px; line-height:1.35}
-.prog-item .ptx{flex:1; min-width:0; word-break:break-all}
+.prog-item{display:flex; align-items:center; gap:4px; font-size:11.5px; padding:6px 8px;
+  border-radius:9px; line-height:1.35; background:#FDF6E8; border:1.5px solid var(--gold-soft);
+  margin-bottom:5px; font-weight:700}
+.prog-item:last-child{margin-bottom:0}
+.prog-item .ptx{flex:1; min-width:0; word-break:break-all; font-weight:700; color:var(--ink)}
 .prog-item .pcnt{font-weight:700; color:var(--gold2); white-space:nowrap}
-.prog-item.full .ptx,.prog-item.full .pcnt{text-decoration:line-through; color:var(--ink3)}
+.prog-item.full{background:var(--green-soft); border-color:#BBD6B5}
+.prog-item.full .ptx{color:#5F8E5F; text-decoration:none}
+.prog-item.full .pcnt{color:#5F8E5F}
 .prog-item .pbtn{width:17px; height:17px; border-radius:50%; border:none; cursor:pointer;
   font-family:inherit; font-size:11px; line-height:1; display:flex; align-items:center;
   justify-content:center; background:var(--gold-soft); color:var(--gold2); flex-shrink:0}
@@ -502,14 +507,14 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 .gal-stamps-got{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; min-height:24px; align-items:center}
 .gal-stamps-got .gc1{background:var(--pink-soft); color:var(--red-ink); border-radius:99px;
   padding:3px 10px; font-size:12px; font-weight:700}
-.gal-stamp-row{display:flex; gap:6px; margin-top:14px; align-items:center}
+.gal-hint{font-size:11px; color:var(--ink3); text-align:center; margin-top:12px}
+.gal-stamp-row{display:flex; gap:8px; margin-top:8px; align-items:center; justify-content:center; flex-wrap:wrap}
 .gal-pick{width:36px; height:36px; border-radius:50%; border:2px solid transparent;
   background:var(--card); font-size:17px; cursor:pointer; font-family:inherit}
 .gal-pick.on{border-color:var(--gold); background:var(--gold-soft)}
-.gal-big{margin-left:auto; width:64px; height:64px; border-radius:50%; border:none;
-  background:linear-gradient(135deg,#EDB6BA,#E09BA0); font-size:28px; cursor:pointer;
-  box-shadow:0 6px 16px rgba(220,150,155,.4); font-family:inherit; transition:transform .08s}
-.gal-big:active{transform:scale(.86)}
+.gal-pick.big{width:52px; height:52px; font-size:25px; background:var(--card2); box-shadow:var(--sh);
+  transition:transform .08s; touch-action:none; user-select:none}
+.gal-pick.big:active{transform:scale(.85); background:var(--pink-soft)}
 
 #toast{position:fixed; top:18px; left:50%; transform:translateX(-50%) translateY(-90px);
   background:rgba(70,58,44,.92); color:#fff; font-size:13px; font-weight:500; padding:11px 22px;
@@ -571,14 +576,15 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
         </div>
       </div>
       <div class="streak-badge" id="hStreak" style="display:inline-block;margin-top:12px">🔥 1日継続中</div>
-      <div class="card today-card">
+      <div class="card home-main-card">
         <div class="today-label">⏱ 今日の記録</div>
         <div class="today-time" id="hToday">0<small>分</small></div>
         <div class="bar"><i id="hBar" style="width:0%"></i></div>
         <div class="today-goal"><span id="hGoal">目標：2時間</span></div>
+        <div class="hmc-divider"></div>
+        <button class="daily-pill" onclick="openDailyGoals(true)"><span id="hDaily">🌱 今日の目標を立てよう</span><span style="color:var(--gold2)">✎</span></button>
+        <div id="homeGoalsList" class="home-goals-list"></div>
       </div>
-      <button class="daily-pill" onclick="openDailyGoals(true)"><span id="hDaily">🌱 今日の目標を立てよう</span><span style="color:var(--gold2)">›</span></button>
-      <div id="homeGoalsList" class="home-goals-list"></div>
     </div>
     <div class="home-bottom"></div>
   </section>
@@ -663,12 +669,12 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
 
     <div class="prog-card mine">
       <div class="prog-bubble" id="myProgBubble"></div>
-      <div class="prog-head">📝 あなたの目標<button class="edit" onclick="openDailyGoals(true)">✎ 編集</button></div>
+      <div class="prog-head">📝 あなたの目標</div>
       <div class="prog-scroll"><div id="myProg"></div></div>
     </div>
     <div class="prog-card theirs">
       <div class="prog-bubble" id="theirProgBubble"></div>
-      <div class="prog-head">💬 <span id="theirProgName">相手</span>の目標（押して応援）</div>
+      <div class="prog-head">💬 <span id="theirProgName">相手</span>の目標</div>
       <div class="prog-scroll"><div id="theirProg"></div></div>
     </div>
 
@@ -1444,6 +1450,7 @@ function renderHome(){
 /* ============================================================ マッチング（待機式） ============================================================ */
 let mapUsers=[]; // 互換のため残置（ギャラリーがisRealを参照）
 let matchWaiting=false, matchTimer=null, matchSec=0, livePool=[];
+let matchInviteSent=false, matchInvitePartner=null;
 
 // ゆめ（受付NPC）
 const YUME = {
@@ -1539,10 +1546,20 @@ function tickMatch(){
   if(!matchWaiting) return;
   const st=matchStage(matchSec);
   setWaitCount();
+  if(matchInviteSent){ matchSec++; return; } // 招待送信済みは返事待ち
   const cands=livePool.filter(u=>u.uid && u.uid!==myUid() && matchesStage(u, st));
   if(cands.length){
     cands.sort((a,b)=>affinity(b)-affinity(a));
-    matchFound(cands[0], true);
+    const best=cands[0];
+    // uidが小さい方だけが招待を送る（両者が同時に送るのを防ぐ）
+    if(myUid() < best.uid){
+      matchInviteSent=true;
+      matchInvitePartner=best;
+      if(window.fbApi) window.fbApi.sendInvite({id:best.uid, uid:best.uid, name:best.name, emoji:best.emoji});
+      toast(`${best.name}さんにマッチを送ったよ…`);
+    }
+    // uidが大きい方は相手からの招待を待つ（onIncomingInviteで自動承諾）
+    matchSec++;
     return;
   }
   if(matchSec>=60 && matchSec%60===0){
@@ -1551,7 +1568,7 @@ function tickMatch(){
   matchSec++;
 }
 function matchFound(partner, isReal){
-  matchWaiting=false; clearInterval(matchTimer);
+  matchWaiting=false; matchInviteSent=false; clearInterval(matchTimer);
   showWaitCard(false); stopWaitBGM();
   restoreNavCenter();
   toast(`${partner.name}さんとマッチしました！✨`);
@@ -1582,21 +1599,23 @@ function tickMatchInRoom(){
   if(!room || !room.waitingForReal){ clearInterval(matchTimer); return; }
   matchSec++;
   setWaitCount();
+  if(matchInviteSent) return;
   const st=matchStage(matchSec%60===0?60:matchSec%60);
   const cands=livePool.filter(u=>u.uid && u.uid!==myUid() && matchesStage(u, st));
   if(cands.length){
     cands.sort((a,b)=>affinity(b)-affinity(a));
     const best=cands[0];
-    clearInterval(matchTimer);
-    room.waitingForReal=false;
-    showWaitCard(false);
-    toast(`${best.name}さんが来たよ！ユメとお別れ👋`);
-    room=null;
-    setTimeout(()=>matchFound(best, true), 600);
+    // uidが小さい方だけ招待を送る
+    if(myUid() < best.uid){
+      matchInviteSent=true; matchInvitePartner=best;
+      if(window.fbApi) window.fbApi.sendInvite({id:best.uid, uid:best.uid, name:best.name, emoji:best.emoji});
+      toast(`${best.name}さんにマッチを送ったよ…`);
+    }
+    // 大きい方は onIncomingInvite で乗り換え
   }
 }
 function cancelWait(){
-  matchWaiting=false; clearInterval(matchTimer);
+  matchWaiting=false; matchInviteSent=false; clearInterval(matchTimer);
   showWaitCard(false); stopWaitBGM();
   restoreNavCenter();
   // ユメ部屋にいたら退出
@@ -1802,16 +1821,13 @@ function renderMyProg(){
   if(!el) return;
   el.innerHTML=state.dailyGoals.map((g,i)=>{
     const full=g.done>=g.target;
-    const mk=myGoalStamps[i]||{};
-    const markStr = mk.stamp ? `<span class="pstamps"><span class="ps1">${mk.stamp}</span></span>` : '';
     return `<div class="prog-item ${full?'full':''}">
       <span class="ptx">${g.secret?'🤫':'・'}${g.tx}</span>
-      ${markStr}
       <span class="pcnt">${g.done}/${g.target}</span>
       <button class="pbtn" onclick="myProgChange(${i},-1)">−</button>
       <button class="pbtn" onclick="myProgChange(${i},1)">＋</button>
     </div>`;
-  }).join('') || '<div style="font-size:10px;color:var(--ink3);text-align:center;padding:6px">目標がないよ。✎で追加！</div>';
+  }).join('') || '<div style="font-size:10px;color:var(--ink3);text-align:center;padding:6px">目標がないよ</div>';
 }
 function myProgChange(i,d){
   const g=state.dailyGoals[i];
@@ -1821,7 +1837,13 @@ function myProgChange(i,d){
   if(g.done>=g.target && was<g.target){ playChime(); toast(`「${g.tx}」達成！えらい！🎉`); }
   save(); renderMyProg();
   // 相手にリアルタイム共有
-  if(room && room.partner.isReal && window.fbApi) window.fbApi.pushMyGoals();
+  if(room && room.partner.isReal && window.fbApi){
+    window.fbApi.pushMyGoals();
+    // 集中モード中でなければ、+の音を相手にも届ける
+    if(d>0 && g.done>was && !focusMode && window.fbApi.sendProgressPing){
+      window.fbApi.sendProgressPing(g.done, g.done>=g.target);
+    }
+  }
   if(window.fbSaveDailyGoals) window.fbSaveDailyGoals();
 }
 function renderTheirProg(){
@@ -1830,11 +1852,9 @@ function renderTheirProg(){
   const goals=room.partner.goals||[];
   el.innerHTML=goals.map((g,i)=>{
     const full=g.done>=g.target;
-    const markStr = Object.keys(g.stamps||{}).length ? `<span class="pstamps">${Object.entries(g.stamps).map(([e,n])=>`<span class="ps1">${e}${n>1?'×'+n:''}</span>`).join('')}</span>` : '';
     const isSecret=g.secret;
     return `<div class="prog-item ${full?'full':''}">
       <span class="ptx">・${isSecret?'<i>ヒミツ</i>':g.tx}</span>
-      ${markStr}
       <span class="pcnt">${g.done}/${g.target}</span>
       <button class="pbtn heart" onclick="pickStampFor(${i})">💬</button>
     </div>`;
@@ -2118,7 +2138,7 @@ function leaveFlow(){
   for(let i=0;i<boxes;i++){ const r=rollReward(); applyReward(r); leaveResults.push(r); }
   pendingGifts=0; save();
   // 待機ループ停止（ユメ部屋の継続待機も含む）
-  matchWaiting=false; clearInterval(matchTimer);
+  matchWaiting=false; matchInviteSent=false; clearInterval(matchTimer);
   if(room) room.waitingForReal=false;
   galLeftPartner = (room && room.partner.isReal) ? room.partner : null;
   if(room && room.partner.isReal && window.fbApi) window.fbApi.leaveRoomSync();
@@ -2176,7 +2196,7 @@ function renderGallery(){
   const goals=(u.goals||[]).slice(0,5);
   const sub=u.detail||(CATS[u.cat]?CATS[u.cat].name:'作業');
   if(!u._galStamps) u._galStamps={};
-  const countsRow=Object.entries(u._galStamps).map(([e,n])=>`<span class="gc1">${e} ${n}</span>`).join('') || '<span style="color:var(--ink3);font-size:11px">まだスタンプなし</span>';
+  const countsRow=Object.entries(u._galStamps).map(([e,n])=>`<span class="gc1">${e} ${n}</span>`).join('') || '<span style="color:var(--ink3);font-size:11px">スタンプを押して応援しよう！</span>';
   document.getElementById('galBody').innerHTML=`
     <div class="gal-card">
       <div class="gal-head">
@@ -2191,37 +2211,61 @@ function renderGallery(){
           <span class="gg-cnt">${g.done}/${g.target}</span></div>`).join(''):'<div style="font-size:12px;color:var(--ink3);padding:6px">今日の目標は未設定だったみたい</div>'}
       </div>
       <div class="gal-stamps-got" id="galStampsGot">${countsRow}</div>
+      <div class="gal-hint">スタンプを押して応援（長押しで連打）</div>
       <div class="gal-stamp-row">
-        ${STAMPS.map(s=>`<button class="gal-pick ${galStamp===s.e?'on':''}" onclick="galPick('${s.e}')">${s.e}</button>`).join('')}
-        <button class="gal-big" id="galBig" onclick="galTap(event)">${galStamp}</button>
+        ${STAMPS.map(s=>`<button class="gal-pick big" data-e="${s.e}">${s.e}</button>`).join('')}
       </div>
     </div>`;
+  bindGalStampButtons();
 }
-function galPick(e){ galStamp=e; renderGallery(); }
-function galTap(ev){
+function bindGalStampButtons(){
+  document.querySelectorAll('.gal-pick').forEach(btn=>{
+    const e=btn.dataset.e;
+    const start=(ev)=>{ ev.preventDefault(); galStampDown(e, btn); };
+    const end=()=>galStampUp();
+    btn.onpointerdown=start;
+    btn.onpointerup=end;
+    btn.onpointerleave=end;
+    btn.onpointercancel=end;
+  });
+}
+let galHoldTimer=null, galHoldDelay=320;
+function galStampDown(e, btn){
+  galStamp=e;
+  doGalStamp(btn);              // 1回目は即時
+  galHoldDelay=320;
+  const rapid=()=>{
+    doGalStamp(btn);
+    galHoldDelay=Math.max(60, galHoldDelay*0.76); // だんだん早く
+    galHoldTimer=setTimeout(rapid, galHoldDelay);
+  };
+  galHoldTimer=setTimeout(rapid, 420);
+}
+function galStampUp(){
+  clearTimeout(galHoldTimer); galHoldTimer=null; galHoldDelay=320; galCombo=0;
+}
+function doGalStamp(btn){
   const u=galList[galIdx];
   const g=(u.goals||[])[0];
   if(g){ if(!g.stamps) g.stamps={}; g.stamps[galStamp]=(g.stamps[galStamp]||0)+1; logStamp(u.name, g.tx, galStamp); }
-  // 絵文字ごとに別々にカウント
   if(!u._galStamps) u._galStamps={};
   u._galStamps[galStamp]=(u._galStamps[galStamp]||0)+1;
   galCombo++;
-  clearTimeout(galComboT);
-  galComboT=setTimeout(()=>galCombo=0, 650);
   playPop(galCombo);
   const b=document.createElement('div');
   b.className='burst'; b.textContent=galStamp;
-  const r=ev.target.getBoundingClientRect();
+  const r=btn.getBoundingClientRect();
   b.style.left=(r.left+r.width/2-13)+'px';
   b.style.top=(r.top-6)+'px';
   b.style.setProperty('--dx',(Math.random()*80-40)+'px');
   b.style.setProperty('--dy',(-60-Math.random()*50)+'px');
   document.body.appendChild(b);
   setTimeout(()=>b.remove(),950);
-  // 取得スタンプ表示だけ更新（再描画は重いので部分更新）
   const got=document.getElementById('galStampsGot');
   if(got){ got.innerHTML=Object.entries(u._galStamps).map(([e,n])=>`<span class="gc1">${e} ${n}</span>`).join(''); }
 }
+function galPick(e){ galStamp=e; }
+function galTap(ev){ /* 旧大ボタン廃止 */ }
 function nextGallery(){
   if(galIdx<galList.length-1){ galIdx++; galCombo=0; renderGallery(); }
   else finishGallery();
@@ -2419,6 +2463,42 @@ function pingActivity(){
 /* --- リアルプレイヤー連携の窓口 --- */
 let pendingInvite=null;
 window.onIncomingInvite=function(v){
+  // 待機中に招待が来たら自動承諾（マッチング成立）
+  if(matchWaiting && !room){
+    matchWaiting=false; matchInviteSent=false; clearInterval(matchTimer);
+    showWaitCard(false); stopWaitBGM(); restoreNavCenter();
+    if(window.fbApi) window.fbApi.respondInvite(true);
+    const pr=v.profile||{};
+    const partner={ id:v.from, name:v.fromName||'プレイヤー', cat:pr.cat||'study',
+      detail:pr.detail||null, detail2:pr.detail2||null, style:pr.style||'cowork',
+      tags:(pr.tags||[]), streak:pr.streak||1, todayMin:pr.todayMin||0, goalMin:pr.goalMin||120,
+      isBreak:false, emoji:pr.emoji||'🙂', border:'#C9A87C', isReal:true, goals:[], uid:v.from };
+    toast(`${partner.name}さんとマッチしました！✨`);
+    setTimeout(()=>{
+      enterRoom(partner);
+      if(window.fbApi){ window.fbApi.joinRoomSync(v.roomId, v.from); window.fbSetScreen&&window.fbSetScreen('room'); window.fbSetPartnerEmoji&&window.fbSetPartnerEmoji(partner.emoji); }
+    },600);
+    return;
+  }
+  // ユメ部屋で待機中も自動承諾（本物に乗り換え）
+  if(room && room.waitingForReal){
+    room.waitingForReal=false; matchWaiting=false; matchInviteSent=false; clearInterval(matchTimer);
+    showWaitCard(false);
+    if(window.fbApi){ window.fbApi.respondInvite(true); window.fbApi.leaveRoomSync(); }
+    const pr=v.profile||{};
+    const partner={ id:v.from, name:v.fromName||'プレイヤー', cat:pr.cat||'study',
+      detail:pr.detail||null, detail2:pr.detail2||null, style:pr.style||'cowork',
+      tags:(pr.tags||[]), streak:pr.streak||1, todayMin:pr.todayMin||0, goalMin:pr.goalMin||120,
+      isBreak:false, emoji:pr.emoji||'🙂', border:'#C9A87C', isReal:true, goals:[], uid:v.from };
+    room=null;
+    toast(`${partner.name}さんが来たよ！ユメとお別れ👋`);
+    setTimeout(()=>{
+      enterRoom(partner);
+      if(window.fbApi){ window.fbApi.joinRoomSync(v.roomId, v.from); window.fbSetScreen&&window.fbSetScreen('room'); window.fbSetPartnerEmoji&&window.fbSetPartnerEmoji(partner.emoji); }
+    },600);
+    return;
+  }
+  // 通常の招待（フレンドなどから）はモーダルで確認
   pendingInvite=v;
   document.getElementById('invFrom').textContent=v.fromName||'だれか';
   playChime();
@@ -2442,12 +2522,25 @@ function declineInvite(){
   pendingInvite=null; closeModal();
 }
 window.onInviteAnswered=function(ok, target, roomId){
+  matchInviteSent=false;
   if(ok){
-    toast(`${target.name}さんが承諾したよ！🎉`);
-    target.uid=target.id;
-    setTimeout(()=>{ enterRoom(target); if(window.fbApi){ window.fbApi.joinRoomSync(roomId, target.id); window.fbSetScreen&&window.fbSetScreen('room'); window.fbSetPartnerEmoji&&window.fbSetPartnerEmoji(target.emoji||'🙂'); } },600);
+    matchWaiting=false; matchInviteSent=false; clearInterval(matchTimer);
+    showWaitCard(false); stopWaitBGM(); restoreNavCenter();
+    const src = (matchInvitePartner && matchInvitePartner.uid===target.id) ? matchInvitePartner : {};
+    const partner = {
+      id:target.id, uid:target.id, name:target.name||src.name||'プレイヤー', emoji:target.emoji||src.emoji||'🙂',
+      cat:src.cat||'study', detail:src.detail||null, detail2:src.detail2||null, style:src.style||'cowork',
+      tags:src.tags||[], streak:src.streak||1, todayMin:src.todayMin||0, goalMin:src.goalMin||120,
+      isBreak:false, border:'#C9A87C', isReal:true, goals:[],
+    };
+    matchInvitePartner=null;
+    toast(`${partner.name}さんとマッチしました！✨`);
+    if(room && room.waitingForReal){ room.waitingForReal=false; if(window.fbApi) window.fbApi.leaveRoomSync(); room=null; }
+    setTimeout(()=>{ enterRoom(partner); if(window.fbApi){ window.fbApi.joinRoomSync(roomId, partner.uid); window.fbSetScreen&&window.fbSetScreen('room'); window.fbSetPartnerEmoji&&window.fbSetPartnerEmoji(partner.emoji); } },600);
   } else {
-    toast('返事がなかったみたい…またさそってみよう');
+    // 相手が応じなかった→待機を継続
+    if(matchWaiting){ matchInvitePartner=null; toast('相手とつながらなかった…もう一度さがすね'); }
+    else toast('返事がなかったみたい…またさそってみよう');
   }
 };
 window.onPartnerStamp=function(v){ floatStamp({e:v.e,l:v.l||''},0.72); playPop(4); };
@@ -2467,6 +2560,11 @@ window.onPartnerGoals=function(goals){
   renderTheirProg();
 };
 window.onMapStamp=function(v){ /* マップ廃止 */ };
+window.onPartnerProgress=function(p){
+  // 相手が目標を進めた音。自分が集中モード中なら鳴らさない
+  if(focusMode) return;
+  if(p && p.done){ playPop(p.done); if(p.full) playChime(); }
+};
 
 /* 全プレイヤーの生存情報を受信→マッチング候補プールへ */
 window.onLivePlayers=function(arr){
@@ -2635,6 +2733,11 @@ try{
       const v=snap.val();
       if(v && v.from!==uid && v.t>joinT) window.onPartnerStamp(v);
     });
+    // 相手の「目標を進めた音」ping
+    progPingUnsub=onValue(ref(rtdb, roomRefPath+'/ping/'+partnerUid), snap=>{
+      const v=snap.val();
+      if(v && v.t>joinT) window.onPartnerProgress(v);
+    });
     // 相手の目標進捗をリアルタイム受信
     pgoalsUnsub=onValue(ref(rtdb, roomRefPath+'/goals/'+partnerUid), snap=>{
       const v=snap.val();
@@ -2661,7 +2764,7 @@ try{
     set(ref(rtdb, roomRefPath+'/focus/'+uid), !!on).catch(()=>{});
   }
   window.fbSetFocus=setFocus;
-  let myPartnerUid=null, myStampUnsub=null, partnerStampsUnsub=null;
+  let myPartnerUid=null, myStampUnsub=null, partnerStampsUnsub=null, progPingUnsub=null;
   let partnerStampsOnMe={}, partnerGstamps={}, lastPartnerGoals=null;
   function mergeGoalStamps(goals, partnerUid){
     lastPartnerGoals = goals;
@@ -2686,6 +2789,10 @@ try{
     if(!roomRefPath) return;
     set(ref(rtdb, roomRefPath+'/stamp'), {from:uid, e, l, t:Date.now()}).catch(()=>{});
   }
+  function sendProgressPing(done, full){
+    if(!roomRefPath) return;
+    set(ref(rtdb, roomRefPath+'/ping/'+uid), {done, full:!!full, t:Date.now()}).catch(()=>{});
+  }
   // 相手の目標にマーク（スタンプ1つ or コメント）を付ける＝gstamps/{相手uid}/{idx} を上書き
   function setPartnerMark(partnerUid, goalIdx, mark){
     if(!roomRefPath) return;
@@ -2698,10 +2805,12 @@ try{
     if(myStampUnsub){ myStampUnsub(); myStampUnsub=null; }
     if(partnerStampsUnsub){ partnerStampsUnsub(); partnerStampsUnsub=null; }
     if(focusUnsub){ focusUnsub(); focusUnsub=null; }
+    if(progPingUnsub){ progPingUnsub(); progPingUnsub=null; }
     if(roomRefPath){
       remove(ref(rtdb, roomRefPath+'/p/'+uid)).catch(()=>{});
       remove(ref(rtdb, roomRefPath+'/goals/'+uid)).catch(()=>{});
       remove(ref(rtdb, roomRefPath+'/focus/'+uid)).catch(()=>{});
+      remove(ref(rtdb, roomRefPath+'/ping/'+uid)).catch(()=>{});
       roomRefPath=null;
     }
     myRoomId=null; myPartnerEmoji=null; myPartnerUid=null;
@@ -2760,7 +2869,7 @@ try{
       onDisconnect(liveRef).remove();
       window.fbApi = { saveProfile, getOnline, setOffline,
         sendInvite, respondInvite, joinRoomSync, sendRoomStamp, leaveRoomSync, sendMapStamp,
-        pushMyGoals, setPartnerMark, saveDailyGoals };
+        pushMyGoals, setPartnerMark, saveDailyGoals, sendProgressPing };
       saveProfile();
       writeLive();
       clearInterval(presenceTimer);
