@@ -27,7 +27,7 @@
 html,body{height:100%}
 body{font-family:'Zen Maru Gothic',sans-serif; background:#E9E2D5; color:var(--ink);
   display:flex; justify-content:center; user-select:none}
-#app{width:100%; max-width:480px; min-height:100vh; background:var(--bg); position:relative; overflow:hidden}
+#app{width:100%; max-width:480px; min-height:100vh; background:var(--bg); position:relative; overflow-x:hidden}
 .screen{display:none; min-height:100vh; padding-bottom:92px; animation:fadein .25s ease}
 .screen.active{display:block}
 .screen.nonav{padding-bottom:20px}
@@ -774,7 +774,7 @@ body.muted .tool-btn.mute-fade{opacity:.32; pointer-events:none}
     </div>
 
     <div class="prog-card mine">
-      <div class="prog-bubble empty" id="myProgBubble">まだ応援がないよ</div>
+      <div class="prog-bubble" id="myProgBubble" style="display:none"></div>
       <div class="prog-head">📝 あなたの目標</div>
       <div class="prog-scroll"><div id="myProg"></div></div>
     </div>
@@ -1166,7 +1166,7 @@ function todayStr(){ return new Date().toDateString(); }
 function dateLabel(ds){ const d=new Date(ds); return (d.getMonth()+1)+'/'+d.getDate(); }
 
 /* ============================================================ 画面遷移 ============================================================ */
-const NAV_SCREENS=['scr-home','scr-records','scr-shop','scr-mypage','scr-friends'];
+const NAV_SCREENS=['scr-home','scr-records','scr-shop','scr-mypage','scr-friends','scr-skin'];
 function go(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -1795,7 +1795,7 @@ function renderFriends(){
       </div>`).join('');
   } else {
     if(!state.requests.length){
-      list.innerHTML=`<div class="fr-empty">新しいリクエストはないよ<br><span style="font-size:11px">本物のプレイヤーから届くようになるのはPart 3！</span></div>`;
+      list.innerHTML=`<div class="fr-empty">新しいリクエストはないよ<br><span style="font-size:11px">作業した相手から届くよ📨</span></div>`;
       return;
     }
     list.innerHTML=state.requests.map((r,i)=>`
@@ -1811,18 +1811,29 @@ function renderFriends(){
 }
 function acceptReq(i){
   const r=state.requests.splice(i,1)[0];
-  state.friends.push({name:r.name, emoji:r.emoji, online:Math.random()<.5});
+  if(r.fromUid && window.fbApi){ window.fbApi.respondFriendReq(r.fromUid, true, {name:r.name, emoji:r.emoji}); }
+  if(!state.friends.some(f=>f.uid===r.fromUid)) state.friends.push({uid:r.fromUid, name:r.name, emoji:r.emoji, online:false});
   save(); renderFriends(); toast(`${r.name}さんとフレンドになったよ！🎉`);
 }
-function rejectReq(i){ state.requests.splice(i,1); save(); renderFriends(); }
+function rejectReq(i){
+  const r=state.requests.splice(i,1)[0];
+  if(r && r.fromUid && window.fbApi){ window.fbApi.respondFriendReq(r.fromUid, false); }
+  save(); renderFriends();
+}
 function updateReqDots(){
   const has=state.requests.length>0;
   const a=document.getElementById('navReqDotHome'); if(a) a.style.display=has?'block':'none';
   const rd=document.getElementById('reqDot');
   if(rd) rd.style.display=has?'block':'none';
-  // 通知バッジ（新しくついたリアクション・コメント数）
+  // 通知バッジ：今日の自分の目標についた全スタンプ＋コメントの合計
   const nb=document.getElementById('notifBadge');
-  const cnt=state.unreadReactions||0;
+  const today=todayStr();
+  const post=(state.myPosts||{})[today];
+  let cnt=0;
+  if(post){
+    cnt += Object.values(post.stamps||{}).reduce((a,b)=>a+b,0);
+    cnt += (post.comments||[]).length;
+  }
   if(nb){
     if(cnt>0){ nb.textContent=cnt>99?'99+':cnt; nb.style.display='flex'; }
     else nb.style.display='none';
@@ -1951,44 +1962,44 @@ function updateGiftFloat(){
 window.onMyGoalMarks=function(marks){
   myGoalStamps=marks||{};
   renderMyProg();
-  const vals=Object.values(myGoalStamps);
-  // 自分の投稿に付いたリアクション数
-  const cnt=vals.filter(m=>m && (m.stamp||m.comment)).length;
-  if(cnt>0){ state.lastPostReactions=cnt; }
-  // 新しく増えたぶんを未読としてカウント（部屋セッション中の増分）
-  if(cnt>myMarksSeen){
-    state.unreadReactions=(state.unreadReactions||0)+(cnt-myMarksSeen);
+  // 受け取ったスタンプの総数＋コメント数
+  let totalStamps=0, totalComments=0, lastShow='';
+  Object.values(myGoalStamps).forEach(m=>{
+    if(!m) return;
+    if(m.stamps){ Object.entries(m.stamps).forEach(([e,n])=>{ totalStamps+=n; lastShow=e; }); }
+    if(m.comment){ totalComments++; lastShow='💬'+m.comment; }
+  });
+  const total=totalStamps+totalComments;
+  if(total>0){ state.lastPostReactions=total; }
+  // 新しく増えたぶんを未読としてカウント
+  if(total>myMarksSeen){
+    state.unreadReactions=(state.unreadReactions||0)+(total-myMarksSeen);
     updateReqDots();
   }
-  myMarksSeen=cnt;
-  // 今日の自分の投稿レコードにスタンプ/コメントを集計保存
+  myMarksSeen=total;
   recordMyPostReactions(marks);
   save();
-  if(vals.length){
-    const last=vals[vals.length-1];
-    if(last){ showBubble('myProgBubble', last.comment ? '💬'+last.comment : last.stamp || ''); }
-  }
+  if(lastShow){ showBubble('myProgBubble', lastShow); }
 };
-// 受け取ったスタンプ・コメントを「今日の自分の投稿」に集計
+// 受け取ったスタンプ・コメントを「今日の自分の投稿」に保存（最新の集計で上書き）
 function recordMyPostReactions(marks){
   const today=todayStr();
   if(!state.myPosts) state.myPosts={};
   if(!state.myPosts[today]){
-    state.myPosts[today]={ date:today, goals:(state.dailyGoals||[]).map(g=>({tx:g.tx, target:g.target, done:g.done, secret:g.secret})), stamps:{}, comments:[] };
+    state.myPosts[today]={ date:today, goals:[], stamps:{}, comments:[] };
   }
   const post=state.myPosts[today];
-  // goalsは最新で更新
   post.goals=(state.dailyGoals||[]).map(g=>({tx:g.tx, target:g.target, done:g.done, secret:g.secret}));
-  // このセッションのマークを反映（重複加算を防ぐためセッション内のスナップショットを保持）
-  if(!post._seen) post._seen={};
-  Object.entries(marks||{}).forEach(([idx,m])=>{
+  // marksは累積済みの値なので、そのまま集計し直して上書き（二重カウントしない）
+  const stamps={}; const comments=[];
+  Object.values(marks||{}).forEach(m=>{
     if(!m) return;
-    const key=idx+':'+(m.stamp||'')+':'+(m.comment||'');
-    if(post._seen[key]) return;
-    post._seen[key]=true;
-    if(m.stamp){ post.stamps[m.stamp]=(post.stamps[m.stamp]||0)+1; }
-    if(m.comment){ post.comments.push(m.comment); }
+    if(m.stamps){ Object.entries(m.stamps).forEach(([e,n])=>{ stamps[e]=(stamps[e]||0)+n; }); }
+    if(m.comment){ comments.push(m.comment); }
   });
+  // 既存の他セッション分とマージ（最大値を採用：同日に複数回作業した場合の累積）
+  Object.entries(stamps).forEach(([e,n])=>{ post.stamps[e]=Math.max(post.stamps[e]||0, n); });
+  comments.forEach(c=>{ if(!post.comments.includes(c)) post.comments.push(c); });
 }
 let myMarksSeen=0;
 function renderMyProg(){
@@ -2040,7 +2051,6 @@ function renderTheirProg(){
     return `<div class="prog-item ${full?'full':''}">
       <span class="ptx">・${isSecret?'<i>ヒミツ</i>':g.tx}</span>
       <span class="pcnt">${g.done}/${g.target}</span>
-      <button class="pbtn heart" onclick="pickStampFor(${i})">😊</button>
     </div>`;
   }).join('') || '<div style="font-size:10px;color:var(--ink3);text-align:center;padding:6px">目標がないみたい</div>';
 }
@@ -2064,14 +2074,14 @@ function applyItemStamp(si){
   if(room.partner.isReal && window.fbApi){
     window.fbApi.setPartnerMark(room.partner.uid, idx, {stamp:STAMPS[si].e});
   } else {
-    g.stamps={}; g.stamps[STAMPS[si].e]=1; g.comment='';
+    if(!g.stamps) g.stamps={}; g.stamps[STAMPS[si].e]=(g.stamps[STAMPS[si].e]||0)+1;
     const npc=state.npcs.find(n=>n.name===room.partner.name);
-    if(npc){ const ng=npc.goals.find(x=>x.tx===g.tx); if(ng){ ng.stamps={[STAMPS[si].e]:1}; } }
+    if(npc){ const ng=npc.goals.find(x=>x.tx===g.tx); if(ng){ ng.stamps=ng.stamps||{}; ng.stamps[STAMPS[si].e]=(ng.stamps[STAMPS[si].e]||0)+1; } }
+    renderTheirProg();
   }
   logStamp(room.partner.name, g.tx, STAMPS[si].e);
   playPop(3);
-  closeModal(); renderTheirProg();
-  toast(`${STAMPS[si].e} を送ったよ！`);
+  // モーダルは閉じない（連打で増やせる）
 }
 /* 相手の進捗の吹き出しをタップ→そのまま入力 */
 function openCommentInput(){
@@ -2114,9 +2124,16 @@ function setBubbleText(id, text){
   if(text){
     b.textContent=text;
     b.classList.remove('empty');
+    b.style.display='block';
   } else {
-    b.textContent = (id==='theirProgBubble') ? 'タップして相手にコメント💬' : 'まだ応援がないよ';
-    b.classList.add('empty');
+    if(id==='myProgBubble'){
+      // 自分の吹き出しは、コメントが無いときは非表示
+      b.style.display='none';
+    } else {
+      b.textContent='タップして相手にコメント💬';
+      b.classList.add('empty');
+      b.style.display='block';
+    }
   }
 }
 function showBubble(id, text){ setBubbleText(id, text); if(id==='theirProgBubble'){ const b=document.getElementById(id); if(b) b.dataset.comment=text||''; } }
@@ -2145,8 +2162,12 @@ function showPartnerProfile(){
 function sendFriendReq(){
   const u=room.partner;
   closeModal();
-  toast(`${u.name}さんにフレンド申請を送りました`);
-  // NPCはフレンドにならない（本物のプレイヤーとはPart 3で）
+  if(u.isReal && u.uid && window.fbApi){
+    window.fbApi.sendFriendRequest(u.uid);
+    toast(`${u.name}さんにフレンド申請を送りました📨`);
+  } else {
+    toast('ユメにはフレンド申請できないよ🐈‍⬛');
+  }
 }
 /* ポモドーロ＋リング */
 function pomoToggle(){
@@ -2843,6 +2864,22 @@ window.onPartnerProgress=function(p){
 window.onLivePlayers=function(arr){
   if(typeof updateLivePool==='function') updateLivePool(arr);
 };
+window.onFriendRequests=function(reqs){
+  state.requests=(reqs||[]).map(r=>({fromUid:r.fromUid, name:r.name||'プレイヤー', emoji:r.emoji||'🙂'}));
+  save();
+  if(document.getElementById('scr-friends').classList.contains('active')) renderFriends();
+  updateReqDots();
+};
+window.onFriendsList=function(friends){
+  // クラウドのフレンドをローカルに反映（重複しないように）
+  (friends||[]).forEach(f=>{
+    if(!state.friends.some(x=>x.uid===f.uid)){
+      state.friends.push({uid:f.uid, name:f.name||'フレンド', emoji:f.emoji||'🙂', online:false});
+    }
+  });
+  save();
+  if(document.getElementById('scr-friends').classList.contains('active')) renderFriends();
+};
 
 window.fbApi=null;
 function fbSaveProfile(){ if(window.fbApi) window.fbApi.saveProfile(); }
@@ -2859,8 +2896,7 @@ load();
   }
   // 日付が変わったら今日の目標をリセット
   if(state.dailyDate!==today){ state.dailyGoals=[]; }
-  // NPCリクエストの掃除（本物のリクエストはPart 3から）
-  state.requests=[];
+  // フレンド申請はFirebaseのリスナーが反映するので消さない
   save();
 })();
 ensureNpcs();
@@ -2896,7 +2932,7 @@ function showReactionBanner(){
 <script type="module">
 try{
   const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js');
-  const { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
+  const { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
   const { getFirestore, doc, setDoc, getDocs, collection, query, where, limit, serverTimestamp, updateDoc } =
     await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js');
   const { getDatabase, ref, set, onValue, remove, onDisconnect, update, runTransaction } =
@@ -3007,6 +3043,20 @@ try{
   function respondInvite(accept){
     update(ref(rtdb,'invites/'+uid), {status: accept?'accepted':'declined'}).catch(()=>{});
   }
+  function sendFriendRequest(targetUid){
+    if(!targetUid || targetUid===uid) return;
+    set(ref(rtdb,'friendReqs/'+targetUid+'/'+uid), {
+      name:state.profile.name, emoji:state.profile.emoji||'🙂', t:Date.now()
+    }).catch(()=>{});
+  }
+  function respondFriendReq(fromUid, accept, fromInfo){
+    remove(ref(rtdb,'friendReqs/'+uid+'/'+fromUid)).catch(()=>{});
+    if(accept){
+      // 双方の friends に追加
+      set(ref(rtdb,'friends/'+uid+'/'+fromUid), {name:(fromInfo&&fromInfo.name)||'フレンド', emoji:(fromInfo&&fromInfo.emoji)||'🙂', t:Date.now()}).catch(()=>{});
+      set(ref(rtdb,'friends/'+fromUid+'/'+uid), {name:state.profile.name, emoji:state.profile.emoji||'🙂', t:Date.now()}).catch(()=>{});
+    }
+  }
   function joinRoomSync(roomId, partnerUid){
     roomRefPath='rooms/'+roomId;
     myRoomId=roomId; myPartnerUid=partnerUid;
@@ -3064,8 +3114,8 @@ try{
       const mark = (partnerGstamps && partnerGstamps[i]) ? partnerGstamps[i] : null;
       const out = Object.assign({}, g, {stamps:{}, comment:''});
       if(mark){
-        if(mark.stamp) out.stamps={[mark.stamp]:1};
-        if(mark.comment) out.comment=mark.comment;
+        if(mark.stamps && typeof mark.stamps==='object') out.stamps=mark.stamps;
+        if(typeof mark.comment==='string') out.comment=mark.comment;
       }
       return out;
     });
@@ -3084,10 +3134,17 @@ try{
     if(!roomRefPath) return;
     set(ref(rtdb, roomRefPath+'/ping/'+uid), {done, full:!!full, t:Date.now()}).catch(()=>{});
   }
-  // 相手の目標にマーク（スタンプ1つ or コメント）を付ける＝gstamps/{相手uid}/{idx} を上書き
+  // スタンプは加算（連打で増える）、コメントは上書き
   function setPartnerMark(partnerUid, goalIdx, mark){
     if(!roomRefPath) return;
-    set(ref(rtdb, roomRefPath+'/gstamps/'+partnerUid+'/'+goalIdx), mark).catch(()=>{});
+    const base = roomRefPath+'/gstamps/'+partnerUid+'/'+goalIdx;
+    if(mark && mark.stamp){
+      const r=ref(rtdb, base+'/stamps/'+mark.stamp);
+      runTransaction(r, cur=>(cur||0)+1).catch(()=>{});
+    }
+    if(mark && typeof mark.comment==='string'){
+      set(ref(rtdb, base+'/comment'), mark.comment).catch(()=>{});
+    }
   }
   function leaveRoomSync(){
     if(partnerUnsub){ partnerUnsub(); partnerUnsub=null; }
@@ -3128,29 +3185,37 @@ try{
   };
 
   window.fbGoogleSignIn=async function(){
+    const provider = new GoogleAuthProvider();
     try{
-      const provider = new GoogleAuthProvider();
       const res = await signInWithPopup(auth, provider);
-      state.signedIn=true; state.signedProvider='google';
-      if(res.user && res.user.displayName && !state.profile.name) state.profile.name=res.user.displayName;
-      save();
-      // クラウドから今日の目標を復元
-      try{
-        const snap=await getDocs(query(collection(db,'users'), where('__name__','==',uid)));
-        snap.forEach(d=>{ const v=d.data();
-          if(v.dailyDate===new Date().toDateString() && Array.isArray(v.dailyGoals)){ state.dailyGoals=v.dailyGoals; state.dailyDate=v.dailyDate; save(); }
-        });
-      }catch(e){}
-      go('scr-home');
-      if(needDailyGoals()) setTimeout(()=>openDailyGoals(false),300);
+      await afterGoogleLogin(res);
     }catch(e){
-      console.log('google login failed', e.message);
-      state.signedIn=true; state.signedProvider='guest';
-      save();
+      console.log('popup failed, trying redirect', e.message);
+      // ポップアップがブロックされたらリダイレクト方式で再試行
+      if(e.code==='auth/popup-blocked' || e.code==='auth/popup-closed-by-user' || e.code==='auth/cancelled-popup-request' || (e.message&&e.message.includes('Cross-Origin'))){
+        try{ await signInWithRedirect(auth, provider); return; }catch(e2){ console.log('redirect failed', e2.message); }
+      }
+      // それでもだめならゲスト継続
+      state.signedIn=true; state.signedProvider='guest'; save();
       go('scr-home');
       if(needDailyGoals()) setTimeout(()=>openDailyGoals(false),300);
     }
   };
+  async function afterGoogleLogin(res){
+    state.signedIn=true; state.signedProvider='google';
+    if(res && res.user && res.user.displayName && !state.profile.name) state.profile.name=res.user.displayName;
+    save();
+    try{
+      const snap=await getDocs(query(collection(db,'users'), where('__name__','==',uid)));
+      snap.forEach(d=>{ const v=d.data();
+        if(v.dailyDate===new Date().toDateString() && Array.isArray(v.dailyGoals)){ state.dailyGoals=v.dailyGoals; state.dailyDate=v.dailyDate; save(); }
+      });
+    }catch(e){}
+    go('scr-home');
+    if(needDailyGoals()) setTimeout(()=>openDailyGoals(false),300);
+  }
+  // リダイレクト方式の結果を起動時に拾う
+  getRedirectResult(auth).then(res=>{ if(res && res.user){ afterGoogleLogin(res); } }).catch(()=>{});
 
   onAuthStateChanged(auth, user=>{
     if(user){
@@ -3160,11 +3225,22 @@ try{
       onDisconnect(liveRef).remove();
       window.fbApi = { saveProfile, getOnline, setOffline,
         sendInvite, respondInvite, joinRoomSync, sendRoomStamp, leaveRoomSync, sendMapStamp,
-        pushMyGoals, setPartnerMark, saveDailyGoals, sendProgressPing };
+        pushMyGoals, setPartnerMark, saveDailyGoals, sendProgressPing,
+        sendFriendRequest, respondFriendReq };
       saveProfile();
       writeLive();
       clearInterval(presenceTimer);
       presenceTimer=setInterval(writeLive, 4000); // ハートビート
+      // フレンド申請の受信
+      onValue(ref(rtdb,'friendReqs/'+uid), snap=>{
+        const all=snap.val()||{};
+        window.onFriendRequests(Object.entries(all).map(([fromUid,v])=>({fromUid, ...v})));
+      });
+      // 自分が承認されたフレンドの受信
+      onValue(ref(rtdb,'friends/'+uid), snap=>{
+        const all=snap.val()||{};
+        window.onFriendsList(Object.entries(all).map(([fuid,v])=>({uid:fuid, ...v})));
+      });
       // 招待の受信（どの画面でも届く）
       onValue(ref(rtdb,'invites/'+uid), snap=>{
         const v=snap.val();
